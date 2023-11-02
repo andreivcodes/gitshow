@@ -1,0 +1,22 @@
+{
+  "name": "@gitshow/db",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "sst bind vitest",
+    "typecheck": "tsc -noEmit",
+    "migrate": "drizzle-kit generate:pg --schema=src --out=migrations"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.10",
+    "drizzle-kit": "^0.19.13",
+    "sst": "^2.33.2",
+    "vitest": "^0.34.6"
+  },
+  "dependencies": {
+    "@aws-sdk/client-rds-data": "^3.441.0",
+    "@aws-sdk/credential-providers": "^3.441.0",
+    "drizzle-orm": "^0.28.6",
+    "zod": "^3.22.4"
+  }
+}

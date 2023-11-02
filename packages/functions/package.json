@@ -1,0 +1,23 @@
+{
+  "name": "@gitshow/functions",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "sst bind vitest",
+    "typecheck": "tsc -noEmit"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "crypto-js": "^4.2.0",
+    "sharp": "^0.32.6",
+    "twitter-api-v2": "^1.15.2"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.125",
+    "@types/crypto-js": "^4.1.3",
+    "@types/node": "^20.8.10",
+    "drizzle-orm": "^0.28.6",
+    "sst": "^2.33.2",
+    "vitest": "^0.34.6"
+  }
+}
