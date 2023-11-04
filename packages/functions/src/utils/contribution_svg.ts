@@ -1,9 +1,11 @@
+import { bool } from "sharp";
 import { contribData } from "./contribution_data";
 import { themes, Theme } from "./themes";
 
 export async function contribSvg(
   username: string,
-  theme: string
+  theme: "standard" | "classic" | "githubDark" | "dracula" | "blue",
+  type: "free" | "standard" | "premium"
 ): Promise<string> {
   const contributionData = await contribData(username);
 
@@ -48,25 +50,21 @@ export async function contribSvg(
   let x = 35 + paddingLeft; // Adjust initial x-coordinate
   let y = 20 + paddingTop; // Adjust initial y-coordinate
 
-  let lastMonth = "";
-
   for (const year in contributionData.contributions) {
     for (const month in contributionData.contributions[year]) {
       for (const day in contributionData.contributions[year][month]) {
-        const contribution = contributionData.contributions[year][month][day];
-        const color =
-          currentTheme[`intensity${contribution.intensity}` as keyof Theme];
-
-        svgContent += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="${color}" />`;
-
-        if (month !== lastMonth) {
+        if (day == "1")
           svgContent += `<text x="${x}" y="${
             10 + paddingTop
           }" font-size="10" font-family="Arial" fill="${currentTheme.text}">${
             months[parseInt(month) - 1]
           }</text>`;
-          lastMonth = month;
-        }
+
+        const contribution = contributionData.contributions[year][month][day];
+        const color =
+          currentTheme[`intensity${contribution.intensity}` as keyof Theme];
+
+        svgContent += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="${color}" />`;
 
         y += cellSize + cellGap;
         if (y >= height - paddingBottom) {
@@ -80,19 +78,22 @@ export async function contribSvg(
   const watermarkX = width - paddingRight - 110;
   const watermarkY = height - paddingBottom - 35;
 
+  const centerYOffset = cellSize / 2 - 1;
+
   for (let i = 0; i < days.length; i++) {
     svgContent += `<text x="${10 + paddingLeft}" y="${
-      paddingTop + 20 + i * (cellSize + cellGap) + cellSize / 2
+      paddingTop + 20 + i * (cellSize + cellGap) + cellSize / 2 + centerYOffset
     }" font-size="10" font-family="Arial" fill="${
       currentTheme.text
-    }" alignment-baseline="middle">${days[i]}</text>`;
+    }" dominant-baseline="central">${days[i]}</text>`;
   }
 
-  svgContent += `<text x="${watermarkX + paddingLeft}" y="${
-    watermarkY + paddingTop
-  }" font-size="10" font-family="Arial" fill="${
-    currentTheme.text
-  }" text-anchor="middle">Get yours from git.show</text>`;
+  if (type == "free")
+    svgContent += `<text x="${watermarkX + paddingLeft}" y="${
+      watermarkY + paddingTop
+    }" font-size="10" font-family="Arial" fill="${
+      currentTheme.text
+    }" text-anchor="middle">Get yours from git.show</text>`;
 
   svgContent += `</svg>`;
 

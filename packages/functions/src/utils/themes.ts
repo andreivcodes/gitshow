@@ -8,7 +8,10 @@ export type Theme = {
   intensity0: string;
 };
 
-export const themes: Record<string, Theme> = {
+export const themes: Record<
+  "standard" | "classic" | "githubDark" | "dracula" | "blue",
+  Theme
+> = {
   standard: {
     background: "#ffffff",
     text: "#000000",
