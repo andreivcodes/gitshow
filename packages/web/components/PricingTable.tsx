@@ -2,11 +2,24 @@ const products = [
   {
     products: [
       {
+        name: "free",
+        type: "year",
+        price: "0,00",
+        productId: "price_1O8rSiHNuNMEdXGMHyQzaTsh",
+        description: ["Free", "Monthly updates"],
+        active: true,
+      },
+      {
         name: "standard",
         type: "year",
         price: "10,00",
         productId: "price_1O7OaXHNuNMEdXGMt3aabIZx",
-        description: ["Standard", "Weekly updates"],
+        description: [
+          "Standard",
+          "Weekly updates",
+          "No branding",
+          "Dark theme",
+        ],
         active: true,
       },
       {
@@ -14,7 +27,7 @@ const products = [
         type: "year",
         price: "25,00",
         productId: "price_1O7ObLHNuNMEdXGMc8dcCRW9",
-        description: ["Premium", "Daily updates"],
+        description: ["Premium", "Daily updates", "No branding", "More themes"],
         active: true,
       },
     ],
@@ -97,7 +110,7 @@ const PricingTable = ({
 }) => {
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
+      <div className="pt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-5">
         {selectedType.type === "monthly"
           ? products[1].products.map((product, index) => (
               <ProductCard

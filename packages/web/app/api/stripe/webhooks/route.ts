@@ -2,9 +2,31 @@ import "server-only";
 
 import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../../../../db/src/index";
 import { Config } from "sst/node/config";
 import { stripe } from "../../../../utils/stripeServer";
+import { Queue } from "sst/node/queue";
+import AWS from "aws-sdk";
+import { AvailableThemeNames } from "../../../../utils/themes";
+import { DynamoDB } from "aws-sdk";
+import { Table } from "sst/node/table";
+import { updateUser } from "../../../../utils/db";
+
+const dynamoDb = new DynamoDB.DocumentClient();
+
+const sqs = new AWS.SQS();
+
+export interface UpdateUserEvent {
+  githubUsername: string;
+  twitterOAuthToken: string;
+  twitterOAuthTokenSecret: string;
+  type: "free" | "standard" | "premium";
+  theme: AvailableThemeNames;
+}
+
+interface Plan {
+  type: "free" | "standard" | "premium";
+  theme: AvailableThemeNames;
+}
 
 const webhookSecret: string = Config.STRIPE_WEBHOOK_SECRET!;
 
@@ -37,72 +59,80 @@ const webhookHandler = async (req: NextRequest) => {
 
     const subscription = event.data.object as Stripe.Subscription;
 
+    const users = await dynamoDb
+      .query({
+        TableName: Table.User.tableName,
+        IndexName: "StripeCustomerIndex",
+        KeyConditionExpression: "stripeCustomerId = :stripeCustomerId",
+        ExpressionAttributeValues: {
+          ":stripeCustomerId": subscription.customer.toString(),
+        },
+      })
+      .promise();
+
+    if (users.Count === 0 || !users.Items) {
+      throw new Error("User not found");
+    }
+
+    const user = users.Items[0];
+
     switch (event.type) {
       case "customer.subscription.created":
-        let created_event = event as Stripe.CustomerSubscriptionCreatedEvent;
+      case "customer.subscription.updated":
+        let e = event as Stripe.CustomerSubscriptionCreatedEvent;
 
-        await db
-          .updateTable("users")
-          .set({
-            isFree: false,
-            isStandard:
-              created_event.data.object.items.data[0].plan.id ==
-              "price_1O7OaXHNuNMEdXGMt3aabIZx"
-                ? true
-                : false,
-            isPremium:
-              created_event.data.object.items.data[0].plan.id ==
-              "price_1O7ObLHNuNMEdXGMc8dcCRW9"
-                ? true
-                : false,
-            lastSubscriptionTimestamp: new Date(),
+        let plan: Plan = { type: "free", theme: "normal" };
+
+        switch (e.data.object.items.data[0].plan.id) {
+          case "price_1O7OaXHNuNMEdXGMt3aabIZx":
+            plan = { type: "standard", theme: "githubDark" };
+            break;
+          case "price_1O7ObLHNuNMEdXGMc8dcCRW9":
+            plan = { type: "premium", theme: "blue" };
+            break;
+          case "price_1O8rSiHNuNMEdXGMHyQzaTsh":
+            plan = { type: "free", theme: "normal" };
+            break;
+          default:
+            break;
+        }
+
+        try {
+          await updateUser(user.email, {
+            subscriptionType: plan.type,
+            lastSubscriptionTimestamp: new Date().toISOString(),
+          });
+        } catch (error) {
+          console.error("Failed to update user:", error);
+        }
+
+        await sqs
+          .sendMessage({
+            QueueUrl: Queue.UpdateQueue.queueUrl,
+            MessageBody: JSON.stringify({
+              githubUsername: user.githubUsername,
+              twitterOAuthToken: user.twitterOAuthToken,
+              twitterOAuthTokenSecret: user.twitterOAuthTokenSecret,
+              type: plan.type,
+              theme: plan.theme,
+            } as UpdateUserEvent),
           })
-          .where(
-            "users.stripeCustomerId",
-            "=",
-            subscription.customer.toString()
-          )
-          .execute();
+          .promise();
 
         break;
 
       case "customer.subscription.deleted":
-        await db
-          .deleteFrom("users")
-          .where(
-            "users.stripeCustomerId",
-            "=",
-            subscription.customer.toString()
-          )
-          .execute();
+        try {
+          await dynamoDb
+            .delete({
+              TableName: Table.User.tableName,
+              Key: { email: user.email },
+            })
+            .promise();
+        } catch (error) {
+          console.error("Failed to delete user:", error);
+        }
 
-        break;
-
-      case "customer.subscription.updated":
-        let updated_event = event as Stripe.CustomerSubscriptionUpdatedEvent;
-
-        await db
-          .updateTable("users")
-          .set({
-            isFree: false,
-            isStandard:
-              updated_event.data.object.items.data[0].plan.id ==
-              "price_1O7OaXHNuNMEdXGMt3aabIZx"
-                ? true
-                : false,
-            isPremium:
-              updated_event.data.object.items.data[0].plan.id ==
-              "price_1O7ObLHNuNMEdXGMc8dcCRW9"
-                ? true
-                : false,
-            lastSubscriptionTimestamp: new Date(),
-          })
-          .where(
-            "users.stripeCustomerId",
-            "=",
-            subscription.customer.toString()
-          )
-          .execute();
         break;
 
       default:
@@ -110,17 +140,20 @@ const webhookHandler = async (req: NextRequest) => {
         break;
     }
 
-    // Return a response to acknowledge receipt of the event.
     return NextResponse.json({ received: true });
-  } catch {
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    console.error(`❌ An error occurred: ${errorMessage}`);
+
     return NextResponse.json(
       {
         error: {
-          message: `Method Not Allowed`,
+          message: errorMessage,
         },
       },
-      { status: 405 }
-    ).headers.set("Allow", "POST");
+      { status: 500 }
+    );
   }
 };
 

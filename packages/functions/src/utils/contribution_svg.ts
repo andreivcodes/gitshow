@@ -1,10 +1,9 @@
-import { bool } from "sharp";
 import { contribData } from "./contribution_data";
-import { themes, Theme } from "./themes";
+import { themes, Theme, AvailableThemeNames } from "./themes";
 
 export async function contribSvg(
   username: string,
-  theme: "standard" | "classic" | "githubDark" | "dracula" | "blue",
+  theme: AvailableThemeNames,
   type: "free" | "standard" | "premium"
 ): Promise<string> {
   const contributionData = await contribData(username);
@@ -56,7 +55,7 @@ export async function contribSvg(
         if (day == "1")
           svgContent += `<text x="${x}" y="${
             10 + paddingTop
-          }" font-size="10" font-family="Arial" fill="${currentTheme.text}">${
+          }" font-size="10" fill="${currentTheme.text}">${
             months[parseInt(month) - 1]
           }</text>`;
 
@@ -83,15 +82,15 @@ export async function contribSvg(
   for (let i = 0; i < days.length; i++) {
     svgContent += `<text x="${10 + paddingLeft}" y="${
       paddingTop + 20 + i * (cellSize + cellGap) + cellSize / 2 + centerYOffset
-    }" font-size="10" font-family="Arial" fill="${
-      currentTheme.text
-    }" dominant-baseline="central">${days[i]}</text>`;
+    }" font-size="10" fill="${currentTheme.text}" dominant-baseline="central">${
+      days[i]
+    }</text>`;
   }
 
   if (type == "free")
     svgContent += `<text x="${watermarkX + paddingLeft}" y="${
       watermarkY + paddingTop
-    }" font-size="10" font-family="Arial" fill="${
+    }" font-size="10" fill="${
       currentTheme.text
     }" text-anchor="middle">Get yours from git.show</text>`;
 

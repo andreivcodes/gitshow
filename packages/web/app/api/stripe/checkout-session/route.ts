@@ -3,8 +3,11 @@ import "server-only";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import { db } from "../../../../../db/src/index";
 import { stripe } from "../../../../utils/stripeServer";
+import { DynamoDB } from "aws-sdk";
+import { Table } from "sst/node/table";
+
+const dynamoDb = new DynamoDB.DocumentClient();
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -23,15 +26,27 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const user = await db
-    .selectFrom("users")
-    .select(["users.stripeCustomerId", "users.email", "users.id"])
-    .where("users.email", "=", session.user.email!)
-    .execute();
+  const user = await dynamoDb
+    .get({
+      TableName: Table.User.tableName,
+      Key: { email: session.user.email! },
+    })
+    .promise();
+
+  if (!user.Item)
+    return NextResponse.json(
+      {
+        error: {
+          code: "stripe-error",
+          message: "Could not create checkout session",
+        },
+      },
+      { status: 500 }
+    );
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "subscription",
-    customer: user[0].stripeCustomerId!,
+    customer: user.Item.stripeCustomerId!,
     line_items: [
       {
         price: body,
@@ -43,9 +58,9 @@ export async function POST(req: NextRequest) {
     cancel_url: process.env.NEXT_PUBLIC_WEBSITE_URL,
     subscription_data: {
       metadata: {
-        userId: user[0].id!,
-        email: user[0].email!,
-        stripeCustomerId: user[0].stripeCustomerId!,
+        userId: user.Item.id!,
+        email: user.Item.email!,
+        stripeCustomerId: user.Item.stripeCustomerId!,
       },
     },
   });

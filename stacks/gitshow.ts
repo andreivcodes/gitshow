@@ -1,6 +1,16 @@
-import { StackContext, RDS, Cron, NextjsSite, Config } from "sst/constructs";
+import { Tags } from "aws-cdk-lib/core";
+import {
+  StackContext,
+  Cron,
+  NextjsSite,
+  Config,
+  Queue,
+  Table,
+} from "sst/constructs";
 
 export function stack({ stack }: StackContext) {
+  Tags.of(stack).add("AppManagerCFNStackKey", `${stack.stage}-${stack.region}`);
+
   const secret_NEXTAUTH_SECRET = new Config.Secret(stack, "NEXTAUTH_SECRET");
 
   const secret_STRIPE_SECRET_KEY = new Config.Secret(
@@ -28,11 +38,49 @@ export function stack({ stack }: StackContext) {
     "GITHUB_CLIENT_SECRET"
   );
 
-  const cluster = new RDS(stack, "dbcluster", {
-    engine: "postgresql11.13",
-    defaultDatabaseName: "gitshow",
-    migrations: "packages/db/migrations",
+  const table = new Table(stack, "User", {
+    fields: {
+      email: "string",
+      name: "string",
+      stripeCustomerId: "string",
+
+      githubId: "string",
+      githubUsername: "string",
+      githubToken: "string",
+
+      twitterId: "string",
+      twitterUsername: "string",
+      twitterOAuthToken: "string",
+      twitterOAuthTokenSecret: "string",
+
+      subscriptionType: "string",
+      lastSubscriptionTimestamp: "string",
+    },
+    primaryIndex: { partitionKey: "email" },
+    globalIndexes: {
+      StripeCustomerIndex: {
+        partitionKey: "stripeCustomerId",
+      },
+      SubscriptionTypeIndex: {
+        partitionKey: "subscriptionType",
+      },
+    },
   });
+
+  const queue = new Queue(stack, "UpdateQueue", {
+    consumer: {
+      function: {
+        handler: "packages/functions/src/update_user.handler",
+        runtime: "nodejs18.x",
+      },
+    },
+  });
+
+  queue.bind([
+    secret_TOKENS_ENCRYPT,
+    secret_TWITTER_CONSUMER_KEY,
+    secret_TWITTER_CONSUMER_SECRET,
+  ]);
 
   const web = new NextjsSite(stack, "web", {
     path: "packages/web",
@@ -56,7 +104,8 @@ export function stack({ stack }: StackContext) {
         process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "",
     },
     bind: [
-      cluster,
+      table,
+      queue,
       secret_NEXTAUTH_SECRET,
       secret_STRIPE_SECRET_KEY,
       secret_STRIPE_WEBHOOK_SECRET,
@@ -72,17 +121,9 @@ export function stack({ stack }: StackContext) {
     schedule: "rate(30 days)",
     job: {
       function: {
-        timeout: "1 minute",
         runtime: "nodejs18.x",
         handler: "packages/functions/src/free_update_job.handler",
-        bind: [
-          cluster,
-          secret_TOKENS_ENCRYPT,
-          secret_TWITTER_CONSUMER_KEY,
-          secret_TWITTER_CONSUMER_SECRET,
-          secret_GITHUB_CLIENT_ID,
-          secret_GITHUB_CLIENT_SECRET,
-        ],
+        bind: [table, queue],
       },
     },
   });
@@ -91,43 +132,25 @@ export function stack({ stack }: StackContext) {
     schedule: "rate(7 days)",
     job: {
       function: {
-        timeout: "1 minute",
         runtime: "nodejs18.x",
         handler: "packages/functions/src/standard_update_job.handler",
-        bind: [
-          cluster,
-          secret_TOKENS_ENCRYPT,
-          secret_TWITTER_CONSUMER_KEY,
-          secret_TWITTER_CONSUMER_SECRET,
-          secret_GITHUB_CLIENT_ID,
-          secret_GITHUB_CLIENT_SECRET,
-        ],
+        bind: [table, queue],
       },
     },
   });
 
   new Cron(stack, "premium_update_job", {
-    schedule: "rate(1 hour)",
+    schedule: "rate(1 day)",
     job: {
       function: {
-        timeout: "1 minute",
         runtime: "nodejs18.x",
         handler: "packages/functions/src/premium_update_job.handler",
-        bind: [
-          cluster,
-          secret_TOKENS_ENCRYPT,
-          secret_TWITTER_CONSUMER_KEY,
-          secret_TWITTER_CONSUMER_SECRET,
-          secret_GITHUB_CLIENT_ID,
-          secret_GITHUB_CLIENT_SECRET,
-        ],
+        bind: [table, queue],
       },
     },
   });
 
   stack.addOutputs({
-    SecretArn: cluster.secretArn,
-    ClusterIdentifier: cluster.clusterIdentifier,
     SiteUrl: web.customDomainUrl || web.url,
   });
 }
