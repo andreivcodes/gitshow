@@ -2,8 +2,8 @@ import { SQSEvent } from "aws-lambda";
 import { AES, enc } from "crypto-js";
 import sharp from "sharp";
 import { TwitterApi } from "twitter-api-v2";
-import { contribSvg } from "./utils/contribution_svg";
 import { Config } from "sst/node/config";
+import { contribSvg } from "@gitshow/svg-gen";
 
 export interface UpdateUserEvent {
   githubUsername: string;

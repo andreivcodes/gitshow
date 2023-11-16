@@ -1,0 +1,247 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+@keyframes free-select {
+  0%,
+  100% {
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes free-select {
+  0%,
+  100% {
+    background: rgba(121, 145, 176, 0.75);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+  }
+  50% {
+    background: rgba(121, 145, 176, 0.75);
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes standard-select {
+  0%,
+  100% {
+    background-image: linear-gradient(
+      90deg,
+      rgba(89, 221, 247, 1),
+      rgba(89, 160, 247, 0.75),
+      rgba(96, 79, 244, 0.6)
+    );
+    background-size: 200% 200%;
+    background-position: 0% 50%;
+  }
+  50% {
+    background-image: linear-gradient(
+      90deg,
+      rgba(89, 221, 247, 1),
+      rgba(89, 160, 247, 0.75),
+      rgba(96, 79, 244, 0.6)
+    );
+    background-size: 200% 200%;
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes premium-select {
+  0%,
+  100% {
+    background-image: linear-gradient(
+      90deg,
+      rgba(251, 191, 36, 0.5),
+      rgba(244, 114, 182, 0.5),
+      rgba(147, 51, 234, 0.5),
+      rgba(59, 130, 246, 0.5),
+      rgba(110, 231, 183, 0.5)
+    );
+    background-size: 500% 500%;
+    background-position: 0% 50%;
+  }
+  50% {
+    background-image: linear-gradient(
+      90deg,
+      rgba(251, 191, 36, 0.5),
+      rgba(244, 114, 182, 0.5),
+      rgba(147, 51, 234, 0.5),
+      rgba(59, 130, 246, 0.5),
+      rgba(110, 231, 183, 0.5)
+    );
+    background-size: 500% 500%;
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes moveAndGlow {
+  0% {
+    box-shadow: 0 0 60px 30px rgba(123, 31, 162, 0.2),
+      0 0 120px 60px rgba(76, 201, 240, 0.1),
+      0 0 200px 100px rgba(255, 198, 93, 0.05);
+    transform: translate(50vw, 50vh);
+    background: rgba(123, 31, 162, 0.6);
+    border-radius: 60% 40% 50% 50%;
+    opacity: 0.2;
+  }
+  100% {
+    box-shadow: 0 0 60px 30px rgba(123, 31, 162, 0.2),
+      0 0 120px 60px rgba(76, 201, 240, 0.1),
+      0 0 200px 100px rgba(255, 198, 93, 0.05);
+    transform: translate(25%, 65%) scale(1);
+    background: rgba(123, 31, 162, 0.6);
+    border-radius: 40% 40% 50% 50%;
+    opacity: 0.35;
+  }
+  25% {
+    box-shadow: 0 0 80px 40px rgba(255, 105, 180, 0.3),
+      0 0 160px 80px rgba(255, 87, 34, 0.2),
+      0 0 240px 120px rgba(255, 193, 7, 0.1);
+    transform: translate(10vw, 15vh) scale(1.1);
+    background: rgba(255, 105, 180, 0.6);
+    border-radius: 45% 55% 50% 50%;
+    opacity: 0.25;
+  }
+  50% {
+    box-shadow: 0 0 100px 50px rgba(0, 150, 136, 0.3),
+      0 0 200px 100px rgba(0, 188, 212, 0.2),
+      0 0 300px 150px rgba(0, 230, 118, 0.1);
+    transform: translate(-10vw, 60vh) scale(0.9);
+    background: rgba(0, 150, 136, 0.6);
+    border-radius: 30% 60% 50% 50%;
+    opacity: 0.4;
+  }
+  75% {
+    box-shadow: 0 0 80px 40px rgba(156, 39, 176, 0.3),
+      0 0 160px 80px rgba(103, 58, 183, 0.2),
+      0 0 240px 120px rgba(63, 81, 181, 0.1);
+    transform: translate(55vw, -15vh) scale(1.05);
+    background: rgba(156, 39, 176, 0.6);
+    border-radius: 50% 50% 50% 50%;
+    opacity: 0.15;
+  }
+}
+
+.orb {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  animation: moveAndGlow 20s infinite alternate ease-in-out;
+  filter: blur(200px);
+  z-index: -1;
+}
+
+.orb-container {
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.chart-shadow::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0px 15px 35px rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  transition: box-shadow 0.3s ease;
+}
+
+@media screen and (max-width: 500px) {
+  .chart-fade::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 20%,
+      rgba(0, 0, 0, 1) 75%
+    );
+    transition: background-color 1s ease-in-out;
+  }
+}

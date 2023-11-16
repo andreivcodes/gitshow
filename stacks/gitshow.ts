@@ -1,4 +1,3 @@
-import { Tags } from "aws-cdk-lib/core";
 import {
   StackContext,
   Cron,
@@ -9,8 +8,6 @@ import {
 } from "sst/constructs";
 
 export function stack({ stack }: StackContext) {
-  Tags.of(stack).add("AppManagerCFNStackKey", `${stack.stage}-${stack.region}`);
-
   const secret_NEXTAUTH_SECRET = new Config.Secret(stack, "NEXTAUTH_SECRET");
 
   const secret_STRIPE_SECRET_KEY = new Config.Secret(
@@ -44,16 +41,22 @@ export function stack({ stack }: StackContext) {
       name: "string",
       stripeCustomerId: "string",
 
+      githubAuthenticated: "string",
+      twitterAuthenticated: "string",
+
       githubId: "string",
       githubUsername: "string",
       githubToken: "string",
 
       twitterId: "string",
       twitterUsername: "string",
+      twitterTag: "string",
+      twitterPicture: "string",
       twitterOAuthToken: "string",
       twitterOAuthTokenSecret: "string",
 
       subscriptionType: "string",
+      theme: "string",
       lastSubscriptionTimestamp: "string",
     },
     primaryIndex: { partitionKey: "email" },
@@ -67,6 +70,8 @@ export function stack({ stack }: StackContext) {
     },
   });
 
+  const deadletter = new Queue(stack, "DeadLetterQueue", {});
+
   const queue = new Queue(stack, "UpdateQueue", {
     consumer: {
       function: {
@@ -74,32 +79,41 @@ export function stack({ stack }: StackContext) {
         runtime: "nodejs18.x",
       },
     },
+    cdk: {
+      queue: {
+        deadLetterQueue: {
+          maxReceiveCount: 3,
+          queue: deadletter.cdk.queue,
+        },
+      },
+    },
   });
 
   queue.bind([
     secret_TOKENS_ENCRYPT,
+    secret_GITHUB_CLIENT_ID,
     secret_TWITTER_CONSUMER_KEY,
     secret_TWITTER_CONSUMER_SECRET,
   ]);
 
   const web = new NextjsSite(stack, "web", {
     path: "packages/web",
-    logging: "per-route",
+    warm: 2,
     customDomain: {
       domainName:
-        stack.stage === "prod" ? "git.show" : `${stack.stage}.git.show`,
-      domainAlias: stack.stage === "prod" ? "www.git.show" : undefined,
+        stack.stage === "production" ? "git.show" : `${stack.stage}.git.show`,
+      domainAlias: stack.stage === "production" ? "www.git.show" : undefined,
       hostedZone: "git.show",
     },
     environment: {
       NEXT_PUBLIC_WEBSITE_URL:
-        stack.stage === "prod"
+        stack.stage === "production"
           ? "https://git.show"
-          : `https://${stack.stage}.git.show`,
+          : `http://localhost:3000`,
       NEXTAUTH_URL:
-        stack.stage === "prod"
+        stack.stage === "production"
           ? "https://git.show"
-          : `https://${stack.stage}.git.show`,
+          : `http://localhost:3000`,
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
         process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "",
     },
@@ -110,6 +124,7 @@ export function stack({ stack }: StackContext) {
       secret_STRIPE_SECRET_KEY,
       secret_STRIPE_WEBHOOK_SECRET,
       secret_TOKENS_ENCRYPT,
+      secret_STRIPE_SECRET_KEY,
       secret_TWITTER_CONSUMER_KEY,
       secret_TWITTER_CONSUMER_SECRET,
       secret_GITHUB_CLIENT_ID,

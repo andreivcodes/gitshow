@@ -31,7 +31,7 @@ export async function handler() {
           githubUsername: user.githubUsername,
           twitterOAuthToken: user.twitterOAuthToken,
           twitterOAuthTokenSecret: user.twitterOAuthTokenSecret,
-          type: "standard",
+          type: user.subscriptionType,
           theme: "githubDark",
         } as UpdateUserEvent),
       })
