@@ -41,37 +41,47 @@ export default function ContributionsChartCard({
       return;
     }
 
+    let lastTime = 0;
+    const throttle = 10;
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (chartRef.current) {
-        const chartRect = chartRef.current.getBoundingClientRect();
-        const centerX = chartRect.left + chartRect.width / 2;
-        const centerY = chartRect.top + chartRect.height / 2;
+      requestAnimationFrame(() => {
+        const now = new Date().getTime();
+        if (now - lastTime < throttle) return;
+        lastTime = now;
 
-        const mouseX = e.clientX - centerX;
-        const mouseY = e.clientY - centerY;
-        const rotateXUncapped =
-          (-1 * tiltEffectSettings.maxx * mouseY * 2) / (chartRect.height / 2);
-        const rotateYUncapped =
-          (+1 * tiltEffectSettings.maxy * mouseX) / (chartRect.height / 2);
-        const rotateX =
-          rotateXUncapped < -tiltEffectSettings.maxx
-            ? -tiltEffectSettings.maxx
-            : rotateXUncapped > tiltEffectSettings.maxx
-            ? tiltEffectSettings.maxx
-            : rotateXUncapped;
-        const rotateY =
-          rotateYUncapped < -tiltEffectSettings.maxy
-            ? -tiltEffectSettings.maxy
-            : rotateYUncapped > tiltEffectSettings.maxy
-            ? tiltEffectSettings.maxy
-            : rotateYUncapped;
+        if (chartRef.current) {
+          const chartRect = chartRef.current.getBoundingClientRect();
+          const centerX = chartRect.left + chartRect.width / 2;
+          const centerY = chartRect.top + chartRect.height / 2;
 
-        setRotationStyles({
-          transform: `perspective(${tiltEffectSettings.perspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) 
+          const mouseX = e.clientX - centerX;
+          const mouseY = e.clientY - centerY;
+          const rotateXUncapped =
+            (-1 * tiltEffectSettings.maxx * mouseY * 2) /
+            (chartRect.height / 2);
+          const rotateYUncapped =
+            (+1 * tiltEffectSettings.maxy * mouseX) / (chartRect.height / 2);
+          const rotateX =
+            rotateXUncapped < -tiltEffectSettings.maxx
+              ? -tiltEffectSettings.maxx
+              : rotateXUncapped > tiltEffectSettings.maxx
+              ? tiltEffectSettings.maxx
+              : rotateXUncapped;
+          const rotateY =
+            rotateYUncapped < -tiltEffectSettings.maxy
+              ? -tiltEffectSettings.maxy
+              : rotateYUncapped > tiltEffectSettings.maxy
+              ? tiltEffectSettings.maxy
+              : rotateYUncapped;
+
+          setRotationStyles({
+            transform: `perspective(${tiltEffectSettings.perspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) 
                           scale3d(${tiltEffectSettings.scale}, ${tiltEffectSettings.scale}, ${tiltEffectSettings.scale})`,
-          transition: `transform ${tiltEffectSettings.speed}s ${tiltEffectSettings.easing}`,
-        });
-      }
+            transition: `transform ${tiltEffectSettings.speed}s ${tiltEffectSettings.easing}`,
+          });
+        }
+      });
     };
 
     window.addEventListener("mousemove", handleMouseMove);

@@ -88,7 +88,10 @@ export function CheckoutMenu({
       });
     }
 
-    if (session.data?.user.subscription_type != "none") {
+    if (
+      session.data?.user.subscription_type != "none" &&
+      selectedProduct.id != session.data?.user.subscription_type
+    ) {
       toast({
         title: "You already have a subscription",
         description:
