@@ -2,10 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getServerAuthSession } from "../../server/auth";
 import { updateUser } from "../../lib/db";
 import { DynamoDB } from "aws-sdk";
-import { Table } from "sst/node/table";
 import { queueUpdateHeader } from "../../lib/sqs";
-
-const dynamoDb = new DynamoDB.DocumentClient();
 
 export default async function handler(
   req: NextApiRequest,

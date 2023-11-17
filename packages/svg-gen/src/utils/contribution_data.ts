@@ -1,7 +1,7 @@
-import { load, Element } from "cheerio";
+import { load, type Element } from "cheerio";
 import {
-  ContributionData,
-  ContributionValue,
+  type ContributionData,
+  type ContributionValue,
   COLOR_MAP,
 } from "./contribution_types";
 

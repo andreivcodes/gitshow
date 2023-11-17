@@ -2,12 +2,11 @@
 import { PriceCard } from "./checkout-item";
 import { getStripe } from "../lib/stripeClient";
 import { Button } from "../components/ui/button";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FREE_PLAN, PREMIUM_PLAN, STANDARD_PLAN } from "../lib/plans";
 import { useRouter } from "next/router";
-import { Url } from "next/dist/shared/lib/router/router";
 import { AvailableSubscriptionTypes } from "@gitshow/svg-gen";
 
 export type ProductType = {
@@ -70,15 +69,21 @@ export function CheckoutMenu({
   const [selectedProduct, setSelectedProduct] = useState(
     products.find((p) => p.id == storedSubscriptionType) ?? products[0]
   );
+  const productRefs = useRef(new Map()).current;
 
   useEffect(() => {
     let newQuery = { ...router.query };
 
-    if (selectedProduct.id == "free" || selectedProduct.id == "standard")
-      delete newQuery.theme;
+    if (selectedProduct.id == "free") newQuery.theme = "classic";
+    else if (selectedProduct.id == "standard") newQuery.theme = "githubDark";
 
-    if (selectedProduct.id == "premium") {
-      newQuery.theme = "bnw";
+    const selectedRef = productRefs.get(selectedProduct.id);
+    if (selectedRef) {
+      selectedRef.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
     }
 
     router.replace({
@@ -95,9 +100,13 @@ export function CheckoutMenu({
           <h3 className="text-xl font-semibold">Manage your plan</h3>
         )}
       </div>
-      <div className="w-screen lg:w-full pt-10 flex flex-row justify-center overflow-x-auto snap-proximity scroll-smooth snap-x gap-10 mb-5 px-10">
+      <div className="w-screen 2xl:w-full pt-10 flex flex-row items-center md:justify-center overflow-x-auto snap-proximity scroll-smooth snap-x gap-10 mb-5 px-24">
         {products.map((product) => (
-          <div className="snap-center" key={product.id}>
+          <div
+            className="snap-center"
+            key={product.id}
+            ref={(el) => productRefs.set(product.id, el)}
+          >
             <PriceCard
               product={product}
               selectedProduct={selectedProduct}

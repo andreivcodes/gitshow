@@ -70,7 +70,6 @@ export default async function handler(
 
     switch (event.type) {
       case "customer.subscription.created":
-      case "customer.subscription.updated":
         let e = event as Stripe.CustomerSubscriptionCreatedEvent;
 
         let plan: Plan = { type: "free", theme: "classic" };
@@ -107,8 +106,11 @@ export default async function handler(
         try {
           console.log(`Delete user ${user.email}`);
           await updateUser(user.email, {
+            theme: "classic",
             subscriptionType: "none",
           });
+
+          await queueUpdateHeader(user.email);
         } catch (error) {
           throw new Error(`[STRIPE] Failed to delete user ${error}`);
         }

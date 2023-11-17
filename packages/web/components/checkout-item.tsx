@@ -78,7 +78,7 @@ export function PriceCard({
         </CardContent>
         <CardFooter className="pt-10">
           {selectedProduct.id == product.id && product.name == "Premium" && (
-            <ThemeSelect selected={theme ?? "bnw"} />
+            <ThemeSelect selected={theme} />
           )}
         </CardFooter>
       </Card>
@@ -86,7 +86,7 @@ export function PriceCard({
   );
 }
 
-const ThemeSelect = ({ selected }: { selected: string }) => {
+const ThemeSelect = ({ selected }: { selected: string | null }) => {
   const session = useSession();
   const router = useRouter();
 
@@ -108,7 +108,7 @@ const ThemeSelect = ({ selected }: { selected: string }) => {
           query: { ...router.query, theme: e },
         });
       }}
-      defaultValue={selected}
+      defaultValue={selected ? selected : undefined}
     >
       <SelectTrigger>
         <SelectValue placeholder="Select a theme" />

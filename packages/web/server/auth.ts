@@ -64,8 +64,10 @@ export const authOptions: NextAuthOptions = {
         if (user.Item) {
           session.user.subscription_type = user.Item.subscriptionType;
           session.user.theme = user.Item.theme;
-          session.user.githubAuthenticated = user.Item.githubAuthenticated;
-          session.user.twitterAuthenticated = user.Item.twitterAuthenticated;
+          session.user.githubAuthenticated =
+            user.Item.githubAuthenticated === "true";
+          session.user.twitterAuthenticated =
+            user.Item.twitterAuthenticated === "true";
           session.user.twittername = user.Item.twitterUsername;
           session.user.twittertag = user.Item.twitterTag;
           session.user.twitterimage = user.Item.twitterPicutre;

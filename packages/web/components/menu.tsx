@@ -1,8 +1,9 @@
 import { CheckoutMenu } from "./checkout-menu";
 
-import { SignIn, Settings } from "./auth";
+import { SignIn } from "./auth";
 import { useSession } from "next-auth/react";
 import { AvailableSubscriptionTypes } from "@gitshow/svg-gen";
+import { Settings } from "./settings";
 
 export function Menu({
   signedIn,

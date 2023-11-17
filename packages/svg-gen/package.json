@@ -8,7 +8,7 @@
     "typecheck": "tsc -noEmit"
   },
   "dependencies": {
-    "aws-sdk": "^2.1497.0",
+    "aws-sdk": "^2.1498.0",
     "cheerio": "^1.0.0-rc.12",
     "crypto-js": "^4.2.0",
     "sharp": "^0.32.6",
@@ -17,6 +17,6 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.126",
     "@types/crypto-js": "^4.2.1",
-    "@types/node": "^20.9.0"
+    "@types/node": "^20.9.1"
   }
 }

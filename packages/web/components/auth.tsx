@@ -1,4 +1,4 @@
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -8,14 +8,6 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Icons } from "./icons";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { useRouter } from "next/router";
 
 export function SignIn({
   githubSigned,
@@ -40,7 +32,7 @@ export function SignIn({
             {githubSigned ? (
               <Button
                 variant="ghost"
-                className="pointer-events-none border-green-600"
+                className="pointer-events-none border border-green-600"
               >
                 <Icons.gitHub className="mr-2 h-4 w-4" />
                 Github
@@ -77,44 +69,4 @@ export function SignIn({
       </Card>
     </div>
   );
-}
-
-export function Settings() {
-  const session = useSession();
-  const router = useRouter();
-
-  if (session.status === "authenticated")
-    return (
-      <div className="absolute mx-4 md:mx-10">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary">
-              <span className="sr-only">Actions</span>
-              <DotsHorizontalIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {(session.data.user.subscription_type == "free" ||
-              session.data.user.subscription_type == "standard" ||
-              session.data.user.subscription_type == "premium") && (
-              <DropdownMenuItem
-                onSelect={() =>
-                  router.push(
-                    "https://billing.stripe.com/p/login/test_00g4k22jXgO63MQdQQ"
-                  )
-                }
-                className="text-red-700"
-              >
-                Cancel subscription
-              </DropdownMenuItem>
-            )}
-
-            <DropdownMenuItem onSelect={() => signOut()}>
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
-  else return <></>;
 }
