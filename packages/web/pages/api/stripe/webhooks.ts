@@ -92,6 +92,7 @@ export default async function handler(
           console.log(`Update user ${user.email} to ${plan.type}`);
           await updateUser(user.email, {
             subscriptionType: plan.type,
+            theme: plan.theme,
             lastSubscriptionTimestamp: new Date().toISOString(),
           });
         } catch (error) {
