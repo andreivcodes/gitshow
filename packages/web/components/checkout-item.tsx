@@ -125,7 +125,7 @@ const ThemeSelect = ({ selected }: { selected: string | null }) => {
           <SelectItem value="classic">Classic</SelectItem>
           <SelectItem value="githubDark">Github Dark</SelectItem>
           <SelectItem value="dracula">Dracula</SelectItem>
-          <SelectItem value="blue">Blue</SelectItem>
+          <SelectItem value="spooky">Spooky</SelectItem>
           <SelectItem value="bnw">Black and White</SelectItem>
         </SelectGroup>
       </SelectContent>

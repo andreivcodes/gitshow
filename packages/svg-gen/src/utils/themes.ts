@@ -9,7 +9,7 @@ export type Theme = {
 };
 
 export const themes: Record<
-  "normal" | "classic" | "githubDark" | "dracula" | "blue" | "bnw",
+  "normal" | "classic" | "githubDark" | "dracula" | "bnw" | "spooky",
   Theme
 > = {
   normal: {
@@ -48,15 +48,6 @@ export const themes: Record<
     intensity1: "#44475a",
     intensity0: "#282a36",
   },
-  blue: {
-    background: "#181818",
-    text: "#C0C0C0",
-    intensity4: "#4F83BF",
-    intensity3: "#416895",
-    intensity2: "#344E6C",
-    intensity1: "#263342",
-    intensity0: "#222222",
-  },
   bnw: {
     background: "#000000",
     text: "#F6F6F6",
@@ -65,6 +56,15 @@ export const themes: Record<
     intensity2: "#A5A5A5",
     intensity1: "#646464",
     intensity0: "#2F2F2F",
+  },
+  spooky: {
+    background: "#000000",
+    text: "#F6F6F6",
+    intensity4: "#FDF156",
+    intensity3: "#FFC722",
+    intensity2: "#FF9711",
+    intensity1: "#EE964B",
+    intensity0: "#eee",
   },
 };
 
