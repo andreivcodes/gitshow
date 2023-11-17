@@ -1,5 +1,4 @@
 import Head from "next/head";
-import { Suspense } from "react";
 import ContributionsChart from "../components/contributions-chart";
 import { Header } from "../components/header";
 import { Menu } from "../components/menu";
@@ -11,6 +10,7 @@ import {
   AvailableThemeNames,
   contribSvg,
 } from "@gitshow/svg-gen";
+import { ToastProvider } from "../components/ui/toast";
 
 export default function Home({
   name,

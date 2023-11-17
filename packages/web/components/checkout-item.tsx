@@ -20,7 +20,7 @@ import { useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { ProductType } from "./checkout-menu";
 import { useRouter } from "next/router";
-import { Url } from "next/dist/shared/lib/router/router";
+import { useToast } from "./ui/use-toast";
 
 export function PriceCard({
   product,
@@ -89,6 +89,7 @@ export function PriceCard({
 const ThemeSelect = ({ selected }: { selected: string | null }) => {
   const session = useSession();
   const router = useRouter();
+  const { toast } = useToast();
 
   return (
     <Select
@@ -102,7 +103,12 @@ const ThemeSelect = ({ selected }: { selected: string | null }) => {
           });
         };
 
-        if (session.data?.user.subscription_type == "premium") setTheme();
+        if (session.data?.user.subscription_type == "premium") {
+          setTheme();
+          toast({
+            description: "Your theme has been changed",
+          });
+        }
 
         router.replace({
           query: { ...router.query, theme: e },

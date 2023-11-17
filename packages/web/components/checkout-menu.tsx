@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { FREE_PLAN, PREMIUM_PLAN, STANDARD_PLAN } from "../lib/plans";
 import { useRouter } from "next/router";
 import { AvailableSubscriptionTypes } from "@gitshow/svg-gen";
+import { useToast } from "./ui/use-toast";
 
 export type ProductType = {
   name: string;
@@ -66,6 +67,7 @@ export function CheckoutMenu({
 }) {
   const session = useSession();
   const router = useRouter();
+  const { toast } = useToast();
   const [selectedProduct, setSelectedProduct] = useState(
     products.find((p) => p.id == storedSubscriptionType) ?? products[0]
   );
@@ -83,6 +85,14 @@ export function CheckoutMenu({
         behavior: "smooth",
         inline: "center",
         block: "nearest",
+      });
+    }
+
+    if (session.data?.user.subscription_type != "none") {
+      toast({
+        title: "You already have a subscription",
+        description:
+          "If you want to change your subscription, you have to cancel your existing one first.",
       });
     }
 
