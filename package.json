@@ -4,11 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "sst dev",
-    "build": "sst build",
-    "deploy": "sst deploy",
-    "remove": "sst remove",
-    "console": "sst console",
+    "dev": "sst dev --profile=gitshow",
+    "build": "sst build --profile=gitshow",
+    "deploy": "sst deploy --profile=gitshow",
+    "remove": "sst remove --profile=gitshow",
+    "console": "sst console --profile=gitshow",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

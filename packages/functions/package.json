@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@gitshow/svg-gen": "*",
-    "aws-sdk": "^2.1498.0",
+    "aws-sdk": "^2.1499.0",
     "crypto-js": "^4.2.0",
     "sharp": "^0.32.6",
     "twitter-api-v2": "^1.15.2"
@@ -16,6 +16,6 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.126",
     "@types/crypto-js": "^4.2.1",
-    "@types/node": "^20.9.1"
+    "@types/node": "^20.9.2"
   }
 }

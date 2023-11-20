@@ -3,20 +3,26 @@ import { AES, enc } from "crypto-js";
 import sharp from "sharp";
 import { TwitterApi } from "twitter-api-v2";
 import { Config } from "sst/node/config";
-import { contribSvg } from "@gitshow/svg-gen";
+import {
+  AvailableSubscriptionTypes,
+  AvailableThemeNames,
+  contribSvg,
+} from "@gitshow/svg-gen";
 
 export interface UpdateUserEvent {
   githubUsername: string;
   twitterOAuthToken: string;
   twitterOAuthTokenSecret: string;
-  type: "free" | "standard" | "premium";
-  theme: "normal" | "classic" | "githubDark" | "dracula" | "blue";
+  type: AvailableSubscriptionTypes;
+  theme: AvailableThemeNames;
 }
 
 export const handler = async (event: SQSEvent) => {
   let result = [];
 
   for (const record of event.Records) {
+    console.log(JSON.parse(record.body));
+
     const {
       githubUsername,
       twitterOAuthToken,

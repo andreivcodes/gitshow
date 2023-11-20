@@ -3,6 +3,10 @@ import { Queue } from "sst/node/queue";
 import { UpdateUserEvent } from "./update_user";
 import { DynamoDB } from "aws-sdk";
 import { Table } from "sst/node/table";
+import {
+  AvailableSubscriptionTypes,
+  AvailableThemeNames,
+} from "@gitshow/svg-gen";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 const sqs = new AWS.SQS();
@@ -15,7 +19,7 @@ export async function handler() {
       KeyConditionExpression: "subscriptionType = :subscriptionTypeVal",
       ExpressionAttributeValues: { ":subscriptionTypeVal": "standard" },
       ProjectionExpression:
-        "githubUsername, twitterOAuthToken, twitterOAuthTokenSecret",
+        "githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, type",
     })
     .promise();
 
@@ -37,6 +41,8 @@ export async function handler() {
       })
       .promise();
 
-    console.log(`Update queued for ${user.githubUsername}!`);
+    console.log(
+      `Update queued for ${user.githubUsername} - ${user.subscriptionType} ${user.theme}!`
+    );
   }
 }

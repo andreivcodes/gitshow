@@ -64,7 +64,7 @@ export const themes: Record<
     intensity3: "#FFC722",
     intensity2: "#FF9711",
     intensity1: "#EE964B",
-    intensity0: "#eee",
+    intensity0: "#EEEEEE",
   },
 };
 

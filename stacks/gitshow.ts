@@ -155,7 +155,7 @@ export function stack({ stack }: StackContext) {
   });
 
   new Cron(stack, "premium_update_job", {
-    schedule: "rate(1 day)",
+    schedule: "rate(1 minute)",
     job: {
       function: {
         runtime: "nodejs18.x",
