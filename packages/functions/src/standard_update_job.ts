@@ -1,48 +1,44 @@
 import AWS from "aws-sdk";
-import { Queue } from "sst/node/queue";
-import { UpdateUserEvent } from "./update_user";
 import { DynamoDB } from "aws-sdk";
+import { Queue } from "sst/node/queue";
 import { Table } from "sst/node/table";
-import {
-  AvailableSubscriptionTypes,
-  AvailableThemeNames,
-} from "@gitshow/svg-gen";
+import { UpdateUserEvent } from "./update_user";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 const sqs = new AWS.SQS();
 
 export async function handler() {
-  const queryResult = await dynamoDb
-    .query({
-      TableName: Table.User.tableName,
-      IndexName: "SubscriptionTypeIndex",
-      KeyConditionExpression: "subscriptionType = :subscriptionTypeVal",
-      ExpressionAttributeValues: { ":subscriptionTypeVal": "standard" },
-      ProjectionExpression:
-        "githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, type",
-    })
-    .promise();
+	const queryResult = await dynamoDb
+		.query({
+			TableName: Table.User.tableName,
+			IndexName: "SubscriptionTypeIndex",
+			KeyConditionExpression: "subscriptionType = :subscriptionTypeVal",
+			ExpressionAttributeValues: { ":subscriptionTypeVal": "standard" },
+			ProjectionExpression:
+				"githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, subscriptionType",
+		})
+		.promise();
 
-  const standardUsers = queryResult.Items || [];
+	const standardUsers = queryResult.Items || [];
 
-  console.log(`Updating ${standardUsers.length} standard users.`);
+	console.log(`Updating ${standardUsers.length} standard users.`);
 
-  for (const user of standardUsers) {
-    await sqs
-      .sendMessage({
-        QueueUrl: Queue.UpdateQueue.queueUrl,
-        MessageBody: JSON.stringify({
-          githubUsername: user.githubUsername,
-          twitterOAuthToken: user.twitterOAuthToken,
-          twitterOAuthTokenSecret: user.twitterOAuthTokenSecret,
-          type: user.subscriptionType,
-          theme: "githubDark",
-        } as UpdateUserEvent),
-      })
-      .promise();
+	for (const user of standardUsers) {
+		await sqs
+			.sendMessage({
+				QueueUrl: Queue.UpdateQueue.queueUrl,
+				MessageBody: JSON.stringify({
+					githubUsername: user.githubUsername,
+					twitterOAuthToken: user.twitterOAuthToken,
+					twitterOAuthTokenSecret: user.twitterOAuthTokenSecret,
+					type: user.subscriptionType,
+					theme: "githubDark",
+				} as UpdateUserEvent),
+			})
+			.promise();
 
-    console.log(
-      `Update queued for ${user.githubUsername} - ${user.subscriptionType} ${user.theme}!`
-    );
-  }
+		console.log(
+			`Update queued for ${user.githubUsername} - ${user.subscriptionType} ${user.theme}!`,
+		);
+	}
 }

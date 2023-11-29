@@ -1,25 +1,24 @@
 {
-  "name": "gitshow",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "sst dev --profile=gitshow",
-    "build": "sst build --profile=gitshow",
-    "deploy": "sst deploy --profile=gitshow",
-    "remove": "sst remove --profile=gitshow",
-    "console": "sst console --profile=gitshow",
-    "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "@tsconfig/node18": "^18.2.2",
-    "aws-cdk-lib": "2.110.0",
-    "constructs": "10.3.0",
-    "sst": "2.36.1",
-    "typescript": "^5.2.2",
-    "vitest": "^0.34.6"
-  },
-  "workspaces": [
-    "packages/*"
-  ]
+	"name": "gitshow",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "sst dev --profile=gitshow",
+		"build": "sst build --profile=gitshow",
+		"deploy": "sst deploy --profile=gitshow",
+		"remove": "sst remove --profile=gitshow",
+		"console": "sst console --profile=gitshow",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.4",
+		"@tsconfig/node18": "^18.2",
+		"aws-cdk-lib": "^2.111",
+		"constructs": "^10.3",
+		"sst": "^2.36",
+		"typescript": "^5.3",
+		"vitest": "^0.34"
+	},
+	"workspaces": ["packages/*"]
 }
