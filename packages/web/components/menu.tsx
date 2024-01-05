@@ -6,27 +6,24 @@ import { SignIn } from "./auth";
 import { Settings } from "./settings";
 
 export function Menu({
-	signedIn,
-	storedSubscriptionType,
+  fullyAuthenticated,
+  storedSubscriptionType,
 }: {
-	signedIn: boolean;
-	storedSubscriptionType: AvailableSubscriptionTypes;
+  fullyAuthenticated: boolean;
+  storedSubscriptionType: AvailableSubscriptionTypes;
 }) {
-	const { data: session } = useSession();
+  const { data: session } = useSession();
 
-	return (
-		<div>
-			{signedIn ? (
-				<div className="flex flex-row justify-end">
-					<CheckoutMenu storedSubscriptionType={storedSubscriptionType} />
-					<Settings />
-				</div>
-			) : (
-				<SignIn
-					githubSigned={session?.user?.githubAuthenticated}
-					twitterSigned={session?.user?.twitterAuthenticated}
-				/>
-			)}
-		</div>
-	);
+  return (
+    <div className="w-full">
+      <SignIn
+        githubSigned={session?.user?.githubAuthenticated}
+        twitterSigned={session?.user?.twitterAuthenticated}
+      />
+
+      <Settings />
+
+      <CheckoutMenu storedSubscriptionType={storedSubscriptionType} />
+    </div>
+  );
 }

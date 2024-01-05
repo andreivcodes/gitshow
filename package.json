@@ -1,6 +1,6 @@
 {
 	"name": "gitshow",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -14,11 +14,13 @@
 	"devDependencies": {
 		"@biomejs/biome": "^1.4",
 		"@tsconfig/node18": "^18.2",
-		"aws-cdk-lib": "^2.111",
+		"aws-cdk-lib": "^2.118",
 		"constructs": "^10.3",
-		"sst": "^2.36",
+		"sst": "2.39.2",
 		"typescript": "^5.3",
-		"vitest": "^0.34"
+		"vitest": "^1.1"
 	},
-	"workspaces": ["packages/*"]
+	"workspaces": [
+		"packages/*"
+	]
 }
