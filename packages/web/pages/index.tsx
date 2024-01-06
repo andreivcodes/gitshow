@@ -1,6 +1,7 @@
 import {
   AvailableSubscriptionTypes,
   AvailableThemeNames,
+  NONE_PLAN,
   contribSvg,
 } from "@gitshow/svg-gen";
 import { GetServerSideProps } from "next";
@@ -69,7 +70,7 @@ export const getServerSideProps = (async (context) => {
     (theme as AvailableThemeNames) ?? session?.user.theme ?? "classic",
     (type as AvailableSubscriptionTypes) ??
       session?.user.subscription_type ??
-      "free"
+      NONE_PLAN
   );
 
   return {
@@ -79,7 +80,7 @@ export const getServerSideProps = (async (context) => {
       twittertag: session?.user.twittertag ?? "@Linus__Torvalds",
       svg: svg,
       fullyAuthenticated: session?.user.fullyAuthenticated ?? false,
-      storedSubscriptionType: session?.user.subscription_type ?? "none",
+      storedSubscriptionType: session?.user.subscription_type ?? NONE_PLAN,
     },
   };
 }) satisfies GetServerSideProps;

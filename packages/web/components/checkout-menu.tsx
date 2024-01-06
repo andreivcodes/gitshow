@@ -1,10 +1,15 @@
-import { AvailableSubscriptionTypes } from "@gitshow/svg-gen";
+import {
+  AvailableSubscriptionTypes,
+  FREE_PLAN,
+  PREMIUM_PLAN,
+  STANDARD_PLAN,
+} from "@gitshow/svg-gen";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../components/ui/button";
-import { FREE_PLAN, PREMIUM_PLAN, STANDARD_PLAN } from "../lib/plans";
+import { FREE_PLAN_ID, PREMIUM_PLAN_ID, STANDARD_PLAN_ID } from "../lib/plans";
 import { getStripe } from "../lib/stripeClient";
 import { PriceCard } from "./checkout-item";
 import { useToast } from "./ui/use-toast";
@@ -22,10 +27,10 @@ export type ProductType = {
 const products: ProductType[] = [
   {
     name: "Free",
-    id: "free",
+    id: FREE_PLAN,
     type: "year",
     price: "0,00",
-    productId: FREE_PLAN,
+    productId: FREE_PLAN_ID,
     description: ["Free forever", "Monthly updates"],
     detailedDescription: [
       "Generates a basic Twitter profile header from your GitHub contributions.",
@@ -34,10 +39,10 @@ const products: ProductType[] = [
   },
   {
     name: "Standard",
-    id: "standard",
+    id: STANDARD_PLAN,
     type: "year",
     price: "10,00",
-    productId: STANDARD_PLAN,
+    productId: STANDARD_PLAN_ID,
     description: ["Weekly updates", "No branding", "Dark theme"],
     detailedDescription: [
       "Weekly header updates for a fresher look.",
@@ -47,10 +52,10 @@ const products: ProductType[] = [
   },
   {
     name: "Premium",
-    id: "premium",
+    id: PREMIUM_PLAN,
     type: "year",
     price: "25,00",
-    productId: PREMIUM_PLAN,
+    productId: PREMIUM_PLAN_ID,
     description: ["Daily updates", "More themes"],
     detailedDescription: [
       "Daily updates for the most up-to-date GitHub activity display.",

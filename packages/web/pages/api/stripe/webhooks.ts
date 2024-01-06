@@ -1,133 +1,146 @@
-import { AvailableThemeNames } from "@gitshow/svg-gen";
+import {
+  AvailableSubscriptionTypes,
+  AvailableThemeNames,
+  FREE_PLAN,
+  NONE_PLAN,
+  PREMIUM_PLAN,
+  STANDARD_PLAN,
+} from "@gitshow/svg-gen";
 import { DynamoDB } from "aws-sdk";
-import { NextApiRequest, NextApiResponse } from "next";
 import { Config } from "sst/node/config";
 import { Table } from "sst/node/table";
 import Stripe from "stripe";
 import { updateUser } from "../../../lib/db";
-import { FREE_PLAN, PREMIUM_PLAN, STANDARD_PLAN } from "../../../lib/plans";
+import {
+  FREE_PLAN_ID,
+  PREMIUM_PLAN_ID,
+  STANDARD_PLAN_ID,
+} from "../../../lib/plans";
 import { queueUpdateHeader } from "../../../lib/sqs";
 import { stripe } from "../../../lib/stripeServer";
+import { buffer } from "micro";
+import Cors from "micro-cors";
+import { NextApiRequest, NextApiResponse } from "next";
 
 interface Plan {
-	type: "free" | "standard" | "premium";
-	theme?: AvailableThemeNames;
+  type: AvailableSubscriptionTypes;
+  theme?: AvailableThemeNames;
 }
+
+const webhookSecret: string = Config.STRIPE_WEBHOOK_SECRET;
 
 export const config = {
-	api: {
-		bodyParser: false,
-	},
+  api: {
+    bodyParser: false,
+  },
 };
 
+const cors = Cors({
+  allowMethods: ["POST", "HEAD"],
+});
 const dynamoDb = new DynamoDB.DocumentClient();
 
-export default async function handler(
-	req: NextApiRequest,
-	res: NextApiResponse,
-) {
-	const webhookSecret: string = Config.STRIPE_WEBHOOK_SECRET;
+const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method === "POST") {
+    const buf = await buffer(req);
+    const sig = req.headers["stripe-signature"]!;
 
-	console.log("[STRIPE] Request");
-	try {
-		const sig = req.headers["stripe-signature"] as string;
+    let event: Stripe.Event;
 
-		let event: Stripe.Event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        buf.toString(),
+        sig,
+        webhookSecret
+      );
+    } catch (err) {
+      console.log(`❌ Error message: ${err}`);
+      res.status(400).send(`Webhook Error: ${err}`);
+      return;
+    }
 
-		console.log("[STRIPE] Construct event");
-		try {
-			event = stripe.webhooks.constructEvent(
-				Buffer.from(req.body),
-				sig,
-				webhookSecret,
-			);
-		} catch (error) {
-			throw new Error(`[STRIPE] Stripe webhook error: ${error}`);
-		}
+    const subscription = event.data.object as Stripe.Subscription;
 
-		console.log("[STRIPE] Event", event.type);
+    const users = await dynamoDb
+      .query({
+        TableName: Table.User.tableName,
+        IndexName: "StripeCustomerIndex",
+        KeyConditionExpression: "stripeCustomerId = :stripeCustomerId",
+        ExpressionAttributeValues: {
+          ":stripeCustomerId": subscription.customer.toString(),
+        },
+      })
+      .promise();
 
-		const subscription = event.data.object as Stripe.Subscription;
+    if (users.Count === 0 || !users.Items) {
+      throw new Error("[STRIPE] Invalid customer");
+    }
 
-		const users = await dynamoDb
-			.query({
-				TableName: Table.User.tableName,
-				IndexName: "StripeCustomerIndex",
-				KeyConditionExpression: "stripeCustomerId = :stripeCustomerId",
-				ExpressionAttributeValues: {
-					":stripeCustomerId": subscription.customer.toString(),
-				},
-			})
-			.promise();
+    const user = users.Items[0];
 
-		if (users.Count === 0 || !users.Items) {
-			throw new Error("[STRIPE] Invalid customer");
-		}
+    switch (event.type) {
+      case "customer.subscription.updated":
+      case "customer.subscription.created": {
+        let plan: Plan = { type: FREE_PLAN, theme: "classic" };
 
-		const user = users.Items[0];
+        switch (event.data.object.items.data[0].plan.id) {
+          case FREE_PLAN_ID:
+            plan = { type: FREE_PLAN, theme: "classic" };
+            break;
+          case STANDARD_PLAN_ID:
+            plan = { type: STANDARD_PLAN, theme: "githubDark" };
+            break;
+          case PREMIUM_PLAN_ID:
+            plan = { type: PREMIUM_PLAN, theme: user.theme };
+            break;
+          default:
+            break;
+        }
 
-		switch (event.type) {
-			case "customer.subscription.created": {
-				const e = event as Stripe.CustomerSubscriptionCreatedEvent;
+        try {
+          console.log(`Update user ${user.email} to ${plan.type}`);
+          await updateUser(user.email, {
+            subscriptionType: plan.type,
+            theme: plan.theme,
+            lastSubscriptionTimestamp: new Date().toISOString(),
+          });
+        } catch (error) {
+          throw new Error(`[STRIPE] Failed to update user ${error}`);
+        }
 
-				let plan: Plan = { type: "free", theme: "classic" };
+        await queueUpdateHeader(user.email);
 
-				switch (e.data.object.items.data[0].plan.id) {
-					case FREE_PLAN:
-						plan = { type: "free", theme: "classic" };
-						break;
-					case STANDARD_PLAN:
-						plan = { type: "standard", theme: "githubDark" };
-						break;
-					case PREMIUM_PLAN:
-						plan = { type: "premium", theme: user.theme };
-						break;
-					default:
-						break;
-				}
+        break;
+      }
 
-				try {
-					console.log(`Update user ${user.email} to ${plan.type}`);
-					await updateUser(user.email, {
-						subscriptionType: plan.type,
-						theme: plan.theme,
-						lastSubscriptionTimestamp: new Date().toISOString(),
-					});
-				} catch (error) {
-					throw new Error(`[STRIPE] Failed to update user ${error}`);
-				}
+      case "customer.subscription.deleted":
+        try {
+          console.log(`Delete user ${user.email}`);
+          await updateUser(user.email, {
+            theme: "classic",
+            subscriptionType: NONE_PLAN,
+          });
 
-				await queueUpdateHeader(user.email);
+          await queueUpdateHeader(user.email);
+        } catch (error) {
+          throw new Error(`[STRIPE] Failed to delete user ${error}`);
+        }
 
-				break;
-			}
+        break;
 
-			case "customer.subscription.deleted":
-				try {
-					console.log(`Delete user ${user.email}`);
-					await updateUser(user.email, {
-						theme: "classic",
-						subscriptionType: "none",
-					});
+      default:
+        console.log(`🤷‍♀️ Unhandled event type: ${event.type}`);
+        break;
+    }
 
-					await queueUpdateHeader(user.email);
-				} catch (error) {
-					throw new Error(`[STRIPE] Failed to delete user ${error}`);
-				}
+    res.json({ received: true });
 
-				break;
+    // Successfully constructed event.
+    console.log("✅ Success:", event.id);
+  } else {
+    res.setHeader("Allow", "POST");
+    res.status(405).end("Method Not Allowed");
+  }
+};
 
-			default:
-				console.log(`🤷‍♀️ Unhandled event type: ${event.type}`);
-				break;
-		}
-	} catch (error) {
-		console.log("Subscriptions webhook error:", error);
-		return res.status(400).json({
-			error: "Subscriptions webhook error.",
-			e: (error as Error).message,
-		});
-	}
-
-	res.status(200).json({ received: true });
-}
+export default cors(webhookHandler as any);

@@ -6,9 +6,12 @@ import {
   StackContext,
   Table,
 } from "sst/constructs";
+import { config as dotenv_config } from "dotenv";
 
 export function stack({ stack }: StackContext) {
   stack.setDefaultFunctionProps({ logRetention: "one_day" });
+
+  dotenv_config();
 
   const param_NEXTAUTH_SECRET = new Config.Parameter(stack, "NEXTAUTH_SECRET", {
     value: process.env.NEXTAUTH_SECRET ?? "",
@@ -115,7 +118,8 @@ export function stack({ stack }: StackContext) {
 
   const web = new NextjsSite(stack, "web", {
     path: "packages/web",
-    warm: 2,
+    warm: 10,
+    logging: "combined",
     customDomain: {
       domainName:
         stack.stage === "production" ? "git.show" : `${stack.stage}.git.show`,
@@ -125,6 +129,14 @@ export function stack({ stack }: StackContext) {
     environment: {
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
         process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "",
+      NEXT_PUBLIC_WEBSITE_URL:
+        stack.stage === "production"
+          ? "https://git.show"
+          : `https://${stack.stage}.git.show`,
+      NEXTAUTH_URL:
+        stack.stage === "production"
+          ? "https://git.show"
+          : `https://${stack.stage}.git.show`,
     },
     bind: [
       table,
@@ -139,12 +151,6 @@ export function stack({ stack }: StackContext) {
       param_GITHUB_CLIENT_SECRET,
     ],
   });
-
-  web.props.environment = {
-    ...web.props.environment,
-    NEXT_PUBLIC_WEBSITE_URL: web.url ?? "http://localhost:3000",
-    NEXTAUTH_URL: web.url ?? "http://localhost:3000",
-  };
 
   new Cron(stack, "free_update_job", {
     schedule: "rate(30 days)",

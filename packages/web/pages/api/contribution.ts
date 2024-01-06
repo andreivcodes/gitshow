@@ -1,11 +1,11 @@
-import { contribSvg } from "@gitshow/svg-gen";
+import { AvailableSubscriptionTypes, contribSvg } from "@gitshow/svg-gen";
 import { AvailableThemeNames } from "@gitshow/svg-gen";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerAuthSession } from "../../server/auth";
 
 export interface ContributionRequest {
 	githubUsername: string;
-	type: "free" | "standard" | "premium";
+	type: AvailableSubscriptionTypes;
 	theme: AvailableThemeNames;
 }
 

@@ -1,4 +1,4 @@
-import { AvailableThemeNames } from "@gitshow/svg-gen";
+import { AvailableSubscriptionTypes, AvailableThemeNames } from "@gitshow/svg-gen";
 import { DynamoDB } from "aws-sdk";
 import { AES } from "crypto-js";
 import { type GetServerSidePropsContext } from "next";
@@ -21,7 +21,7 @@ const dynamoDb = new DynamoDB.DocumentClient();
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      subscription_type: "free" | "standard" | "premium" | "none";
+      subscription_type: AvailableSubscriptionTypes;
       theme: AvailableThemeNames;
 
       fullyAuthenticated: boolean;

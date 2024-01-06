@@ -10,6 +10,7 @@ import {
 } from "./ui/dropdown-menu";
 import { useSearchParams } from "next/navigation";
 import { ThemeSelect } from "./theme-select";
+import Link from "next/link";
 
 export function Settings() {
   const session = useSession();
@@ -18,7 +19,7 @@ export function Settings() {
   const theme = searchParams.get("theme");
 
   return (
-    <div className="w-full m-auto flex flex-col items-center">
+    <div className="w-full max-w-fit m-auto flex flex-col items-center">
       <div className="w-full flex flex-col items-start p-4 gap-8">
         <div
           className={`w-full flex flex-col items-start gap-4 p-6 border rounded-md ${
@@ -42,12 +43,16 @@ export function Settings() {
           </p>
 
           <div className="flex flex-row gap-2 self-end">
-            <Button variant="default" onClick={() => signOut()}>
-              Change Subscription
+            <Button variant="default">
+              <Link href="https://billing.stripe.com/p/login/test_aEU2bUf6J7dw5UYaEF">
+                Change Subscription
+              </Link>
             </Button>
 
             <Button variant="destructive" onClick={() => signOut()}>
-              Cancel Subscription
+              <Link href="https://billing.stripe.com/p/login/test_aEU2bUf6J7dw5UYaEF">
+                Cancel Subscription
+              </Link>
             </Button>
           </div>
         </div>

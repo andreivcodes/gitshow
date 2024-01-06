@@ -16,14 +16,18 @@ export function Menu({
 
   return (
     <div className="w-full">
-      <SignIn
-        githubSigned={session?.user?.githubAuthenticated}
-        twitterSigned={session?.user?.twitterAuthenticated}
-      />
+      {!fullyAuthenticated && (
+        <SignIn
+          githubSigned={session?.user?.githubAuthenticated}
+          twitterSigned={session?.user?.twitterAuthenticated}
+        />
+      )}
 
-      <Settings />
+      {fullyAuthenticated && storedSubscriptionType != "none" && <Settings />}
 
-      <CheckoutMenu storedSubscriptionType={storedSubscriptionType} />
+      {fullyAuthenticated && storedSubscriptionType == "none" && (
+        <CheckoutMenu storedSubscriptionType={storedSubscriptionType} />
+      )}
     </div>
   );
 }
