@@ -8,6 +8,8 @@ import {
 } from "sst/constructs";
 
 export function stack({ stack }: StackContext) {
+  stack.setDefaultFunctionProps({ logRetention: "one_day" });
+
   const param_NEXTAUTH_SECRET = new Config.Parameter(stack, "NEXTAUTH_SECRET", {
     value: process.env.NEXTAUTH_SECRET ?? "",
   });
