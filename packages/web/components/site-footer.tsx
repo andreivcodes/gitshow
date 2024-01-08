@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "../lib/utils";
-import { Icons } from "./icons";
+import { Icons } from "./ui/icons";
 
 export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
   return (

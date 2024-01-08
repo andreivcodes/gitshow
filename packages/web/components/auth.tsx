@@ -1,5 +1,5 @@
 import { signIn } from "next-auth/react";
-import { Icons } from "./icons";
+import { Icons } from "./ui/icons";
 import { Button } from "./ui/button";
 import {
   Card,

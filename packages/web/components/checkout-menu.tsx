@@ -49,7 +49,6 @@ const products: ProductType[] = [
 ];
 
 export function CheckoutMenu() {
-  const session = useSession();
   const subscription = useContext(SubscriptionContext);
 
   const selectedProduct =
@@ -72,11 +71,7 @@ export function CheckoutMenu() {
   return (
     <div className="m-auto flex flex-col items-center">
       <div className="mt-12 lg:mt-0 flex justify-center items-center">
-        {session.data?.user.subscription_type === "none" ? (
-          <h3 className="text-xl font-semibold">Choose a plan</h3>
-        ) : (
-          <h3 className="text-xl font-semibold">Manage your plan</h3>
-        )}
+        <h3 className="text-xl font-semibold">Choose a plan</h3>
       </div>
       <div className="w-screen 2xl:w-full pt-10 flex flex-row items-center md:justify-center overflow-x-auto snap-proximity scroll-smooth snap-x gap-10 mb-5 px-24">
         {products.map((product) => (

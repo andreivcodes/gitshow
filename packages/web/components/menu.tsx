@@ -1,9 +1,8 @@
 import { CheckoutMenu } from "./checkout-menu";
-
-import { AvailableSubscriptionTypes, NONE_PLAN } from "@gitshow/svg-gen";
 import { useSession } from "next-auth/react";
 import { SignIn } from "./auth";
 import { Settings } from "./settings";
+import { AvailableSubscriptionTypes, NONE_PLAN } from "@gitshow/gitshow-lib";
 
 export function Menu({
   fullyAuthenticated,
