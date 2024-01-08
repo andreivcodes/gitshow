@@ -3,32 +3,39 @@ import { DynamoDB } from "aws-sdk";
 import { Queue } from "sst/node/queue";
 import { Table } from "sst/node/table";
 import { UpdateUserEvent } from "./update_user";
-import { FREE_PLAN } from "@gitshow/svg-gen";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 const sqs = new AWS.SQS();
 
 export async function handler() {
+  const timestampThreshold = new Date().getTime();
   const queryResult = await dynamoDb
     .query({
       TableName: Table.User.tableName,
-      IndexName: "SubscriptionTypeIndex",
-      KeyConditionExpression: "subscriptionType = :subscriptionTypeVal",
-      ExpressionAttributeValues: { ":subscriptionTypeVal": FREE_PLAN },
+      IndexName: "LastRefreshTimestampIndex",
+      KeyConditionExpression: "LastRefreshTimestampIndex < :timestamp",
+      ExpressionAttributeValues: { ":timestamp": timestampThreshold },
       ProjectionExpression:
-        "githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, subscriptionType",
+        "email, githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, subscriptionType",
     })
     .promise();
 
-  const freeUsers = queryResult.Items || [];
+  const users = queryResult.Items || [];
 
-  console.log(`Updating ${freeUsers.length} free users.`);
+  const usersToRefresh = users.filter(
+    (u) =>
+      u.lastRefreshTimestamp <
+      timestampThreshold + u.refreshInterval * 60 * 60 * 1000
+  );
 
-  for (const user of freeUsers) {
+  console.log(`Updating ${usersToRefresh.length} free users.`);
+
+  for (const user of usersToRefresh) {
     await sqs
       .sendMessage({
         QueueUrl: Queue.UpdateQueue.queueUrl,
         MessageBody: JSON.stringify({
+          email: user.email,
           githubUsername: user.githubUsername,
           twitterOAuthToken: user.twitterOAuthToken,
           twitterOAuthTokenSecret: user.twitterOAuthTokenSecret,

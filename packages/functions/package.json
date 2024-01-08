@@ -7,7 +7,7 @@
 		"typecheck": "tsc -noEmit"
 	},
 	"dependencies": {
-		"@gitshow/svg-gen": "*",
+		"@gitshow/gitshow-lib": "*",
 		"aws-sdk": "^2",
 		"crypto-js": "^4.2",
 		"sharp": "^0.33",

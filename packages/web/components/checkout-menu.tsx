@@ -1,23 +1,20 @@
+import { useSession } from "next-auth/react";
+import { useContext, useEffect, useRef } from "react";
+import { Button } from "../components/ui/button";
+import { getStripe } from "../lib/stripeClient";
+import { PriceCard } from "./checkout-item";
+import { SubscriptionContext } from "../pages";
 import {
   AvailableSubscriptionTypes,
   FREE_PLAN,
   PREMIUM_PLAN,
-  STANDARD_PLAN,
-} from "@gitshow/svg-gen";
-import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "../components/ui/button";
-import { FREE_PLAN_ID, PREMIUM_PLAN_ID, STANDARD_PLAN_ID } from "../lib/plans";
-import { getStripe } from "../lib/stripeClient";
-import { PriceCard } from "./checkout-item";
-import { useToast } from "./ui/use-toast";
+} from "@gitshow/gitshow-lib";
+import { FREE_PLAN_ID, PREMIUM_PLAN_ID } from "../lib/plans";
 
 export type ProductType = {
   name: string;
-  id: string;
-  type: string;
+  type: AvailableSubscriptionTypes;
+  recurrence: string;
   price: string;
   productId: string;
   description: string[];
@@ -27,8 +24,8 @@ export type ProductType = {
 const products: ProductType[] = [
   {
     name: "Free",
-    id: FREE_PLAN,
-    type: "year",
+    type: FREE_PLAN,
+    recurrence: "year",
     price: "0,00",
     productId: FREE_PLAN_ID,
     description: ["Free forever", "Monthly updates"],
@@ -38,22 +35,9 @@ const products: ProductType[] = [
     ],
   },
   {
-    name: "Standard",
-    id: STANDARD_PLAN,
-    type: "year",
-    price: "10,00",
-    productId: STANDARD_PLAN_ID,
-    description: ["Weekly updates", "No branding", "Dark theme"],
-    detailedDescription: [
-      "Weekly header updates for a fresher look.",
-      "Removal of default branding from the header.",
-      "Dark theme for your header.",
-    ],
-  },
-  {
     name: "Premium",
-    id: PREMIUM_PLAN,
-    type: "year",
+    type: PREMIUM_PLAN,
+    recurrence: "year",
     price: "25,00",
     productId: PREMIUM_PLAN_ID,
     description: ["Daily updates", "More themes"],
@@ -64,27 +48,18 @@ const products: ProductType[] = [
   },
 ];
 
-export function CheckoutMenu({
-  storedSubscriptionType,
-}: {
-  storedSubscriptionType: AvailableSubscriptionTypes;
-}) {
+export function CheckoutMenu() {
   const session = useSession();
-  const router = useRouter();
-  const { toast } = useToast();
-  const [selectedProduct, setSelectedProduct] = useState(
-    products.find((p) => p.id === storedSubscriptionType) ?? products[0]
-  );
+  const subscription = useContext(SubscriptionContext);
+
+  const selectedProduct =
+    products.find((p) => p.type === subscription.subscriptionType) ??
+    products[0];
+
   const productRefs = useRef(new Map()).current;
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const newQuery = { ...router.query };
-
-    if (selectedProduct.id === "free") newQuery.theme = "classic";
-    else if (selectedProduct.id === "standard") newQuery.theme = "githubDark";
-
-    const selectedRef = productRefs.get(selectedProduct.id);
+    const selectedRef = productRefs.get(selectedProduct.type);
     if (selectedRef) {
       selectedRef.scrollIntoView({
         behavior: "smooth",
@@ -92,24 +67,7 @@ export function CheckoutMenu({
         block: "nearest",
       });
     }
-
-    if (
-      session.data?.user.fullyAuthenticated == true &&
-      session.data?.user.subscription_type !== "none" &&
-      selectedProduct.id !== session.data?.user.subscription_type
-    ) {
-      toast({
-        title: "You already have a subscription",
-        description:
-          "If you want to change your subscription, you have to cancel your existing one first.",
-      });
-    }
-
-    router.replace({
-      query: { ...newQuery, type: selectedProduct.id },
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProduct]);
+  }, [subscription.subscriptionType]);
 
   return (
     <div className="m-auto flex flex-col items-center">
@@ -124,15 +82,10 @@ export function CheckoutMenu({
         {products.map((product) => (
           <div
             className="snap-center"
-            key={product.id}
-            ref={(el) => productRefs.set(product.id, el)}
+            key={product.type}
+            ref={(el) => productRefs.set(product.type, el)}
           >
-            <PriceCard
-              product={product}
-              selectedProduct={selectedProduct}
-              setSelectedProduct={setSelectedProduct}
-              key={product.productId}
-            />
+            <PriceCard key={product.productId} product={product} />
           </div>
         ))}
       </div>
@@ -145,17 +98,13 @@ export function CheckoutMenu({
             </h3>
             <ul className="list-none space-y-2">
               {selectedProduct.detailedDescription.map((detail) => (
-                <li
-                  key={selectedProduct.id}
-                  className="flex items-center space-x-2"
-                >
+                <li key={detail.length} className="flex items-center space-x-2">
                   <svg
                     className="h-6 w-8 text-green-500"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     stroke="currentColor"
                   >
-                    <title>check</title>
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -176,10 +125,7 @@ export function CheckoutMenu({
 
 const CheckoutButton = () => {
   const session = useSession();
-  const searchParams = useSearchParams();
-
-  const type = searchParams.get("type");
-  const theme = searchParams.get("theme");
+  const subscription = useContext(SubscriptionContext);
 
   async function handleCreateCheckoutSession() {
     try {
@@ -187,8 +133,7 @@ const CheckoutButton = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          type: type,
-          theme: theme,
+          type: subscription.subscriptionType,
         }),
       });
       const { session } = await response.json();

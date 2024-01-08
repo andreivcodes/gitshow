@@ -69,14 +69,16 @@ export const themes: Record<
 };
 
 export type AvailableThemeNames = keyof typeof themes;
+export const PREMIUM_THEMES = ["dracula", "bnw", "spooky"];
+
+export type AvailableIntervals = 1 | 24 | 168 | 720;
+export const PREMIUM_INTERVALS = [1 | 24];
 
 export const FREE_PLAN = "free";
-export const STANDARD_PLAN = "standard";
 export const PREMIUM_PLAN = "premium";
 export const NONE_PLAN = "none";
 
 export type AvailableSubscriptionTypes =
   | typeof FREE_PLAN
-  | typeof STANDARD_PLAN
   | typeof PREMIUM_PLAN
   | typeof NONE_PLAN;

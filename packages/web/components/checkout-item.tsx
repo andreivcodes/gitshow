@@ -1,72 +1,55 @@
 import * as React from "react";
 
-import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
+
+import { SubscriptionContext } from "../pages";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
-import { ProductType } from "./checkout-menu";
-import { useToast } from "./ui/use-toast";
-import { ThemeSelect } from "./theme-select";
-import { FREE_PLAN, PREMIUM_PLAN, STANDARD_PLAN } from "@gitshow/svg-gen";
+  AvailableSubscriptionTypes,
+  PREMIUM_PLAN,
+  FREE_PLAN,
+} from "@gitshow/gitshow-lib";
 
 export function PriceCard({
   product,
-  selectedProduct,
-  setSelectedProduct,
 }: {
   product: {
     name: string;
-    id: string;
-    type: string;
+    type: AvailableSubscriptionTypes;
+    recurrence: string;
     price: string;
     productId: string;
     description: string[];
     detailedDescription: string[];
   };
-  selectedProduct: ProductType;
-  setSelectedProduct: React.Dispatch<React.SetStateAction<ProductType>>;
 }) {
-  const searchParams = useSearchParams();
-  const theme = searchParams.get("theme");
+  const subscription = React.useContext(SubscriptionContext);
 
   return (
     <div
       className={`w-52 h-72 transition-transform ease-in-out rounded-lg ${
-        selectedProduct.id === product.id && product.id === PREMIUM_PLAN
+        subscription.subscriptionType === product.type &&
+        product.type === PREMIUM_PLAN
           ? "p-0.5 animate-premium-select -translate-y-4"
           : "hover:-translate-y-4"
       } 
       ${
-        selectedProduct.id === product.id && product.id === STANDARD_PLAN
-          ? "p-0.5 animate-standard-select -translate-y-4"
-          : "hover:-translate-y-4"
-      }
-      ${
-        selectedProduct.id === product.id && product.id === FREE_PLAN
+        subscription.subscriptionType === product.type &&
+        product.type === FREE_PLAN
           ? "p-0.5 animate-free-select -translate-y-4"
           : "hover:-translate-y-4"
       }
       `}
       onClick={() => {
-        setSelectedProduct(product);
+        subscription.setSubscriptionType(product.type);
       }}
       onKeyDown={() => {
-        setSelectedProduct(product);
+        subscription.setSubscriptionType(product.type);
       }}
     >
       <Card className="m-0.2 w-full h-full bg-zinc-950 snap-center">
@@ -81,11 +64,6 @@ export function PriceCard({
             </p>
           ))}
         </CardContent>
-        <CardFooter className="pt-10">
-          {selectedProduct.id === product.id && product.id === PREMIUM_PLAN && (
-            <ThemeSelect selected={theme} />
-          )}
-        </CardFooter>
       </Card>
     </div>
   );

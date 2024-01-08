@@ -1,7 +1,7 @@
 import {
   AvailableSubscriptionTypes,
   AvailableThemeNames,
-} from "@gitshow/svg-gen";
+} from "@gitshow/gitshow-lib";
 import AWS from "aws-sdk";
 import { DynamoDB } from "aws-sdk";
 import { Queue } from "sst/node/queue";
@@ -19,7 +19,7 @@ export interface UpdateHeaderEvent {
   theme: AvailableThemeNames;
 }
 
-export const queueUpdateHeader = async (email: string) => {
+export const queueJob = async (email: string) => {
   const user = await dynamoDb
     .get({
       TableName: Table.User.tableName,

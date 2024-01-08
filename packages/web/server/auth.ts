@@ -1,4 +1,3 @@
-import { AvailableSubscriptionTypes, AvailableThemeNames } from "@gitshow/svg-gen";
 import { DynamoDB } from "aws-sdk";
 import { AES } from "crypto-js";
 import { type GetServerSidePropsContext } from "next";
@@ -13,8 +12,13 @@ import TwitterLegacy, {
 } from "next-auth/providers/twitter";
 import { Config } from "sst/node/config";
 import { Table } from "sst/node/table";
-import { UserUpdateAttributes, updateUser } from "../lib/db";
 import { stripe } from "../lib/stripeServer";
+import {
+  AvailableSubscriptionTypes,
+  AvailableThemeNames,
+  UserUpdateAttributes,
+  updateUser,
+} from "@gitshow/gitshow-lib";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
@@ -23,6 +27,7 @@ declare module "next-auth" {
     user: {
       subscription_type: AvailableSubscriptionTypes;
       theme: AvailableThemeNames;
+      interval: number;
 
       fullyAuthenticated: boolean;
       twitterAuthenticated: boolean;
@@ -33,6 +38,8 @@ declare module "next-auth" {
       twitterimage: string;
 
       githubname: string;
+
+      lastSubscriptionTimestamp: number;
     } & DefaultSession["user"];
   }
 }
@@ -67,6 +74,7 @@ export const authOptions: NextAuthOptions = {
         if (user.Item) {
           session.user.subscription_type = user.Item.subscriptionType;
           session.user.theme = user.Item.theme;
+          session.user.interval = user.Item.refreshInterval;
           session.user.githubAuthenticated =
             user.Item.githubAuthenticated === "true";
           session.user.twitterAuthenticated =
@@ -78,6 +86,8 @@ export const authOptions: NextAuthOptions = {
           session.user.twittertag = user.Item.twitterTag;
           session.user.twitterimage = user.Item.twitterPicutre;
           session.user.githubname = user.Item.githubUsername;
+          session.user.lastSubscriptionTimestamp =
+            user.Item.lastSubscriptionTimestamp;
         }
       }
       return session;

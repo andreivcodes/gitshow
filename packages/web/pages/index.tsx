@@ -1,9 +1,3 @@
-import {
-  AvailableSubscriptionTypes,
-  AvailableThemeNames,
-  NONE_PLAN,
-  contribSvg,
-} from "@gitshow/svg-gen";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import ContributionsChart from "../components/contributions-chart";
@@ -11,6 +5,24 @@ import { Header } from "../components/header";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/site-footer";
 import { getServerAuthSession } from "../server/auth";
+import { createContext, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import {
+  NONE_PLAN,
+  AvailableSubscriptionTypes,
+  AvailableThemeNames,
+  contribSvg,
+  AvailableIntervals,
+} from "@gitshow/gitshow-lib";
+
+export const SubscriptionContext = createContext({
+  subscriptionType: NONE_PLAN,
+  setSubscriptionType: (subscriptionType: AvailableSubscriptionTypes) => {},
+  theme: "classic",
+  setTheme: (theme: AvailableThemeNames) => {},
+  interval: 720,
+  setInterval: (interval: AvailableIntervals) => {},
+});
 
 export default function Home({
   name,
@@ -19,6 +31,8 @@ export default function Home({
   svg,
   fullyAuthenticated,
   storedSubscriptionType,
+  storedTheme,
+  storedInterval,
 }: {
   name: string;
   twittertag: string;
@@ -26,16 +40,39 @@ export default function Home({
   svg: string;
   fullyAuthenticated: boolean;
   storedSubscriptionType: AvailableSubscriptionTypes;
+  storedTheme: AvailableThemeNames;
+  storedInterval: AvailableIntervals;
 }) {
+  const [subscriptionType, setSubscriptionType] = useState(
+    storedSubscriptionType
+  );
+  const [theme, setTheme] = useState(storedTheme);
+  const [interval, setInterval] = useState(storedInterval);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace(router.asPath);
+  }, [theme]);
+
   return (
-    <>
+    <SubscriptionContext.Provider
+      value={{
+        subscriptionType,
+        setSubscriptionType,
+        theme,
+        setTheme,
+        interval,
+        setInterval,
+      }}
+    >
       <Head>
         <title>git.show</title>
         <meta name="description" content="show off your contributions" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <div className="orb-container w-full flex flex-col min-h-screen place-content-between xl:max-h-screen">
+        <div className="orb-container w-full flex flex-col min-h-screen place-content-between">
           <div className="orb" />
           <div className="flex flex-col gap-12 items-center">
             <Header />
@@ -57,20 +94,17 @@ export default function Home({
           <Footer />
         </div>
       </main>
-    </>
+    </SubscriptionContext.Provider>
   );
 }
 
 export const getServerSideProps = (async (context) => {
   const session = await getServerAuthSession(context);
-  const { type, theme } = context.query;
 
   const svg = await contribSvg(
     session?.user.githubname ?? "torvalds",
-    (theme as AvailableThemeNames) ?? session?.user.theme ?? "classic",
-    (type as AvailableSubscriptionTypes) ??
-      session?.user.subscription_type ??
-      NONE_PLAN
+    session?.user.theme ?? "classic",
+    session?.user.subscription_type ?? NONE_PLAN
   );
 
   return {
@@ -81,6 +115,8 @@ export const getServerSideProps = (async (context) => {
       svg: svg,
       fullyAuthenticated: session?.user.fullyAuthenticated ?? false,
       storedSubscriptionType: session?.user.subscription_type ?? NONE_PLAN,
+      storedTheme: session?.user.theme ?? "classic",
+      storedInterval: session?.user.interval ?? 720,
     },
   };
 }) satisfies GetServerSideProps;

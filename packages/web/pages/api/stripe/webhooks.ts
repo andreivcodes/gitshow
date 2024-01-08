@@ -1,30 +1,23 @@
-import {
-  AvailableSubscriptionTypes,
-  AvailableThemeNames,
-  FREE_PLAN,
-  NONE_PLAN,
-  PREMIUM_PLAN,
-  STANDARD_PLAN,
-} from "@gitshow/svg-gen";
 import { DynamoDB } from "aws-sdk";
 import { Config } from "sst/node/config";
 import { Table } from "sst/node/table";
 import Stripe from "stripe";
-import { updateUser } from "../../../lib/db";
-import {
-  FREE_PLAN_ID,
-  PREMIUM_PLAN_ID,
-  STANDARD_PLAN_ID,
-} from "../../../lib/plans";
-import { queueUpdateHeader } from "../../../lib/sqs";
+import { FREE_PLAN_ID, PREMIUM_PLAN_ID } from "../../../lib/plans";
+import { queueJob } from "../../../lib/sqs";
 import { stripe } from "../../../lib/stripeServer";
 import { buffer } from "micro";
 import Cors from "micro-cors";
 import { NextApiRequest, NextApiResponse } from "next";
+import {
+  AvailableSubscriptionTypes,
+  FREE_PLAN,
+  PREMIUM_PLAN,
+  updateUser,
+  NONE_PLAN,
+} from "@gitshow/gitshow-lib";
 
 interface Plan {
   type: AvailableSubscriptionTypes;
-  theme?: AvailableThemeNames;
 }
 
 const webhookSecret: string = Config.STRIPE_WEBHOOK_SECRET;
@@ -81,34 +74,29 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     switch (event.type) {
       case "customer.subscription.updated":
       case "customer.subscription.created": {
-        let plan: Plan = { type: FREE_PLAN, theme: "classic" };
+        let plan: Plan = { type: FREE_PLAN };
 
         switch (event.data.object.items.data[0].plan.id) {
           case FREE_PLAN_ID:
-            plan = { type: FREE_PLAN, theme: "classic" };
+            plan = { type: FREE_PLAN };
             break;
-          case STANDARD_PLAN_ID:
-            plan = { type: STANDARD_PLAN, theme: "githubDark" };
-            break;
+
           case PREMIUM_PLAN_ID:
-            plan = { type: PREMIUM_PLAN, theme: user.theme };
+            plan = { type: PREMIUM_PLAN };
             break;
           default:
             break;
         }
 
         try {
-          console.log(`Update user ${user.email} to ${plan.type}`);
+          console.log(`Update user ${user.email} to ${plan.type}}`);
           await updateUser(user.email, {
             subscriptionType: plan.type,
-            theme: plan.theme,
             lastSubscriptionTimestamp: new Date().toISOString(),
           });
         } catch (error) {
           throw new Error(`[STRIPE] Failed to update user ${error}`);
         }
-
-        await queueUpdateHeader(user.email);
 
         break;
       }
@@ -117,11 +105,8 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         try {
           console.log(`Delete user ${user.email}`);
           await updateUser(user.email, {
-            theme: "classic",
             subscriptionType: NONE_PLAN,
           });
-
-          await queueUpdateHeader(user.email);
         } catch (error) {
           throw new Error(`[STRIPE] Failed to delete user ${error}`);
         }
@@ -132,7 +117,7 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         console.log(`🤷‍♀️ Unhandled event type: ${event.type}`);
         break;
     }
-
+    await queueJob(user.email);
     res.json({ received: true });
 
     // Successfully constructed event.

@@ -9,7 +9,7 @@
 		"start": "next start"
 	},
 	"dependencies": {
-		"@gitshow/svg-gen": "*",
+		"@gitshow/gitshow-lib": "*",
 		"@hookform/resolvers": "^3.3",
 		"@radix-ui/react-accordion": "^1.1",
 		"@radix-ui/react-alert-dialog": "^1.0",

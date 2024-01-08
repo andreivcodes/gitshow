@@ -75,8 +75,11 @@ export function stack({ stack }: StackContext) {
       twitterOAuthToken: "string",
       twitterOAuthTokenSecret: "string",
 
-      subscriptionType: "string",
       theme: "string",
+      refreshInterval: "number",
+      lastRefreshTimestamp: "number",
+
+      subscriptionType: "string",
       lastSubscriptionTimestamp: "string",
     },
     primaryIndex: { partitionKey: "email" },
@@ -86,6 +89,9 @@ export function stack({ stack }: StackContext) {
       },
       SubscriptionTypeIndex: {
         partitionKey: "subscriptionType",
+      },
+      LastRefreshTimestampIndex: {
+        partitionKey: "lastSubscriptionTimestamp",
       },
     },
   });
@@ -152,34 +158,12 @@ export function stack({ stack }: StackContext) {
     ],
   });
 
-  new Cron(stack, "free_update_job", {
-    schedule: "rate(30 days)",
+  new Cron(stack, "cron_update", {
+    schedule: "rate(1 hour)",
     job: {
       function: {
         runtime: "nodejs18.x",
-        handler: "packages/functions/src/free_update_job.handler",
-        bind: [table, queue],
-      },
-    },
-  });
-
-  new Cron(stack, "standard_update_job", {
-    schedule: "rate(7 days)",
-    job: {
-      function: {
-        runtime: "nodejs18.x",
-        handler: "packages/functions/src/standard_update_job.handler",
-        bind: [table, queue],
-      },
-    },
-  });
-
-  new Cron(stack, "premium_update_job", {
-    schedule: "rate(1 day)",
-    job: {
-      function: {
-        runtime: "nodejs18.x",
-        handler: "packages/functions/src/premium_update_job.handler",
+        handler: "packages/functions/src/cron_update.handler",
         bind: [table, queue],
       },
     },

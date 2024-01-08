@@ -1,8 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { updateUser } from "../../lib/db";
-import { queueUpdateHeader } from "../../lib/sqs";
+import { queueJob } from "../../lib/sqs";
 import { getServerAuthSession } from "../../server/auth";
-import { PREMIUM_PLAN } from "@gitshow/svg-gen";
+import {
+  PREMIUM_INTERVALS,
+  PREMIUM_PLAN,
+  updateUser,
+} from "@gitshow/gitshow-lib";
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,7 +24,10 @@ export default async function handler(
     });
   }
 
-  if (session.user.subscription_type !== PREMIUM_PLAN) {
+  if (
+    session.user.subscription_type !== PREMIUM_PLAN &&
+    PREMIUM_INTERVALS.includes(session.user.interval)
+  ) {
     return res.status(401).json({
       error: {
         code: "no-access",
@@ -31,7 +37,7 @@ export default async function handler(
   }
 
   await updateUser(session.user.email, { theme: theme });
-  await queueUpdateHeader(session.user.email);
+  await queueJob(session.user.email);
 
   return res.status(200).json({
     message: "Theme updated",

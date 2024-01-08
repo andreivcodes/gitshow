@@ -1,18 +1,14 @@
-import {
-  AvailableSubscriptionTypes,
-  AvailableThemeNames,
-} from "@gitshow/svg-gen";
 import { DynamoDB } from "aws-sdk";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Table } from "sst/node/table";
-import { updateUser } from "../../../lib/db";
 import { stripe } from "../../../lib/stripeServer";
 import { getServerAuthSession } from "../../../server/auth";
 import {
-  FREE_PLAN_ID,
-  PREMIUM_PLAN_ID,
-  STANDARD_PLAN_ID,
-} from "../../../lib/plans";
+  AvailableSubscriptionTypes,
+  AvailableThemeNames,
+  updateUser,
+} from "@gitshow/gitshow-lib";
+import { FREE_PLAN_ID, PREMIUM_PLAN_ID } from "../../../lib/plans";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
@@ -22,7 +18,6 @@ type SubscriptionIdMap = {
 
 const productIds: SubscriptionIdMap = {
   free: FREE_PLAN_ID,
-  standard: STANDARD_PLAN_ID,
   premium: PREMIUM_PLAN_ID,
   none: "",
 };
@@ -65,7 +60,7 @@ export default async function handler(
       },
     });
 
-  if (type === "premium") await updateUser(user.Item.email, { theme: theme });
+  await updateUser(user.Item.email, { theme: theme });
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "subscription",

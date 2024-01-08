@@ -6,17 +6,17 @@ import { Toaster } from "../components/ui/toaster";
 import "../styles/globals.css";
 
 const MyApp: AppType<{ session: Session | null }> = ({
-	Component,
-	pageProps: { session, ...pageProps },
+  Component,
+  pageProps: { session, ...pageProps },
 }) => {
-	return (
-		<SessionProvider session={session}>
-			<ThemeProvider attribute="class" defaultTheme="dark">
-				<Component {...pageProps} />
-				<Toaster />
-			</ThemeProvider>
-		</SessionProvider>
-	);
+  return (
+    <SessionProvider session={session}>
+      <ThemeProvider attribute="class" defaultTheme="dark">
+        <Component {...pageProps} />
+        <Toaster />
+      </ThemeProvider>
+    </SessionProvider>
+  );
 };
 
 export default MyApp;

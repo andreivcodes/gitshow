@@ -100,29 +100,6 @@
   }
 }
 
-@keyframes standard-select {
-  0%,
-  100% {
-    background-image: linear-gradient(
-      90deg,
-      rgba(89, 221, 247, 1),
-      rgba(89, 160, 247, 0.75),
-      rgba(96, 79, 244, 0.6)
-    );
-    background-size: 200% 200%;
-    background-position: 0% 50%;
-  }
-  50% {
-    background-image: linear-gradient(
-      90deg,
-      rgba(89, 221, 247, 1),
-      rgba(89, 160, 247, 0.75),
-      rgba(96, 79, 244, 0.6)
-    );
-    background-size: 200% 200%;
-    background-position: 100% 50%;
-  }
-}
 
 @keyframes premium-select {
   0%,
