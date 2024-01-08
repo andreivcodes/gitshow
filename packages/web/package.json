@@ -45,7 +45,7 @@
 		"clsx": "^2.1",
 		"cmdk": "^0.2",
 		"date-fns": "^3.1",
-		"lucide-react": "^0.306",
+		"lucide-react": "^0.307",
 		"micro": "^10.0.1",
 		"micro-cors": "^0.1.1",
 		"next": "^14.0",
