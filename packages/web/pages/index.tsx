@@ -78,12 +78,12 @@ export default function Home({
             <Header />
             <div className="flex flex-col justify-center 2xl:flex-row 2xl:items-start 2xl:pt-20 w-full 2xl:w-3/4 gap-4 2xl:gap-8">
               <div className="flex flex-col justify-center 2xl:justify-end gap-10 2xl:pb-0">
-                <ContributionsChart
+                {/* <ContributionsChart
                   name={name}
                   twittertag={twittertag}
                   picture={picture}
                   svg={svg}
-                />
+                /> */}
               </div>
               <Menu
                 fullyAuthenticated={fullyAuthenticated}

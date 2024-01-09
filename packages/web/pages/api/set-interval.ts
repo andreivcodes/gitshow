@@ -11,7 +11,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { theme } = JSON.parse(req.body);
+  const { interval } = JSON.parse(req.body);
 
   const session = await getServerAuthSession({ req, res });
 
@@ -36,10 +36,10 @@ export default async function handler(
     });
   }
 
-  await updateUser(session.user.email, { theme: theme });
+  await updateUser(session.user.email, { refreshInterval: interval });
   await queueJob(session.user.email);
 
   return res.status(200).json({
-    message: "Theme updated",
+    message: "Interval updated",
   });
 }

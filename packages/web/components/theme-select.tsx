@@ -9,7 +9,7 @@ import {
 import { useToast } from "./ui/use-toast";
 import { useContext } from "react";
 import { SubscriptionContext } from "../pages";
-import { AvailableThemeNames } from "@gitshow/gitshow-lib";
+import { AvailableThemeNames, PREMIUM_PLAN } from "@gitshow/gitshow-lib";
 
 export const ThemeSelect = () => {
   const subscription = useContext(SubscriptionContext);
@@ -41,14 +41,64 @@ export const ThemeSelect = () => {
         <SelectValue placeholder="Select a theme" />
       </SelectTrigger>
       <SelectContent>
-        <SelectGroup>
-          <SelectItem value="normal">Normal</SelectItem>
-          <SelectItem value="classic">Classic</SelectItem>
-          <SelectItem value="githubDark">Github Dark</SelectItem>
-          <SelectItem value="dracula">Dracula</SelectItem>
-          <SelectItem value="spooky">Spooky</SelectItem>
-          <SelectItem value="bnw">Black and White</SelectItem>
-        </SelectGroup>
+        {subscription.subscriptionType != PREMIUM_PLAN ? (
+          <SelectGroup>
+            <SelectItem value="normal">
+              <p>Normal</p>
+            </SelectItem>
+            <SelectItem value="classic">
+              <p>Classic</p>
+            </SelectItem>
+            <SelectItem value="githubDark">
+              <p>Github Dark</p>
+            </SelectItem>
+            <SelectItem value="dracula" disabled={true}>
+              <div className="flex flex-row gap-2">
+                <p className="animate-premium-select rounded-md px-2">
+                  Pro Only
+                </p>
+                <p>Dracula</p>
+              </div>
+            </SelectItem>
+            <SelectItem value="spooky" disabled={true}>
+              <div className="flex flex-row gap-2">
+                <p className="animate-premium-select rounded-md px-2">
+                  Pro Only
+                </p>
+                <p>Spooky</p>
+              </div>
+            </SelectItem>
+            <SelectItem value="bnw" disabled={true}>
+              <div className="flex flex-row gap-2">
+                <p className="animate-premium-select rounded-md px-2">
+                  Pro Only
+                </p>
+                <p>Black and White</p>
+              </div>
+            </SelectItem>
+          </SelectGroup>
+        ) : (
+          <SelectGroup>
+            <SelectItem value="normal">
+              <p>Normal</p>
+            </SelectItem>
+            <SelectItem value="classic">
+              <p>Classic</p>
+            </SelectItem>
+            <SelectItem value="githubDark">
+              <p>Github Dark</p>
+            </SelectItem>
+            <SelectItem value="dracula">
+              <p>Dracula</p>
+            </SelectItem>
+            <SelectItem value="spooky">
+              <p>Spooky</p>
+            </SelectItem>
+            <SelectItem value="bnw">
+              <p>Black and White</p>
+            </SelectItem>
+          </SelectGroup>
+        )}
       </SelectContent>
     </Select>
   );

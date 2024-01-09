@@ -15,20 +15,20 @@ export function Menu({
 
   return (
     <div className="w-full">
-      {!fullyAuthenticated && (
-        <SignIn
-          githubSigned={session?.user?.githubAuthenticated}
-          twitterSigned={session?.user?.twitterAuthenticated}
-        />
-      )}
+      {/* {!fullyAuthenticated && ( */}
+      <SignIn
+        githubSigned={session?.user?.githubAuthenticated}
+        twitterSigned={session?.user?.twitterAuthenticated}
+      />
+      {/* )}
 
-      {fullyAuthenticated && storedSubscriptionType != NONE_PLAN && (
-        <Settings />
-      )}
+      {fullyAuthenticated && storedSubscriptionType != NONE_PLAN && ( */}
+      <Settings />
+      {/* )}
 
-      {fullyAuthenticated && storedSubscriptionType == NONE_PLAN && (
-        <CheckoutMenu />
-      )}
+      {fullyAuthenticated && storedSubscriptionType == NONE_PLAN && ( */}
+      <CheckoutMenu />
+      {/* )} */}
     </div>
   );
 }

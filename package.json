@@ -12,7 +12,6 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^1.4",
 		"@tsconfig/node18": "^18.2",
 		"aws-cdk-lib": "^2.118",
 		"constructs": "^10.3",

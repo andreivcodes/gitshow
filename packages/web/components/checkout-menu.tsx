@@ -28,10 +28,10 @@ const products: ProductType[] = [
     recurrence: "year",
     price: "0,00",
     productId: FREE_PLAN_ID,
-    description: ["Free forever", "Monthly updates"],
+    description: ["Free forever", "Weekly updates"],
     detailedDescription: [
       "Generates a basic Twitter profile header from your GitHub contributions.",
-      "Monthly header update.",
+      "Weekly header update.",
     ],
   },
   {
@@ -40,9 +40,9 @@ const products: ProductType[] = [
     recurrence: "year",
     price: "25,00",
     productId: PREMIUM_PLAN_ID,
-    description: ["Daily updates", "More themes"],
+    description: ["Hourly updates", "More themes"],
     detailedDescription: [
-      "Daily updates for the most up-to-date GitHub activity display.",
+      "Hourly updates for the most up-to-date GitHub activity display.",
       "Multiple additional theme options for your Twitter header.",
     ],
   },

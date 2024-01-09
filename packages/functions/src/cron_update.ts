@@ -28,7 +28,7 @@ export async function handler() {
       timestampThreshold + u.refreshInterval * 60 * 60 * 1000
   );
 
-  console.log(`Updating ${usersToRefresh.length} free users.`);
+  console.log(`Updating ${usersToRefresh.length} users.`);
 
   for (const user of usersToRefresh) {
     await sqs
@@ -40,13 +40,13 @@ export async function handler() {
           twitterOAuthToken: user.twitterOAuthToken,
           twitterOAuthTokenSecret: user.twitterOAuthTokenSecret,
           type: user.subscriptionType,
-          theme: "classic",
+          theme: user.theme,
         } as UpdateUserEvent),
       })
       .promise();
 
     console.log(
-      `Update queued for ${user.githubUsername} - ${user.subscriptionType} ${user.theme}!`
+      `Update queued for ${user.githubUsername} - ${user.subscriptionType} ${user.theme} ${user.refreshInterval}h!`
     );
   }
 }
