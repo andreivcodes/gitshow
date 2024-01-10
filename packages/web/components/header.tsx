@@ -11,9 +11,7 @@ export function Header({ className }: React.HTMLAttributes<HTMLElement>) {
             <Link className="text-7xl font-bold tracking-tighter" href="/">
               git.show
             </Link>
-            <p className="hidden md:block text-md font-light">
-              show off your contributions
-            </p>
+            <p className="text-md font-light">show off your contributions</p>
           </div>
         </div>
       </div>
