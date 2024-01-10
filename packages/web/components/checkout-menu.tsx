@@ -40,10 +40,11 @@ const products: ProductType[] = [
     recurrence: "year",
     price: "25,00",
     productId: PREMIUM_PLAN_ID,
-    description: ["Hourly updates", "More themes"],
+    description: ["Hourly updates", "More themes", "No branding"],
     detailedDescription: [
       "Hourly updates for the most up-to-date GitHub activity display.",
       "Multiple additional theme options for your Twitter header.",
+      "No gitshow branding on your Twitter header.",
     ],
   },
 ];

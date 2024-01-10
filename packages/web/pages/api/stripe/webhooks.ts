@@ -14,10 +14,14 @@ import {
   PREMIUM_PLAN,
   updateUser,
   NONE_PLAN,
+  AvailableThemeNames,
+  AvailableIntervals,
 } from "@gitshow/gitshow-lib";
 
 interface Plan {
   type: AvailableSubscriptionTypes;
+  theme: AvailableThemeNames;
+  interval: AvailableIntervals;
 }
 
 const webhookSecret: string = Config.STRIPE_WEBHOOK_SECRET;
@@ -74,15 +78,15 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     switch (event.type) {
       case "customer.subscription.updated":
       case "customer.subscription.created": {
-        let plan: Plan = { type: FREE_PLAN };
+        let plan: Plan = { type: FREE_PLAN, theme: "classic", interval: 168 };
 
         switch (event.data.object.items.data[0].plan.id) {
           case FREE_PLAN_ID:
-            plan = { type: FREE_PLAN };
+            plan = { type: FREE_PLAN, theme: "classic", interval: 168 };
             break;
 
           case PREMIUM_PLAN_ID:
-            plan = { type: PREMIUM_PLAN };
+            plan = { type: PREMIUM_PLAN, theme: "classic", interval: 168 };
             break;
           default:
             break;
