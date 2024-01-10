@@ -21,7 +21,7 @@ export default async function handler(
   }
 
   if (
-    session.user.subscription_type !== PREMIUM_PLAN &&
+    session.user.subscription_type != PREMIUM_PLAN &&
     PREMIUM_THEMES.includes(session.user.theme)
   ) {
     return res.status(401).json({

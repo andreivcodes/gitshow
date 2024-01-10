@@ -3,6 +3,7 @@ import { DynamoDB } from "aws-sdk";
 import { Queue } from "sst/node/queue";
 import { Table } from "sst/node/table";
 import { UpdateUserEvent } from "./update_user";
+import { NONE_PLAN } from "@gitshow/gitshow-lib";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 const sqs = new AWS.SQS();
@@ -25,7 +26,8 @@ export async function handler() {
   const usersToRefresh = users.filter(
     (u) =>
       u.lastRefreshTimestamp <
-      timestampThreshold + u.refreshInterval * 60 * 60 * 1000
+        timestampThreshold + u.refreshInterval * 60 * 60 * 1000 &&
+      u.subscriptionType != NONE_PLAN
   );
 
   console.log(`Updating ${usersToRefresh.length} users.`);

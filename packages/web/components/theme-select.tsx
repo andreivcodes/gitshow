@@ -54,7 +54,7 @@ export const ThemeSelect = () => {
             </SelectItem>
             <SelectItem value="dracula" disabled={true}>
               <div className="flex flex-row gap-2">
-                <p className="animate-premium-select rounded-md px-2">
+                <p className="animate-premium-select rounded-md px-2 opacity-200">
                   Pro Only
                 </p>
                 <p>Dracula</p>
@@ -62,7 +62,7 @@ export const ThemeSelect = () => {
             </SelectItem>
             <SelectItem value="spooky" disabled={true}>
               <div className="flex flex-row gap-2">
-                <p className="animate-premium-select rounded-md px-2">
+                <p className="animate-premium-select rounded-md px-2 opacity-200">
                   Pro Only
                 </p>
                 <p>Spooky</p>
@@ -70,7 +70,7 @@ export const ThemeSelect = () => {
             </SelectItem>
             <SelectItem value="bnw" disabled={true}>
               <div className="flex flex-row gap-2">
-                <p className="animate-premium-select rounded-md px-2">
+                <p className="animate-premium-select rounded-md px-2 opacity-200">
                   Pro Only
                 </p>
                 <p>Black and White</p>
