@@ -18,13 +18,13 @@ export function Settings() {
 
           <div className="flex flex-row gap-2">
             <Button variant="default">
-              <Link href="https://billing.stripe.com/p/login/test_aEU2bUf6J7dw5UYaEF">
+              <Link href="https://billing.stripe.com/p/login/test_eVa6sa3o19lE1EI8wy">
                 Change Plan
               </Link>
             </Button>
 
             <Button variant="destructive">
-              <Link href="https://billing.stripe.com/p/login/test_aEU2bUf6J7dw5UYaEF">
+              <Link href="https://billing.stripe.com/p/login/test_eVa6sa3o19lE1EI8wy">
                 Cancel Subscription
               </Link>
             </Button>

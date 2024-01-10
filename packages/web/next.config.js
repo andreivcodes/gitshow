@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ["@gitshow/svg-gen"],
+  transpilePackages: ["@gitshow/gitshow-lib"],
   reactStrictMode: true,
   images: {
     remotePatterns: [

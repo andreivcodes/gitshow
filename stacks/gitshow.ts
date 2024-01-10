@@ -91,7 +91,7 @@ export function stack({ stack }: StackContext) {
         partitionKey: "subscriptionType",
       },
       LastRefreshTimestampIndex: {
-        partitionKey: "lastSubscriptionTimestamp",
+        partitionKey: "lastRefreshTimestamp",
       },
     },
   });
@@ -116,6 +116,7 @@ export function stack({ stack }: StackContext) {
   });
 
   queue.bind([
+    table,
     param_TOKENS_ENCRYPT,
     param_GITHUB_CLIENT_ID,
     param_TWITTER_CONSUMER_KEY,
@@ -124,8 +125,7 @@ export function stack({ stack }: StackContext) {
 
   const web = new NextjsSite(stack, "web", {
     path: "packages/web",
-    warm: 10,
-    logging: "combined",
+    warm: 20,
     customDomain: {
       domainName:
         stack.stage === "production" ? "git.show" : `${stack.stage}.git.show`,

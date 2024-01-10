@@ -33,7 +33,7 @@ export const IntervalSelect = () => {
         setInterval();
 
         toast({
-          description: "Your interval has been changed",
+          description: "⏱️ Your interval has been changed",
         });
       }}
       defaultValue={subscription.interval.toString()}

@@ -14,7 +14,7 @@ export async function handler() {
     .query({
       TableName: Table.User.tableName,
       IndexName: "LastRefreshTimestampIndex",
-      KeyConditionExpression: "LastRefreshTimestampIndex < :timestamp",
+      KeyConditionExpression: "lastRefreshTimestamp < :timestamp",
       ExpressionAttributeValues: { ":timestamp": timestampThreshold },
       ProjectionExpression:
         "email, githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, subscriptionType",

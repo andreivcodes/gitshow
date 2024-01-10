@@ -1,2 +1,2 @@
-export const FREE_PLAN_ID = "price_1OD8CDHNuNMEdXGMYnyX62TI";
-export const PREMIUM_PLAN_ID = "price_1OD8CcHNuNMEdXGMPOCjqx5P";
+export const FREE_PLAN_ID = "price_1OWwU2HNuNMEdXGM19B50YCY";
+export const PREMIUM_PLAN_ID = "price_1OWwUQHNuNMEdXGMhJb2CLe8";

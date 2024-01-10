@@ -32,7 +32,7 @@ export const ThemeSelect = () => {
         setTheme();
 
         toast({
-          description: "Your theme has been changed",
+          description: "🎨 Your theme has been changed",
         });
       }}
       defaultValue={subscription.theme}
