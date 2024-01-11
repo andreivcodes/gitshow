@@ -17,7 +17,7 @@ export async function handler() {
       KeyConditionExpression: "lastRefreshTimestamp < :timestamp",
       ExpressionAttributeValues: { ":timestamp": timestampThreshold },
       ProjectionExpression:
-        "email, githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, subscriptionType",
+        "email, githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, subscriptionType, lastRefreshTimestam, refreshInterval",
     })
     .promise();
 
