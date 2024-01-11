@@ -35,6 +35,7 @@ export const queueJob = async (email: string) => {
     .sendMessage({
       QueueUrl: Queue.UpdateQueue.queueUrl,
       MessageBody: JSON.stringify({
+        email: email,
         githubUsername: user.Item.githubUsername,
         twitterOAuthToken: user.Item.twitterOAuthToken,
         twitterOAuthTokenSecret: user.Item.twitterOAuthTokenSecret,

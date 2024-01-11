@@ -16,6 +16,7 @@ import { stripe } from "../lib/stripeServer";
 import {
   AvailableSubscriptionTypes,
   AvailableThemeNames,
+  NONE_PLAN,
   UserUpdateAttributes,
   updateUser,
 } from "@gitshow/gitshow-lib";
@@ -84,7 +85,7 @@ export const authOptions: NextAuthOptions = {
             session.user.twitterAuthenticated;
           session.user.twittername = user.Item.twitterUsername;
           session.user.twittertag = user.Item.twitterTag;
-          session.user.twitterimage = user.Item.twitterPicutre;
+          session.user.twitterimage = user.Item.twitterPicture;
           session.user.githubname = user.Item.githubUsername;
           session.user.lastSubscriptionTimestamp =
             user.Item.lastSubscriptionTimestamp;
@@ -115,7 +116,7 @@ export const authOptions: NextAuthOptions = {
               profile as TwitterLegacyProfile
             ).screen_name;
             updateData.twitterUsername = (profile as TwitterLegacyProfile).name;
-            updateData.twitterPicutre = (
+            updateData.twitterPicture = (
               profile as TwitterLegacyProfile
             ).profile_image_url_https?.replace("_normal.jpg", ".jpg");
 
@@ -147,7 +148,10 @@ export const authOptions: NextAuthOptions = {
             });
 
             updateData.stripeCustomerId = stripeCustomer.id;
-            updateData.subscriptionType = "none";
+            updateData.subscriptionType = NONE_PLAN;
+            updateData.theme = "classic";
+            updateData.refreshInterval = 168;
+
             await dynamoDb
               .put({
                 TableName: Table.User.tableName,

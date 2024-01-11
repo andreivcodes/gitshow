@@ -15,7 +15,7 @@ export interface UserUpdateAttributes {
   twitterId?: string;
   twitterUsername?: string;
   twitterTag?: string;
-  twitterPicutre?: string;
+  twitterPicture?: string;
   twitterOAuthToken?: string;
   twitterOAuthTokenSecret?: string;
 

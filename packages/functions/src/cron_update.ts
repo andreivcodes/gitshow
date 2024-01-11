@@ -9,7 +9,7 @@ const dynamoDb = new DynamoDB.DocumentClient();
 const sqs = new AWS.SQS();
 
 export async function handler() {
-  const timestampThreshold = new Date().getTime();
+  const timestampThreshold = new Date().getTime() / 1000;
   const queryResult = await dynamoDb
     .query({
       TableName: Table.User.tableName,
@@ -30,7 +30,7 @@ export async function handler() {
   const usersToRefresh = users.filter(
     (u) =>
       u.lastRefreshTimestamp <
-        timestampThreshold + u.refreshInterval * 60 * 60 * 1000 &&
+        timestampThreshold + u.refreshInterval * 60 * 60 &&
       u.subscriptionType != NONE_PLAN
   );
 

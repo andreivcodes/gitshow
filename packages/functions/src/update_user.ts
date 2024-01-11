@@ -56,7 +56,7 @@ export const handler = async (event: SQSEvent) => {
     await client.v1.updateAccountProfileBanner(bannerPng);
 
     await updateUser(email, {
-      lastRefreshTimestamp: new Date().getTime(),
+      lastRefreshTimestamp: new Date().getTime() / 1000,
     });
 
     console.log(`Updated ${githubUsername}`);
