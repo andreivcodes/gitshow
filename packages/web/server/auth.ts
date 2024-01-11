@@ -151,7 +151,11 @@ export const authOptions: NextAuthOptions = {
             await dynamoDb
               .put({
                 TableName: Table.User.tableName,
-                Item: { email: profile.email, ...updateData },
+                Item: {
+                  constantKey: "USER",
+                  email: profile.email,
+                  ...updateData,
+                },
               })
               .promise();
           }

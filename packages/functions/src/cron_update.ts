@@ -14,10 +14,14 @@ export async function handler() {
     .query({
       TableName: Table.User.tableName,
       IndexName: "LastRefreshTimestampIndex",
-      KeyConditionExpression: "lastRefreshTimestamp < :timestamp",
-      ExpressionAttributeValues: { ":timestamp": timestampThreshold },
+      KeyConditionExpression:
+        "constantKey = :constantVal AND lastRefreshTimestamp < :timestamp",
+      ExpressionAttributeValues: {
+        ":constantVal": "USER",
+        ":timestamp": timestampThreshold,
+      },
       ProjectionExpression:
-        "email, githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, subscriptionType, lastRefreshTimestam, refreshInterval",
+        "email, githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, subscriptionType, lastRefreshTimestamp, refreshInterval",
     })
     .promise();
 

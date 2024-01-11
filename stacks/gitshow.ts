@@ -57,6 +57,7 @@ export function stack({ stack }: StackContext) {
 
   const table = new Table(stack, "User", {
     fields: {
+      constantKey: "string",
       email: "string",
       name: "string",
       stripeCustomerId: "string",
@@ -91,7 +92,8 @@ export function stack({ stack }: StackContext) {
         partitionKey: "subscriptionType",
       },
       LastRefreshTimestampIndex: {
-        partitionKey: "lastRefreshTimestamp",
+        partitionKey: "constantKey",
+        sortKey: "lastRefreshTimestamp",
       },
     },
   });

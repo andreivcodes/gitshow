@@ -93,9 +93,14 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
 
         try {
-          console.log(`Update user ${user.email} to ${plan.type}}`);
+          console.log(
+            `Update user ${user.email} to ${plan.type}} - ${plan.theme} - ${plan.interval}h`
+          );
+
           await updateUser(user.email, {
             subscriptionType: plan.type,
+            theme: plan.theme,
+            refreshInterval: plan.interval,
             lastSubscriptionTimestamp: new Date().toISOString(),
           });
         } catch (error) {
