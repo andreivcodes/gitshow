@@ -14,6 +14,8 @@ import {
   contribSvg,
   AvailableIntervals,
 } from "@gitshow/gitshow-lib";
+import Feedback from "../components/feedback";
+import { Card } from "../components/ui/card";
 
 export const SubscriptionContext = createContext({
   subscriptionType: NONE_PLAN,
@@ -73,6 +75,13 @@ export default function Home({
       </Head>
       <main>
         <div className="orb-container w-full flex flex-col min-h-screen place-content-between">
+          <div className="absolute -bottom-4 -right-4">
+            <Card>
+              <div className="pb-8 pr-8 pt-4 pl-4">
+                <Feedback />
+              </div>
+            </Card>
+          </div>
           <div className="orb" />
           <div className="flex flex-col gap-12 items-center">
             <Header />
