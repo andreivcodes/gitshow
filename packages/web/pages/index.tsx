@@ -75,9 +75,9 @@ export default function Home({
       </Head>
       <main>
         <div className="orb-container w-full flex flex-col min-h-screen place-content-between">
-          <div className="absolute -bottom-4 -right-4">
+          <div className="absolute -bottom-2 -right-2 xl:-bottom-4 xl:-right-4">
             <Card>
-              <div className="pb-8 pr-8 pt-4 pl-4">
+              <div className="pb-4 pr-4 pt-2 pl-2 xl:pb-8 xl:pr-8 xl:pt-4 xl:pl-4">
                 <Feedback />
               </div>
             </Card>

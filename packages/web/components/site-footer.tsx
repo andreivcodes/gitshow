@@ -5,7 +5,7 @@ import { Icons } from "./ui/icons";
 export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
   return (
     <footer className={cn(className)}>
-      <div className="container flex items-center justify-center md:h-12 pt-8 xl:pt-0">
+      <div className="container flex items-center justify-center md:h-12 pt-8 xl:pt-0 pb-16 xl:pb-0">
         <div className="flex flex-col xl:flex-row items-center gap-4 md:gap-2">
           <p className="text-center text-sm leading-loose md:text-left flex-row flex gap-1">
             Built by{" "}
