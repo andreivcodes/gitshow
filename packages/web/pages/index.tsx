@@ -5,8 +5,7 @@ import { Header } from "../components/header";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/site-footer";
 import { getServerAuthSession } from "../server/auth";
-import { createContext, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { createContext, useState } from "react";
 import {
   NONE_PLAN,
   AvailableSubscriptionTypes,
