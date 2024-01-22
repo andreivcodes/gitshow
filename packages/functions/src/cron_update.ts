@@ -21,7 +21,7 @@ export async function handler() {
         ":timestamp": timestampThreshold,
       },
       ProjectionExpression:
-        "email, githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, subscriptionType, lastRefreshTimestamp, refreshInterval",
+        "email, githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, subscriptionType, lastRefreshTimestamp, refreshInterval, theme",
     })
     .promise();
 

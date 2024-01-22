@@ -10,10 +10,12 @@ import { useToast } from "./ui/use-toast";
 import { useContext } from "react";
 import { SubscriptionContext } from "../pages";
 import { AvailableThemeNames, PREMIUM_PLAN } from "@gitshow/gitshow-lib";
+import { useRouter } from "next/navigation";
 
 export const ThemeSelect = () => {
   const subscription = useContext(SubscriptionContext);
   const { toast } = useToast();
+  const router = useRouter();
 
   return (
     <Select
@@ -26,6 +28,7 @@ export const ThemeSelect = () => {
             method: "POST",
           }).then(() => {
             subscription.setTheme(e as AvailableThemeNames);
+            router.refresh();
           });
         };
 

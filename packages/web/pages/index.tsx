@@ -6,7 +6,7 @@ import { Menu } from "../components/menu";
 import { Footer } from "../components/site-footer";
 import { getServerAuthSession } from "../server/auth";
 import { createContext, useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import {
   NONE_PLAN,
   AvailableSubscriptionTypes,
@@ -50,12 +50,6 @@ export default function Home({
   );
   const [theme, setTheme] = useState(storedTheme);
   const [interval, setInterval] = useState(storedInterval);
-
-  const router = useRouter();
-
-  useEffect(() => {
-    if (router) router.replace(router.asPath);
-  }, [theme]);
 
   return (
     <SubscriptionContext.Provider
