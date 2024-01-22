@@ -135,7 +135,6 @@ export function stack({ stack }: StackContext) {
     imageOptimization: {
       memorySize: "2 GB",
     },
-    edge: true,
     customDomain: {
       domainName:
         stack.stage === "production" ? "git.show" : `${stack.stage}.git.show`,
