@@ -127,11 +127,11 @@ export function stack({ stack }: StackContext) {
 
   const web = new NextjsSite(stack, "web", {
     path: "packages/web",
-    warm: 20,
     memorySize: "2 GB",
     imageOptimization: {
       memorySize: "2 GB",
     },
+    edge: true,
     customDomain: {
       domainName:
         stack.stage === "production" ? "git.show" : `${stack.stage}.git.show`,
