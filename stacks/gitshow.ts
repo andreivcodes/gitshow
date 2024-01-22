@@ -9,7 +9,11 @@ import {
 import { config as dotenv_config } from "dotenv";
 
 export function stack({ stack }: StackContext) {
-  stack.setDefaultFunctionProps({ logRetention: "one_day" });
+  stack.setDefaultFunctionProps({
+    logRetention: "one_day",
+    tracing: "disabled",
+    architecture: "arm_64",
+  });
 
   dotenv_config();
 

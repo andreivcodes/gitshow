@@ -1,25 +1,25 @@
 {
-	"name": "gitshow",
-	"version": "0.1.0",
-	"private": true,
-	"type": "module",
-	"scripts": {
-		"dev": "sst dev --profile=gitshow",
-		"build": "sst build --profile=gitshow",
-		"deploy": "sst deploy --profile=gitshow",
-		"remove": "sst remove --profile=gitshow",
-		"console": "sst console --profile=gitshow",
-		"typecheck": "tsc --noEmit"
-	},
-	"devDependencies": {
-		"@tsconfig/node18": "^18.2",
-		"aws-cdk-lib": "^2.122",
-		"constructs": "^10.3",
-		"sst": "2.39.7",
-		"typescript": "^5.3",
-		"vitest": "^1.2"
-	},
-	"workspaces": [
-		"packages/*"
-	]
+  "name": "gitshow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sst dev --profile=gitshow",
+    "build": "sst build --profile=gitshow",
+    "deploy": "sst deploy --profile=gitshow",
+    "remove": "sst remove --profile=gitshow",
+    "console": "sst console --profile=gitshow",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2",
+    "aws-cdk-lib": "^2.122",
+    "constructs": "^10.3",
+    "sst": "2.39.7",
+    "typescript": "^5.3",
+    "vitest": "^1.2"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
