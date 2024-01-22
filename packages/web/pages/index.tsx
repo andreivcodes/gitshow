@@ -54,7 +54,7 @@ export default function Home({
   const router = useRouter();
 
   useEffect(() => {
-    router.replace(router.asPath);
+    if (router) router.replace(router.asPath);
   }, [theme]);
 
   return (
