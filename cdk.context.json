@@ -2,5 +2,9 @@
   "hosted-zone:account=479162749611:domainName=git.show:region=us-east-1": {
     "Id": "/hostedzone/Z09586128N77IIQIS4ON",
     "Name": "git.show."
+  },
+  "hosted-zone:account=126518137048:domainName=git.show:region=us-east-1": {
+    "Id": "/hostedzone/Z07503531UI882CEWSND3",
+    "Name": "git.show."
   }
 }
