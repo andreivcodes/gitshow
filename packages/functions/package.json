@@ -1,21 +1,21 @@
 {
-	"name": "@gitshow/functions",
-	"version": "0.0.0",
-	"type": "module",
-	"scripts": {
-		"test": "sst bind vitest",
-		"typecheck": "tsc -noEmit"
-	},
-	"dependencies": {
-		"@gitshow/gitshow-lib": "*",
-		"aws-sdk": "^2",
-		"crypto-js": "^4.2",
-		"sharp": "^0.33",
-		"twitter-api-v2": "^1.16"
-	},
-	"devDependencies": {
-		"@types/aws-lambda": "^8.10",
-		"@types/crypto-js": "^4.2",
-		"@types/node": "^20.11"
-	}
+  "name": "@gitshow/functions",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "sst bind vitest",
+    "typecheck": "tsc -noEmit"
+  },
+  "dependencies": {
+    "@gitshow/gitshow-lib": "*",
+    "aws-sdk": "^2.1545.0",
+    "crypto-js": "^4.2",
+    "sharp": "^0.33.2",
+    "twitter-api-v2": "^1.16"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.132",
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "^20.11.8"
+  }
 }
