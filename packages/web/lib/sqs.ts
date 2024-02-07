@@ -6,6 +6,7 @@ import AWS from "aws-sdk";
 import { DynamoDB } from "aws-sdk";
 import { Queue } from "sst/node/queue";
 import { Table } from "sst/node/table";
+import { prisma } from "@gitshow/db";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
@@ -20,14 +21,9 @@ export interface UpdateHeaderEvent {
 }
 
 export const queueJob = async (email: string) => {
-  const user = await dynamoDb
-    .get({
-      TableName: Table.User.tableName,
-      Key: { email },
-    })
-    .promise();
+  const user = await prisma.user.findUnique({ where: { email } });
 
-  if (!user.Item) {
+  if (!user) {
     throw new Error("Invalid user");
   }
 
@@ -36,11 +32,11 @@ export const queueJob = async (email: string) => {
       QueueUrl: Queue.UpdateQueue.queueUrl,
       MessageBody: JSON.stringify({
         email: email,
-        githubUsername: user.Item.githubUsername,
-        twitterOAuthToken: user.Item.twitterOAuthToken,
-        twitterOAuthTokenSecret: user.Item.twitterOAuthTokenSecret,
-        type: user.Item.subscriptionType,
-        theme: user.Item.theme,
+        githubUsername: user.githubUsername,
+        twitterOAuthToken: user.twitterOAuthToken,
+        twitterOAuthTokenSecret: user.twitterOAuthTokenSecret,
+        type: user.subscriptionType,
+        theme: user.theme,
       } as UpdateHeaderEvent),
     })
     .promise();

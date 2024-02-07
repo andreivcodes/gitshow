@@ -1,0 +1,41 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = "file:./dev.db"
+}
+
+model User {
+    id                   Int      @id @default(autoincrement())
+    createdAt            DateTime @default(now())
+    email                String   @unique
+    name                 String?
+    stripeCustomerId     String?
+    githubAuthenticated  Boolean  @default(false)
+    twitterAuthenticated Boolean  @default(false)
+
+    githubId       String?
+    githubUsername String?
+    githubToken    String?
+
+    twitterId               String?
+    twitterUsername         String?
+    twitterTag              String?
+    twitterPicture          String?
+    twitterOAuthToken       String?
+    twitterOAuthTokenSecret String?
+
+    theme                String   @default("normal")
+    refreshInterval      Int      @default(720)
+    lastRefreshTimestamp DateTime @default(now())
+
+    subscriptionType          String   @default("free")
+    lastSubscriptionTimestamp DateTime @default(now())
+
+    @@index([stripeCustomerId])
+    @@index([subscriptionType])
+    @@index([lastRefreshTimestamp])
+}

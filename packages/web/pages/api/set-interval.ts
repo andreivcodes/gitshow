@@ -1,11 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { queueJob } from "../../lib/sqs";
 import { getServerAuthSession } from "../../server/auth";
-import {
-  PREMIUM_INTERVALS,
-  PREMIUM_PLAN,
-  updateUser,
-} from "@gitshow/gitshow-lib";
+import { PREMIUM_INTERVALS, PREMIUM_PLAN } from "@gitshow/gitshow-lib";
+import { prisma } from "@gitshow/db";
 
 export default async function handler(
   req: NextApiRequest,
@@ -15,7 +12,7 @@ export default async function handler(
 
   const session = await getServerAuthSession({ req, res });
 
-  if (!session?.user || !session.user.email) {
+  if (!session?.user.email) {
     return res.status(401).json({
       error: {
         code: "no-access",
@@ -36,7 +33,11 @@ export default async function handler(
     });
   }
 
-  await updateUser(session.user.email, { refreshInterval: interval });
+  await prisma.user.update({
+    where: { email: session.user.email },
+    data: { refreshInterval: interval },
+  });
+
   await queueJob(session.user.email);
 
   return res.status(200).json({

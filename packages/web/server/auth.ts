@@ -10,16 +10,14 @@ import Github, { GithubProfile } from "next-auth/providers/github";
 import TwitterLegacy, {
   TwitterLegacyProfile,
 } from "next-auth/providers/twitter";
-import { Config } from "sst/node/config";
 import { Table } from "sst/node/table";
 import { stripe } from "../lib/stripeServer";
 import {
   AvailableSubscriptionTypes,
   AvailableThemeNames,
   NONE_PLAN,
-  UserUpdateAttributes,
-  updateUser,
 } from "@gitshow/gitshow-lib";
+import { prisma, UserInput } from "@gitshow/db";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
@@ -34,13 +32,13 @@ declare module "next-auth" {
       twitterAuthenticated: boolean;
       githubAuthenticated: boolean;
 
-      twittername: string;
-      twittertag: string;
-      twitterimage: string;
+      twittername: string | null;
+      twittertag: string | null;
+      twitterimage: string | null;
 
-      githubname: string;
+      githubname: string | null;
 
-      lastSubscriptionTimestamp: number;
+      lastSubscriptionTimestamp: Date;
     } & DefaultSession["user"];
   }
 }
@@ -51,52 +49,51 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
-  secret: Config.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     Github({
-      clientId: Config.GITHUB_CLIENT_ID,
-      clientSecret: Config.GITHUB_CLIENT_SECRET,
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
     TwitterLegacy({
-      clientId: Config.TWITTER_CONSUMER_KEY,
-      clientSecret: Config.TWITTER_CONSUMER_SECRET,
+      clientId: process.env.TWITTER_CONSUMER_KEY!,
+      clientSecret: process.env.TWITTER_CONSUMER_SECRET!,
     }),
   ],
   callbacks: {
     async session({ session }) {
-      if (session.user) {
-        const user = await dynamoDb
-          .get({
-            TableName: Table.User.tableName,
-            Key: { email: session.user.email },
-          })
-          .promise();
+      if (session.user.email) {
+        const user = await prisma.user.findUnique({
+          where: { email: session.user.email },
+        });
 
-        if (user.Item) {
-          session.user.subscription_type = user.Item.subscriptionType;
-          session.user.theme = user.Item.theme;
-          session.user.interval = user.Item.refreshInterval;
-          session.user.githubAuthenticated =
-            user.Item.githubAuthenticated === "true";
+        if (user) {
+          session.user.subscription_type =
+            user.subscriptionType as AvailableSubscriptionTypes;
+          session.user.theme = user.theme as AvailableThemeNames;
+          session.user.interval = user.refreshInterval;
+          session.user.githubAuthenticated = user.githubAuthenticated === true;
           session.user.twitterAuthenticated =
-            user.Item.twitterAuthenticated === "true";
+            user.twitterAuthenticated === true;
           session.user.fullyAuthenticated =
             session.user.githubAuthenticated &&
             session.user.twitterAuthenticated;
-          session.user.twittername = user.Item.twitterUsername;
-          session.user.twittertag = user.Item.twitterTag;
-          session.user.twitterimage = user.Item.twitterPicture;
-          session.user.githubname = user.Item.githubUsername;
+          session.user.twittername = user.twitterUsername;
+          session.user.twittertag = user.twitterTag;
+          session.user.twitterimage = user.twitterPicture;
+          session.user.githubname = user.githubUsername;
           session.user.lastSubscriptionTimestamp =
-            user.Item.lastSubscriptionTimestamp;
+            user.lastSubscriptionTimestamp;
         }
       }
       return session;
     },
     async jwt({ token, account, profile }) {
-      const updateData: UserUpdateAttributes = {};
-
       if (account && profile && profile.email) {
+        let updateData: UserInput = {
+          email: profile?.email,
+        };
+
         switch (account.provider) {
           case "github":
             updateData.githubId = account.providerAccountId;
@@ -105,9 +102,9 @@ export const authOptions: NextAuthOptions = {
 
             updateData.githubToken = AES.encrypt(
               account.access_token ?? "",
-              Config.TOKENS_ENCRYPT
+              process.env.TOKENS_ENCRYPT!
             ).toString();
-            updateData.githubAuthenticated = "true";
+            updateData.githubAuthenticated = true;
             break;
 
           case "twitter":
@@ -122,26 +119,26 @@ export const authOptions: NextAuthOptions = {
 
             updateData.twitterOAuthToken = AES.encrypt(
               (account.oauth_token as string) ?? "",
-              Config.TOKENS_ENCRYPT
+              process.env.TOKENS_ENCRYPT!
             ).toString();
             updateData.twitterOAuthTokenSecret = AES.encrypt(
               (account.oauth_token_secret as string) ?? "",
-              Config.TOKENS_ENCRYPT
+              process.env.TOKENS_ENCRYPT!
             ).toString();
-            updateData.twitterAuthenticated = "true";
+            updateData.twitterAuthenticated = true;
             break;
         }
 
         try {
-          const existingUser = await dynamoDb
-            .get({
-              TableName: Table.User.tableName,
-              Key: { email: profile.email },
-            })
-            .promise();
+          const existingUser = await prisma.user.findUnique({
+            where: { email: profile.email },
+          });
 
-          if (existingUser.Item) {
-            await updateUser(profile.email, updateData);
+          if (existingUser) {
+            await prisma.user.update({
+              where: { email: profile.email },
+              data: updateData,
+            });
           } else {
             const stripeCustomer = await stripe.customers.create({
               email: profile.email,
@@ -152,16 +149,9 @@ export const authOptions: NextAuthOptions = {
             updateData.theme = "classic";
             updateData.refreshInterval = 168;
 
-            await dynamoDb
-              .put({
-                TableName: Table.User.tableName,
-                Item: {
-                  constantKey: "USER",
-                  email: profile.email,
-                  ...updateData,
-                },
-              })
-              .promise();
+            await prisma.user.create({
+              data: updateData,
+            });
           }
         } catch (error) {
           console.error("Failed to retrieve or update user:", error);

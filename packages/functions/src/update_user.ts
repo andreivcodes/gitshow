@@ -2,8 +2,8 @@ import {
   AvailableSubscriptionTypes,
   AvailableThemeNames,
   contribSvg,
-  updateUser,
 } from "@gitshow/gitshow-lib";
+import { prisma } from "@gitshow/db";
 import { SQSEvent } from "aws-lambda";
 import { AES, enc } from "crypto-js";
 import sharp from "sharp";
@@ -55,8 +55,9 @@ export const handler = async (event: SQSEvent) => {
 
     await client.v1.updateAccountProfileBanner(bannerPng);
 
-    await updateUser(email, {
-      lastRefreshTimestamp: new Date().getTime() / 1000,
+    await prisma.user.update({
+      where: { email },
+      data: { lastRefreshTimestamp: new Date() },
     });
 
     console.log(`Updated ${githubUsername}`);

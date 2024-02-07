@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { queueJob } from "../../lib/sqs";
 import { getServerAuthSession } from "../../server/auth";
-import { PREMIUM_PLAN, PREMIUM_THEMES, updateUser } from "@gitshow/gitshow-lib";
+import { PREMIUM_PLAN, PREMIUM_THEMES } from "@gitshow/gitshow-lib";
+import { prisma } from "@gitshow/db";
 
 export default async function handler(
   req: NextApiRequest,
@@ -32,7 +33,11 @@ export default async function handler(
     });
   }
 
-  await updateUser(session.user.email, { theme: theme });
+  await prisma.user.update({
+    where: { email: session.user.email },
+    data: { theme: theme },
+  });
+
   await queueJob(session.user.email);
 
   return res.status(200).json({

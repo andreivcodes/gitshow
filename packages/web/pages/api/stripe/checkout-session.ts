@@ -6,8 +6,8 @@ import { getServerAuthSession } from "../../../server/auth";
 import {
   AvailableSubscriptionTypes,
   AvailableThemeNames,
-  updateUser,
 } from "@gitshow/gitshow-lib";
+import { prisma } from "@gitshow/db";
 import { FREE_PLAN_ID, PREMIUM_PLAN_ID } from "../../../lib/plans";
 
 const dynamoDb = new DynamoDB.DocumentClient();
@@ -36,7 +36,7 @@ export default async function handler(
 
   const session = await getServerAuthSession({ req, res });
 
-  if (!session?.user) {
+  if (!session?.user.email) {
     return res.status(500).json({
       error: {
         code: "no-access",
@@ -45,14 +45,11 @@ export default async function handler(
     });
   }
 
-  const user = await dynamoDb
-    .get({
-      TableName: Table.User.tableName,
-      Key: { email: session.user.email },
-    })
-    .promise();
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
 
-  if (!user.Item)
+  if (!user || !user.stripeCustomerId)
     return res.status(500).json({
       error: {
         code: "stripe-error",
@@ -60,11 +57,14 @@ export default async function handler(
       },
     });
 
-  await updateUser(user.Item.email, { theme: theme });
+  await prisma.user.update({
+    where: { email: user.email },
+    data: { theme: theme },
+  });
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "subscription",
-    customer: user.Item.stripeCustomerId,
+    customer: user.stripeCustomerId!,
     line_items: [
       {
         price: productIds[type],
@@ -75,9 +75,9 @@ export default async function handler(
     cancel_url: process.env.NEXT_PUBLIC_WEBSITE_URL,
     subscription_data: {
       metadata: {
-        userId: user.Item.id,
-        email: user.Item.email,
-        stripeCustomerId: user.Item.stripeCustomerId,
+        userId: user.id,
+        email: user.email,
+        stripeCustomerId: user.stripeCustomerId!,
       },
     },
   });

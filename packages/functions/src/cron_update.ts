@@ -4,33 +4,32 @@ import { Queue } from "sst/node/queue";
 import { Table } from "sst/node/table";
 import { UpdateUserEvent } from "./update_user";
 import { NONE_PLAN } from "@gitshow/gitshow-lib";
+import { prisma } from "@gitshow/db";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 const sqs = new AWS.SQS();
 
 export async function handler() {
-  const timestampThreshold = new Date().getTime() / 1000;
-  const queryResult = await dynamoDb
-    .query({
-      TableName: Table.User.tableName,
-      IndexName: "LastRefreshTimestampIndex",
-      KeyConditionExpression:
-        "constantKey = :constantVal AND lastRefreshTimestamp < :timestamp",
-      ExpressionAttributeValues: {
-        ":constantVal": "USER",
-        ":timestamp": timestampThreshold,
-      },
-      ProjectionExpression:
-        "email, githubUsername, twitterOAuthToken, twitterOAuthTokenSecret, subscriptionType, lastRefreshTimestamp, refreshInterval, theme",
-    })
-    .promise();
+  const timestampThreshold = new Date();
 
-  const users = queryResult.Items || [];
+  const users = await prisma.user.findMany({
+    where: { lastRefreshTimestamp: { lt: timestampThreshold } },
+    select: {
+      email: true,
+      githubUsername: true,
+      twitterOAuthToken: true,
+      twitterOAuthTokenSecret: true,
+      subscriptionType: true,
+      lastRefreshTimestamp: true,
+      refreshInterval: true,
+      theme: true,
+    },
+  });
 
   const usersToRefresh = users.filter(
     (u) =>
-      u.lastRefreshTimestamp <
-        timestampThreshold + u.refreshInterval * 60 * 60 &&
+      u.lastRefreshTimestamp.getTime() <
+        timestampThreshold.getTime() + u.refreshInterval * 60 * 60 * 1000 &&
       u.subscriptionType != NONE_PLAN
   );
 

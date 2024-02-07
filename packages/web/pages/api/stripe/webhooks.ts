@@ -1,6 +1,5 @@
 import { DynamoDB } from "aws-sdk";
-import { Config } from "sst/node/config";
-import { Table } from "sst/node/table";
+
 import Stripe from "stripe";
 import { FREE_PLAN_ID, PREMIUM_PLAN_ID } from "../../../lib/plans";
 import { queueJob } from "../../../lib/sqs";
@@ -12,11 +11,11 @@ import {
   AvailableSubscriptionTypes,
   FREE_PLAN,
   PREMIUM_PLAN,
-  updateUser,
   NONE_PLAN,
   AvailableThemeNames,
   AvailableIntervals,
 } from "@gitshow/gitshow-lib";
+import { prisma } from "@gitshow/db";
 
 interface Plan {
   type: AvailableSubscriptionTypes;
@@ -24,7 +23,7 @@ interface Plan {
   interval: AvailableIntervals;
 }
 
-const webhookSecret: string = Config.STRIPE_WEBHOOK_SECRET;
+const webhookSecret: string = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export const config = {
   api: {
@@ -58,22 +57,13 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const subscription = event.data.object as Stripe.Subscription;
 
-    const users = await dynamoDb
-      .query({
-        TableName: Table.User.tableName,
-        IndexName: "StripeCustomerIndex",
-        KeyConditionExpression: "stripeCustomerId = :stripeCustomerId",
-        ExpressionAttributeValues: {
-          ":stripeCustomerId": subscription.customer.toString(),
-        },
-      })
-      .promise();
+    const user = await prisma.user.findFirst({
+      where: { stripeCustomerId: subscription.customer.toString() },
+    });
 
-    if (users.Count === 0 || !users.Items) {
+    if (!user) {
       throw new Error("[STRIPE] Invalid customer");
     }
-
-    const user = users.Items[0];
 
     switch (event.type) {
       case "customer.subscription.updated":
@@ -97,11 +87,14 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
             `Update user ${user.email} to ${plan.type}} - ${plan.theme} - ${plan.interval}h`
           );
 
-          await updateUser(user.email, {
-            subscriptionType: plan.type,
-            theme: plan.theme,
-            refreshInterval: plan.interval,
-            lastSubscriptionTimestamp: new Date().toISOString(),
+          await prisma.user.update({
+            where: { email: user.email },
+            data: {
+              subscriptionType: plan.type,
+              theme: plan.theme,
+              refreshInterval: plan.interval,
+              lastSubscriptionTimestamp: new Date(),
+            },
           });
         } catch (error) {
           throw new Error(`[STRIPE] Failed to update user ${error}`);
@@ -113,8 +106,10 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       case "customer.subscription.deleted":
         try {
           console.log(`Delete user ${user.email}`);
-          await updateUser(user.email, {
-            subscriptionType: NONE_PLAN,
+
+          await prisma.user.update({
+            where: { email: user.email },
+            data: { subscriptionType: NONE_PLAN },
           });
         } catch (error) {
           throw new Error(`[STRIPE] Failed to delete user ${error}`);

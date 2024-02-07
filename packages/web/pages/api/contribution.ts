@@ -1,6 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerAuthSession } from "../../server/auth";
-import { AvailableSubscriptionTypes, AvailableThemeNames, contribSvg } from "@gitshow/gitshow-lib";
+import {
+  AvailableSubscriptionTypes,
+  AvailableThemeNames,
+  contribSvg,
+} from "@gitshow/gitshow-lib";
 
 export interface ContributionRequest {
   githubUsername: string;
