@@ -1,7 +1,6 @@
 import AWS from "aws-sdk";
 import { DynamoDB } from "aws-sdk";
 import { Queue } from "sst/node/queue";
-import { Table } from "sst/node/table";
 import { UpdateUserEvent } from "./update_user";
 import { NONE_PLAN } from "@gitshow/gitshow-lib";
 import { prisma } from "@gitshow/db";

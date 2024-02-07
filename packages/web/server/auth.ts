@@ -10,7 +10,6 @@ import Github, { GithubProfile } from "next-auth/providers/github";
 import TwitterLegacy, {
   TwitterLegacyProfile,
 } from "next-auth/providers/twitter";
-import { Table } from "sst/node/table";
 import { stripe } from "../lib/stripeServer";
 import {
   AvailableSubscriptionTypes,

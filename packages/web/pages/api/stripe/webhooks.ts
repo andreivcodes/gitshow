@@ -1,5 +1,4 @@
 import { DynamoDB } from "aws-sdk";
-
 import Stripe from "stripe";
 import { FREE_PLAN_ID, PREMIUM_PLAN_ID } from "../../../lib/plans";
 import { queueJob } from "../../../lib/sqs";

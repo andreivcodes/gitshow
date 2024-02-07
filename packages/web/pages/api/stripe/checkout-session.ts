@@ -1,6 +1,5 @@
 import { DynamoDB } from "aws-sdk";
 import { NextApiRequest, NextApiResponse } from "next";
-import { Table } from "sst/node/table";
 import { stripe } from "../../../lib/stripeServer";
 import { getServerAuthSession } from "../../../server/auth";
 import {

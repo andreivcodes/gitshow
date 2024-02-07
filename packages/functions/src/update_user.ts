@@ -7,7 +7,6 @@ import { prisma } from "@gitshow/db";
 import { SQSEvent } from "aws-lambda";
 import { AES, enc } from "crypto-js";
 import sharp from "sharp";
-import { Config } from "sst/node/config";
 import { TwitterApi } from "twitter-api-v2";
 
 export interface UpdateUserEvent {
@@ -35,15 +34,15 @@ export const handler = async (event: SQSEvent) => {
     } = JSON.parse(record.body) as UpdateUserEvent;
 
     const client = new TwitterApi({
-      appKey: Config.TWITTER_CONSUMER_KEY,
-      appSecret: Config.TWITTER_CONSUMER_SECRET,
+      appKey: process.env.TWITTER_CONSUMER_KEY!,
+      appSecret: process.env.TWITTER_CONSUMER_SECRET!,
       accessToken: AES.decrypt(
         twitterOAuthToken,
-        Config.TOKENS_ENCRYPT
+        process.env.TOKENS_ENCRYPT!
       ).toString(enc.Utf8),
       accessSecret: AES.decrypt(
         twitterOAuthTokenSecret,
-        Config.TOKENS_ENCRYPT
+        process.env.TOKENS_ENCRYPT!
       ).toString(enc.Utf8),
     });
 
