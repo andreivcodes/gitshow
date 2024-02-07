@@ -2,7 +2,7 @@ import {
   AvailableSubscriptionTypes,
   AvailableThemeNames,
   contribSvg,
-} from "@gitshow/gitshow-lib";
+} from "../../../libs/gitshow-lib/src";
 import { prisma } from "@gitshow/db";
 import { SQSEvent } from "aws-lambda";
 import { AES, enc } from "crypto-js";

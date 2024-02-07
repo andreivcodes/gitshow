@@ -3,6 +3,10 @@
   "compilerOptions": {
     "module": "esnext",
     "moduleResolution": "node",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@gitshow/db": ["../../libs/db/index.ts"],
+      "@gitshow/gitshow-lib": ["../../libs/gitshow-lib/src/index.ts"]
+    }
   }
 }

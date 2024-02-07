@@ -5,6 +5,7 @@ export function stack({ stack }: StackContext) {
   stack.setDefaultFunctionProps({
     logRetention: "one_day",
     tracing: "disabled",
+    memorySize: "1 GB",
     architecture: "arm_64",
   });
 
