@@ -1,5 +1,5 @@
 import {
-  AvailableSubscriptionTypes,
+  AvailablePlanTypes,
   AvailableThemeNames,
   contribSvg,
 } from "../../../libs/gitshow-lib/src";
@@ -14,7 +14,7 @@ export interface UpdateUserEvent {
   githubUsername: string;
   twitterOAuthToken: string;
   twitterOAuthTokenSecret: string;
-  type: AvailableSubscriptionTypes;
+  type: AvailablePlanTypes;
   theme: AvailableThemeNames;
 }
 

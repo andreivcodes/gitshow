@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -19,8 +18,7 @@
       }
     ],
     "paths": {
-      "@gitshow/db": ["../../libs/db/index.ts"],
-      "@gitshow/gitshow-lib": ["../../libs/gitshow-lib/src/index.ts"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

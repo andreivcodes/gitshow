@@ -1,16 +1,16 @@
 import { contribData } from "./contribution_data";
 import {
-  type AvailableSubscriptionTypes,
   type AvailableThemeNames,
   type Theme,
   themes,
   FREE_PLAN,
-} from "./themes";
+  type AvailablePlanTypes,
+} from "./const";
 
 export async function contribSvg(
   username: string,
   theme: AvailableThemeNames,
-  type: AvailableSubscriptionTypes
+  type: AvailablePlanTypes
 ): Promise<string> {
   const contributionData = await contribData(username);
 
