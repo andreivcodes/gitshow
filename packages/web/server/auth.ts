@@ -16,9 +16,7 @@ import {
   AvailableThemeNames,
   NONE_PLAN,
 } from "@gitshow/gitshow-lib";
-import { prisma, UserInput } from "@gitshow/db";
-
-const dynamoDb = new DynamoDB.DocumentClient();
+import { db, userTable, eq, takeUniqueOrThrow } from "@gitshow/db";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -62,34 +60,35 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session }) {
       if (session.user.email) {
-        const user = await prisma.user.findUnique({
-          where: { email: session.user.email },
-        });
+        const u = await db
+          .select()
+          .from(userTable)
+          .where(eq(userTable.email, session.user.email))
+          .then(takeUniqueOrThrow);
 
-        if (user) {
+        if (u) {
           session.user.subscription_type =
-            user.subscriptionType as AvailableSubscriptionTypes;
-          session.user.theme = user.theme as AvailableThemeNames;
-          session.user.interval = user.refreshInterval;
-          session.user.githubAuthenticated = user.githubAuthenticated === true;
-          session.user.twitterAuthenticated =
-            user.twitterAuthenticated === true;
+            u.subscriptionType as AvailableSubscriptionTypes;
+          session.user.theme = u.theme as AvailableThemeNames;
+          session.user.interval = u.refreshInterval;
+          session.user.githubAuthenticated = u.githubAuthenticated === true;
+          session.user.twitterAuthenticated = u.twitterAuthenticated === true;
           session.user.fullyAuthenticated =
             session.user.githubAuthenticated &&
             session.user.twitterAuthenticated;
-          session.user.twittername = user.twitterUsername;
-          session.user.twittertag = user.twitterTag;
-          session.user.twitterimage = user.twitterPicture;
-          session.user.githubname = user.githubUsername;
-          session.user.lastSubscriptionTimestamp =
-            user.lastSubscriptionTimestamp;
+          session.user.twittername = u.twitterUsername;
+          session.user.twittertag = u.twitterTag;
+          session.user.twitterimage = u.twitterPicture;
+          session.user.githubname = u.githubUsername;
+          session.user.lastSubscriptionTimestamp = u.lastSubscriptionTimestamp;
         }
       }
       return session;
     },
     async jwt({ token, account, profile }) {
       if (account && profile && profile.email) {
-        let updateData: UserInput = {
+        type NewUser = typeof userTable.$inferInsert;
+        let updateData: NewUser = {
           email: profile?.email,
         };
 
@@ -129,15 +128,17 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const existingUser = await prisma.user.findUnique({
-            where: { email: profile.email },
-          });
+          const existingUser = await db
+            .select()
+            .from(userTable)
+            .where(eq(userTable.email, profile.email))
+            .then(takeUniqueOrThrow);
 
           if (existingUser) {
-            await prisma.user.update({
-              where: { email: profile.email },
-              data: updateData,
-            });
+            await db
+              .update(userTable)
+              .set(updateData)
+              .where(eq(userTable.email, profile.email));
           } else {
             const stripeCustomer = await stripe.customers.create({
               email: profile.email,
@@ -148,9 +149,7 @@ export const authOptions: NextAuthOptions = {
             updateData.theme = "classic";
             updateData.refreshInterval = 168;
 
-            await prisma.user.create({
-              data: updateData,
-            });
+            await db.insert(userTable).values(updateData);
           }
         } catch (error) {
           console.error("Failed to retrieve or update user:", error);

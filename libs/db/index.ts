@@ -1,13 +1,17 @@
-import { PrismaClient, Prisma } from "@prisma/client";
-import { PrismaLibSQL } from "@prisma/adapter-libsql";
+import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
 
-const libsql = createClient({
-  url: `${process.env.TURSO_DATABASE_URL}`,
-  authToken: `${process.env.TURSO_AUTH_TOKEN}`,
+const client = createClient({
+  url: process.env.TURSO_DATABASE_URL!,
+  authToken: process.env.TURSO_AUTH_TOKEN!,
 });
 
-const adapter = new PrismaLibSQL(libsql);
-export const prisma = new PrismaClient({ adapter });
+export const takeUniqueOrThrow = <T extends any[]>(values: T): T[number] => {
+  if (values.length !== 1)
+    throw new Error("Found non unique or inexistent value");
+  return values[0]!;
+};
 
-export type UserInput = Prisma.UserCreateInput;
+export const db = drizzle(client);
+export * from "./schema";
+export { eq, lt } from "drizzle-orm";

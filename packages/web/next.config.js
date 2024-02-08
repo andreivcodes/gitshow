@@ -15,6 +15,15 @@ const nextConfig = {
     config.devtool = "source-map";
     return config;
   },
+  experimental: {
+    serverComponentsExternalPackages: [
+      "libsql",
+      "@libsql/client",
+      "@libsql/linux-arm64-gnu",
+      "@libsql/linux-arm64-musl",
+    ],
+    esmExternals: false,
+  },
 };
 
 module.exports = nextConfig;

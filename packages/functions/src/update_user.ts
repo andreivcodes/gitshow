@@ -3,7 +3,7 @@ import {
   AvailableThemeNames,
   contribSvg,
 } from "../../../libs/gitshow-lib/src";
-import { prisma } from "@gitshow/db";
+import { db, userTable, eq } from "@gitshow/db";
 import { SQSEvent } from "aws-lambda";
 import { AES, enc } from "crypto-js";
 import sharp from "sharp";
@@ -54,10 +54,10 @@ export const handler = async (event: SQSEvent) => {
 
     await client.v1.updateAccountProfileBanner(bannerPng);
 
-    await prisma.user.update({
-      where: { email },
-      data: { lastRefreshTimestamp: new Date() },
-    });
+    await db
+      .update(userTable)
+      .set({ lastRefreshTimestamp: new Date() })
+      .where(eq(userTable.email, email));
 
     console.log(`Updated ${githubUsername}`);
     result.push({ message: `Updated ${githubUsername}` });

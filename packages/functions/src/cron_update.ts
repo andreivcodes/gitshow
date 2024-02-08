@@ -1,29 +1,27 @@
 import AWS from "aws-sdk";
-import { DynamoDB } from "aws-sdk";
 import { Queue } from "sst/node/queue";
 import { UpdateUserEvent } from "./update_user";
 import { NONE_PLAN } from "../../../libs/gitshow-lib/src";
-import { prisma } from "@gitshow/db";
+import { db, userTable, lt } from "@gitshow/db";
 
-const dynamoDb = new DynamoDB.DocumentClient();
 const sqs = new AWS.SQS();
 
 export async function handler() {
   const timestampThreshold = new Date();
 
-  const users = await prisma.user.findMany({
-    where: { lastRefreshTimestamp: { lt: timestampThreshold } },
-    select: {
-      email: true,
-      githubUsername: true,
-      twitterOAuthToken: true,
-      twitterOAuthTokenSecret: true,
-      subscriptionType: true,
-      lastRefreshTimestamp: true,
-      refreshInterval: true,
-      theme: true,
-    },
-  });
+  const users = await db
+    .select({
+      email: userTable.email,
+      githubUsername: userTable.githubUsername,
+      twitterOAuthToken: userTable.twitterOAuthToken,
+      twitterOAuthTokenSecret: userTable.twitterOAuthTokenSecret,
+      subscriptionType: userTable.subscriptionType,
+      lastRefreshTimestamp: userTable.lastRefreshTimestamp,
+      refreshInterval: userTable.refreshInterval,
+      theme: userTable.theme,
+    })
+    .from(userTable)
+    .where(lt(userTable.lastRefreshTimestamp, timestampThreshold));
 
   const usersToRefresh = users.filter(
     (u) =>

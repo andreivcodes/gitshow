@@ -18,6 +18,16 @@ export function stack({ stack }: StackContext) {
       function: {
         handler: "packages/functions/src/update_user.handler",
         runtime: "nodejs18.x",
+        nodejs: {
+          esbuild: {
+            external: [
+              "libsql",
+              "@libsql/client",
+              "@libsql/linux-arm64-gnu",
+              "@libsql/linux-arm64-musl",
+            ],
+          },
+        },
         environment: {
           TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN ?? "",
           TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL ?? "",

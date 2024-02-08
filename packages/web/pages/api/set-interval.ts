@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { queueJob } from "../../lib/sqs";
 import { getServerAuthSession } from "../../server/auth";
 import { PREMIUM_INTERVALS, PREMIUM_PLAN } from "@gitshow/gitshow-lib";
-import { prisma } from "@gitshow/db";
+import { db, eq, userTable } from "@gitshow/db";
 
 export default async function handler(
   req: NextApiRequest,
@@ -33,10 +33,10 @@ export default async function handler(
     });
   }
 
-  await prisma.user.update({
-    where: { email: session.user.email },
-    data: { refreshInterval: interval },
-  });
+  await db
+    .update(userTable)
+    .set({ refreshInterval: interval })
+    .where(eq(userTable.email, session.user.email));
 
   await queueJob(session.user.email);
 

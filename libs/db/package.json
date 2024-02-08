@@ -3,12 +3,16 @@
   "version": "0.0.0",
   "main": "./src/index.ts",
   "private": true,
-  "devDependencies": {
-    "prisma": "^5.9.1"
+  "scripts": {
+    "db:push": "drizzle-kit push:sqlite",
+    "schema:gen": "drizzle-kit generate:sqlite --out migrations --schema schema.ts"
   },
   "dependencies": {
-    "@libsql/client": "^0.4.3",
-    "@prisma/adapter-libsql": "^5.9.1",
-    "@prisma/client": "5.9.1"
+    "@libsql/client": "0.3.2",
+    "drizzle-orm": "^0.29.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.20.14",
+    "ts-node": "^10.9.2"
   }
 }

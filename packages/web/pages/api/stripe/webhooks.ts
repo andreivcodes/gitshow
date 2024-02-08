@@ -14,7 +14,7 @@ import {
   AvailableThemeNames,
   AvailableIntervals,
 } from "@gitshow/gitshow-lib";
-import { prisma } from "@gitshow/db";
+import { db, userTable, eq, takeUniqueOrThrow } from "@gitshow/db";
 
 interface Plan {
   type: AvailableSubscriptionTypes;
@@ -56,11 +56,13 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const subscription = event.data.object as Stripe.Subscription;
 
-    const user = await prisma.user.findFirst({
-      where: { stripeCustomerId: subscription.customer.toString() },
-    });
+    const u = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.email, subscription.customer.toString()))
+      .then(takeUniqueOrThrow);
 
-    if (!user) {
+    if (!u) {
       throw new Error("[STRIPE] Invalid customer");
     }
 
@@ -83,18 +85,18 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         try {
           console.log(
-            `Update user ${user.email} to ${plan.type}} - ${plan.theme} - ${plan.interval}h`
+            `Update user ${u.email} to ${plan.type}} - ${plan.theme} - ${plan.interval}h`
           );
 
-          await prisma.user.update({
-            where: { email: user.email },
-            data: {
+          await db
+            .update(userTable)
+            .set({
               subscriptionType: plan.type,
               theme: plan.theme,
               refreshInterval: plan.interval,
               lastSubscriptionTimestamp: new Date(),
-            },
-          });
+            })
+            .where(eq(userTable.email, u.email));
         } catch (error) {
           throw new Error(`[STRIPE] Failed to update user ${error}`);
         }
@@ -104,12 +106,14 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       case "customer.subscription.deleted":
         try {
-          console.log(`Delete user ${user.email}`);
+          console.log(`Delete user ${u.email}`);
 
-          await prisma.user.update({
-            where: { email: user.email },
-            data: { subscriptionType: NONE_PLAN },
-          });
+          await db
+            .update(userTable)
+            .set({
+              subscriptionType: NONE_PLAN,
+            })
+            .where(eq(userTable.email, u.email));
         } catch (error) {
           throw new Error(`[STRIPE] Failed to delete user ${error}`);
         }
@@ -120,7 +124,7 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         console.log(`🤷‍♀️ Unhandled event type: ${event.type}`);
         break;
     }
-    await queueJob(user.email);
+    await queueJob(u.email);
     res.json({ received: true });
 
     // Successfully constructed event.

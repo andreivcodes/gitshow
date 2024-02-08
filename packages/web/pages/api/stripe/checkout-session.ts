@@ -6,8 +6,8 @@ import {
   AvailableSubscriptionTypes,
   AvailableThemeNames,
 } from "@gitshow/gitshow-lib";
-import { prisma } from "@gitshow/db";
 import { FREE_PLAN_ID, PREMIUM_PLAN_ID } from "../../../lib/plans";
+import { db, userTable, eq, takeUniqueOrThrow } from "@gitshow/db";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
@@ -44,11 +44,13 @@ export default async function handler(
     });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  });
+  const u = await db
+    .select()
+    .from(userTable)
+    .where(eq(userTable.email, session.user.email))
+    .then(takeUniqueOrThrow);
 
-  if (!user || !user.stripeCustomerId)
+  if (!u || !u.stripeCustomerId)
     return res.status(500).json({
       error: {
         code: "stripe-error",
@@ -56,14 +58,14 @@ export default async function handler(
       },
     });
 
-  await prisma.user.update({
-    where: { email: user.email },
-    data: { theme: theme },
-  });
+  await db
+    .update(userTable)
+    .set({ theme: theme })
+    .where(eq(userTable.email, u.email));
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "subscription",
-    customer: user.stripeCustomerId!,
+    customer: u.stripeCustomerId!,
     line_items: [
       {
         price: productIds[type],
@@ -74,9 +76,9 @@ export default async function handler(
     cancel_url: process.env.NEXT_PUBLIC_WEBSITE_URL,
     subscription_data: {
       metadata: {
-        userId: user.id,
-        email: user.email,
-        stripeCustomerId: user.stripeCustomerId!,
+        userId: u.id,
+        email: u.email,
+        stripeCustomerId: u.stripeCustomerId!,
       },
     },
   });
