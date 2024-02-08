@@ -130,6 +130,7 @@ const CheckoutButton = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: subscription.subscriptionType,
+          theme: subscription.theme,
         }),
       });
       const { session } = await response.json();

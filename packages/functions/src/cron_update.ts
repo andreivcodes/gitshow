@@ -25,7 +25,7 @@ export async function handler() {
 
   const usersToRefresh = users.filter(
     (u) =>
-      u.lastRefreshTimestamp.getTime() <
+      u.lastRefreshTimestamp!.getTime() <
         timestampThreshold.getTime() + u.refreshInterval * 60 * 60 * 1000 &&
       u.subscriptionType != NONE_PLAN
   );

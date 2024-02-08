@@ -1,4 +1,3 @@
-import { DynamoDB } from "aws-sdk";
 import { AES } from "crypto-js";
 import { type GetServerSidePropsContext } from "next";
 import {
@@ -14,9 +13,9 @@ import { stripe } from "../lib/stripeServer";
 import {
   AvailableSubscriptionTypes,
   AvailableThemeNames,
-  NONE_PLAN,
+  FREE_PLAN,
 } from "@gitshow/gitshow-lib";
-import { db, userTable, eq, takeUniqueOrThrow } from "@gitshow/db";
+import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -35,7 +34,7 @@ declare module "next-auth" {
 
       githubname: string | null;
 
-      lastSubscriptionTimestamp: Date;
+      lastSubscriptionTimestamp: Date | null;
     } & DefaultSession["user"];
   }
 }
@@ -64,7 +63,7 @@ export const authOptions: NextAuthOptions = {
           .select()
           .from(userTable)
           .where(eq(userTable.email, session.user.email))
-          .then(takeUniqueOrThrow);
+          .then(takeUniqueOrNull);
 
         if (u) {
           session.user.subscription_type =
@@ -132,7 +131,7 @@ export const authOptions: NextAuthOptions = {
             .select()
             .from(userTable)
             .where(eq(userTable.email, profile.email))
-            .then(takeUniqueOrThrow);
+            .then(takeUniqueOrNull);
 
           if (existingUser) {
             await db
@@ -145,7 +144,7 @@ export const authOptions: NextAuthOptions = {
             });
 
             updateData.stripeCustomerId = stripeCustomer.id;
-            updateData.subscriptionType = NONE_PLAN;
+            updateData.subscriptionType = FREE_PLAN;
             updateData.theme = "classic";
             updateData.refreshInterval = 168;
 

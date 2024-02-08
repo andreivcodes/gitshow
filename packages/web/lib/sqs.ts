@@ -4,7 +4,7 @@ import {
 } from "@gitshow/gitshow-lib";
 import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
-import { db, userTable, eq, takeUniqueOrThrow } from "@gitshow/db";
+import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
 
 const sqs = new AWS.SQS();
 
@@ -21,7 +21,7 @@ export const queueJob = async (email: string) => {
     .select()
     .from(userTable)
     .where(eq(userTable.email, email))
-    .then(takeUniqueOrThrow);
+    .then(takeUniqueOrNull);
 
   if (!u) {
     throw new Error("Invalid user");

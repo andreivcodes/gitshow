@@ -1,14 +1,16 @@
 import { drizzle } from "drizzle-orm/libsql";
 import { createClient } from "@libsql/client";
+import { config } from "dotenv";
+
+config();
 
 const client = createClient({
   url: process.env.TURSO_DATABASE_URL!,
   authToken: process.env.TURSO_AUTH_TOKEN!,
 });
 
-export const takeUniqueOrThrow = <T extends any[]>(values: T): T[number] => {
-  if (values.length !== 1)
-    throw new Error("Found non unique or inexistent value");
+export const takeUniqueOrNull = <T extends any[]>(values: T): T[number] => {
+  if (values.length !== 1) return null;
   return values[0]!;
 };
 

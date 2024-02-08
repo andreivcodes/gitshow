@@ -14,7 +14,7 @@ import {
   AvailableThemeNames,
   AvailableIntervals,
 } from "@gitshow/gitshow-lib";
-import { db, userTable, eq, takeUniqueOrThrow } from "@gitshow/db";
+import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
 
 interface Plan {
   type: AvailableSubscriptionTypes;
@@ -60,7 +60,7 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       .select()
       .from(userTable)
       .where(eq(userTable.email, subscription.customer.toString()))
-      .then(takeUniqueOrThrow);
+      .then(takeUniqueOrNull);
 
     if (!u) {
       throw new Error("[STRIPE] Invalid customer");

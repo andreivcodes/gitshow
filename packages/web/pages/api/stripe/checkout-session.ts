@@ -7,7 +7,7 @@ import {
   AvailableThemeNames,
 } from "@gitshow/gitshow-lib";
 import { FREE_PLAN_ID, PREMIUM_PLAN_ID } from "../../../lib/plans";
-import { db, userTable, eq, takeUniqueOrThrow } from "@gitshow/db";
+import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
 
 const dynamoDb = new DynamoDB.DocumentClient();
 
@@ -48,7 +48,7 @@ export default async function handler(
     .select()
     .from(userTable)
     .where(eq(userTable.email, session.user.email))
-    .then(takeUniqueOrThrow);
+    .then(takeUniqueOrNull);
 
   if (!u || !u.stripeCustomerId)
     return res.status(500).json({

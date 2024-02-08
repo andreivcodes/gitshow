@@ -42,18 +42,13 @@ export const userTable = sqliteTable(
       .notNull(),
     lastRefreshTimestamp: integer("lastRefreshTimestamp", {
       mode: "timestamp",
-    })
-      .default(new Date(0))
-      .notNull(),
-
+    }),
     subscriptionType: text("subscriptionType", {
       enum: ["free", "premium", "none"],
     }),
     lastSubscriptionTimestamp: integer("lastSubscriptionTimestamp", {
       mode: "timestamp",
-    })
-      .default(new Date(0))
-      .notNull(),
+    }),
   },
   (user) => ({
     stripeCustomerIdx: uniqueIndex("stripeCustomerId_idx").on(
