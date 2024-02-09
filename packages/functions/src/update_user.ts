@@ -1,5 +1,5 @@
 import {
-  AvailablePlanTypes,
+  SubscriptionPlan,
   AvailableThemeNames,
   contribSvg,
 } from "@gitshow/gitshow-lib";
@@ -15,7 +15,7 @@ export interface UpdateUserEvent {
   githubUsername: string;
   twitterOAuthToken: string;
   twitterOAuthTokenSecret: string;
-  type: AvailablePlanTypes;
+  plan: SubscriptionPlan;
   theme: AvailableThemeNames;
 }
 
@@ -31,7 +31,7 @@ export const handler = async (event: SQSEvent) => {
       githubUsername,
       twitterOAuthToken,
       twitterOAuthTokenSecret,
-      type,
+      plan,
       theme,
     } = JSON.parse(record.body) as UpdateUserEvent;
 
@@ -48,7 +48,7 @@ export const handler = async (event: SQSEvent) => {
       ).toString(enc.Utf8),
     });
 
-    const bannerSvg = await contribSvg(githubUsername, theme, type);
+    const bannerSvg = await contribSvg(githubUsername, theme, plan);
 
     const bannerPng = await sharp(Buffer.from(bannerSvg), { density: 500 })
       .png()
@@ -58,7 +58,7 @@ export const handler = async (event: SQSEvent) => {
 
     await db
       .update(userTable)
-      .set({ lastRefreshTimestamp: new Date() })
+      .set({ lastUpdateTimestamp: new Date() })
       .where(eq(userTable.email, email));
 
     console.log(`Updated ${githubUsername}`);

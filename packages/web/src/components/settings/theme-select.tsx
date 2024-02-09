@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  AvailablePlanTypes,
-  AvailableThemeNames,
-  Intervals,
-  UpdateIntervalsType,
-  PREMIUM_PLAN,
-} from "@gitshow/gitshow-lib";
+import { AvailableThemeNames, SubscriptionPlan } from "@gitshow/gitshow-lib";
 import {
   Select,
   SelectContent,
@@ -22,7 +16,7 @@ export default function ThemeSelect({
   theme,
   setUserTheme,
 }: {
-  subscription_type?: AvailablePlanTypes;
+  subscription_type?: SubscriptionPlan;
   theme?: AvailableThemeNames;
   setUserTheme: (theme: AvailableThemeNames) => void;
 }) {
@@ -42,7 +36,7 @@ export default function ThemeSelect({
         <SelectValue placeholder="Select a theme" />
       </SelectTrigger>
       <SelectContent>
-        {subscription_type != PREMIUM_PLAN ? (
+        {subscription_type != SubscriptionPlan.Premium ? (
           <SelectGroup>
             <SelectItem value="normal">
               <p>Normal</p>

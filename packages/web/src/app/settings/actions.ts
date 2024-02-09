@@ -5,15 +5,15 @@ import { queueJob } from "@/lib/sqs";
 import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
 import {
   AvailableThemeNames,
-  UpdateIntervalsType,
+  PREMIUM_INTERVALS,
   PREMIUM_THEMES,
-  Plans,
-  PremiumIntervals,
+  SubscriptionPlan,
+  UpdateInterval,
 } from "@gitshow/gitshow-lib";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
-export async function setUpdateInterval(interval: UpdateIntervalsType) {
+export async function setUpdateInterval(interval: UpdateInterval) {
   const session = await getServerSession(authOptions);
 
   if (
@@ -31,8 +31,8 @@ export async function setUpdateInterval(interval: UpdateIntervalsType) {
     .then(takeUniqueOrNull);
 
   if (
-    PremiumIntervals.includes(interval) &&
-    user.subscriptionType != Plans.PREMIUM_PLAN
+    PREMIUM_INTERVALS.includes(interval) &&
+    user.subscriptionPlan != SubscriptionPlan.Premium
   )
     redirect("/subscribe");
 
@@ -65,7 +65,7 @@ export async function setUserTheme(theme: AvailableThemeNames) {
 
   if (
     PREMIUM_THEMES.includes(theme) &&
-    user.subscriptionType != Plans.PREMIUM_PLAN
+    user.subscriptionPlan != SubscriptionPlan.Premium
   )
     redirect("/subscribe");
 
@@ -89,12 +89,6 @@ export async function setAutomaticallyUpdate(update: boolean) {
     (session.user && session.user.twitterAuthenticated === false)
   )
     redirect("/signin");
-
-  const user = await db
-    .select()
-    .from(userTable)
-    .where(eq(userTable.email, session.user.email!))
-    .then(takeUniqueOrNull);
 
   await db
     .update(userTable)

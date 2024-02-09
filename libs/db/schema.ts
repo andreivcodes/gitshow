@@ -1,3 +1,4 @@
+import { SubscriptionPlan } from "@gitshow/gitshow-lib";
 import {
   text,
   integer,
@@ -26,8 +27,8 @@ export const userTable = sqliteTable(
     theme: text("theme", {
       enum: ["normal", "classic", "githubDark", "dracula", "bnw", "spooky"],
     }),
-    subscriptionType: text("subscriptionType", {
-      enum: ["free", "premium", "none"],
+    subscriptionPlan: text("subscriptionPlan", {
+      enum: [SubscriptionPlan.Free, SubscriptionPlan.Premium],
     }),
     lastSubscriptionTimestamp: integer("lastSubscriptionTimestamp", {
       mode: "timestamp",
@@ -57,8 +58,8 @@ export const userTable = sqliteTable(
     stripeCustomerIdx: uniqueIndex("stripeCustomerId_idx").on(
       user.stripeCustomerId
     ),
-    subscriptionTypeIdx: index("subscriptionType_idx").on(
-      user.subscriptionType
+    subscriptionTypeIdx: index("subscriptionPlan_idx").on(
+      user.subscriptionPlan
     ),
     lastRefreshTimestampIdx: index("lastRefreshTimestamp_idx").on(
       user.lastSubscriptionTimestamp

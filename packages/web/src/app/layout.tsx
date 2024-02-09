@@ -7,7 +7,7 @@ import { Header } from "@/components/header";
 import Feedback from "@/components/feedback";
 import { Footer } from "@/components/footer";
 import Contributions from "@/components/contributions";
-import { Plans, contribSvg } from "@gitshow/gitshow-lib";
+import { SubscriptionPlan, contribSvg } from "@gitshow/gitshow-lib";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
@@ -28,7 +28,7 @@ export default async function RootLayout({
   const svg = await contribSvg(
     session?.user.githubname ?? "torvalds",
     session?.user.theme ?? "classic",
-    session?.user.subscription_type ?? Plans.NONE_PLAN
+    session?.user.subscription_type ?? SubscriptionPlan.Free
   );
 
   return (

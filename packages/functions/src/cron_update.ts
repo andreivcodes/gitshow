@@ -3,7 +3,6 @@ import { Queue } from "sst/node/queue";
 import { UpdateUserEvent } from "./update_user";
 import { db, userTable, lt } from "@gitshow/db";
 import { config } from "dotenv";
-import { NONE_PLAN } from "@gitshow/gitshow-lib";
 
 const sqs = new AWS.SQS();
 
@@ -18,19 +17,18 @@ export async function handler() {
       githubUsername: userTable.githubUsername,
       twitterOAuthToken: userTable.twitterOAuthToken,
       twitterOAuthTokenSecret: userTable.twitterOAuthTokenSecret,
-      subscriptionType: userTable.subscriptionType,
-      lastRefreshTimestamp: userTable.lastRefreshTimestamp,
-      refreshInterval: userTable.refreshInterval,
+      subscriptionPlan: userTable.subscriptionPlan,
+      lastUpdateTimestamp: userTable.lastUpdateTimestamp,
+      updateInterval: userTable.updateInterval,
       theme: userTable.theme,
     })
     .from(userTable)
-    .where(lt(userTable.lastRefreshTimestamp, timestampThreshold));
+    .where(lt(userTable.lastUpdateTimestamp, timestampThreshold));
 
   const usersToRefresh = users.filter(
     (u) =>
-      u.lastRefreshTimestamp!.getTime() <
-        timestampThreshold.getTime() + u.refreshInterval * 60 * 60 * 1000 &&
-      u.subscriptionType != NONE_PLAN
+      u.lastUpdateTimestamp!.getTime() <
+      timestampThreshold.getTime() + u.updateInterval * 60 * 60 * 1000
   );
 
   console.log(`Updating ${usersToRefresh.length} users.`);
@@ -44,14 +42,14 @@ export async function handler() {
           githubUsername: user.githubUsername,
           twitterOAuthToken: user.twitterOAuthToken,
           twitterOAuthTokenSecret: user.twitterOAuthTokenSecret,
-          type: user.subscriptionType,
+          plan: user.subscriptionPlan,
           theme: user.theme,
         } as UpdateUserEvent),
       })
       .promise();
 
     console.log(
-      `Update queued for ${user.githubUsername} - ${user.subscriptionType} ${user.theme} ${user.refreshInterval}h!`
+      `Update queued for ${user.githubUsername} - ${user.subscriptionPlan} ${user.theme} ${user.updateInterval}h!`
     );
   }
 }

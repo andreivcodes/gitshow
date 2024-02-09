@@ -1,4 +1,4 @@
-import { AvailablePlanTypes, AvailableThemeNames } from "@gitshow/gitshow-lib";
+import { SubscriptionPlan, AvailableThemeNames } from "@gitshow/gitshow-lib";
 import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
 import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
@@ -9,7 +9,7 @@ export interface UpdateHeaderEvent {
   githubUsername: string;
   twitterOAuthToken: string;
   twitterOAuthTokenSecret: string;
-  type: AvailablePlanTypes;
+  type: SubscriptionPlan;
   theme: AvailableThemeNames;
 }
 
@@ -32,7 +32,7 @@ export const queueJob = async (email: string) => {
         githubUsername: u.githubUsername,
         twitterOAuthToken: u.twitterOAuthToken,
         twitterOAuthTokenSecret: u.twitterOAuthTokenSecret,
-        type: u.subscriptionType,
+        type: u.subscriptionPlan,
         theme: u.theme,
       } as UpdateHeaderEvent),
     })

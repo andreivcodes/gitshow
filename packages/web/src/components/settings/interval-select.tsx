@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  AvailablePlanTypes,
-  AvailableThemeNames,
-  Intervals,
-  UpdateIntervalsType,
-  PREMIUM_PLAN,
-} from "@gitshow/gitshow-lib";
+import { SubscriptionPlan, UpdateInterval } from "@gitshow/gitshow-lib";
 import {
   Select,
   SelectContent,
@@ -22,31 +16,34 @@ export default function IntervalSelect({
   interval,
   setUpdateInterval,
 }: {
-  subscription_type?: AvailablePlanTypes;
-  interval?: UpdateIntervalsType;
-  setUpdateInterval: (interval: UpdateIntervalsType) => void;
+  subscription_type?: SubscriptionPlan;
+  interval?: UpdateInterval;
+  setUpdateInterval: (interval: UpdateInterval) => void;
 }) {
   const { toast } = useToast();
 
   return (
     <Select
       onValueChange={(e) => {
-        setUpdateInterval(parseInt(e) as UpdateIntervalsType);
+        setUpdateInterval(parseInt(e) as UpdateInterval);
         toast({
           description: "⏱️ Your interval has been changed",
         });
       }}
       defaultValue={
-        interval ? interval.toString() : Intervals.EVERY_MONTH.toString()
+        interval ? interval.toString() : UpdateInterval.EVERY_MONTH.toString()
       }
     >
       <SelectTrigger>
         <SelectValue placeholder="Select an update interval" />
       </SelectTrigger>
       <SelectContent>
-        {subscription_type != PREMIUM_PLAN ? (
+        {subscription_type != SubscriptionPlan.Premium ? (
           <SelectGroup>
-            <SelectItem disabled={true} value={Intervals.EVERY_DAY.toString()}>
+            <SelectItem
+              disabled={true}
+              value={UpdateInterval.EVERY_DAY.toString()}
+            >
               <div className="flex flex-row gap-2">
                 <p className="animate-premium-select rounded-md px-2">
                   Pro Only
@@ -54,24 +51,24 @@ export default function IntervalSelect({
                 <p>Daily</p>
               </div>
             </SelectItem>
-            <SelectItem value={Intervals.EVERY_WEEK.toString()}>
+            <SelectItem value={UpdateInterval.EVERY_WEEK.toString()}>
               <div className="flex flex-row gap-2">Weekly</div>
             </SelectItem>
-            <SelectItem value={Intervals.EVERY_MONTH.toString()}>
+            <SelectItem value={UpdateInterval.EVERY_MONTH.toString()}>
               <div className="flex flex-row gap-2">Monthly</div>
             </SelectItem>
           </SelectGroup>
         ) : (
           <SelectGroup>
-            <SelectItem value={Intervals.EVERY_DAY.toString()}>
+            <SelectItem value={UpdateInterval.EVERY_DAY.toString()}>
               <div className="flex flex-row gap-2">
                 <p>Daily</p>
               </div>
             </SelectItem>
-            <SelectItem value={Intervals.EVERY_WEEK.toString()}>
+            <SelectItem value={UpdateInterval.EVERY_WEEK.toString()}>
               <div className="flex flex-row gap-2">Weekly</div>
             </SelectItem>
-            <SelectItem value={Intervals.EVERY_MONTH.toString()}>
+            <SelectItem value={UpdateInterval.EVERY_MONTH.toString()}>
               <div className="flex flex-row gap-2">Monthly</div>
             </SelectItem>
           </SelectGroup>

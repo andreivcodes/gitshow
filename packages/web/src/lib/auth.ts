@@ -4,26 +4,24 @@ import Github, { GithubProfile } from "next-auth/providers/github";
 import TwitterLegacy, {
   TwitterLegacyProfile,
 } from "next-auth/providers/twitter";
-import {
-  AvailablePlanTypes,
-  AvailableThemeNames,
-  Intervals,
-  UpdateIntervalsType,
-  Plans,
-} from "@gitshow/gitshow-lib";
 import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
 import { stripe } from "./stripe-server";
+import {
+  AvailableThemeNames,
+  SubscriptionPlan,
+  UpdateInterval,
+} from "@gitshow/gitshow-lib";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       automaticallyUpdate: boolean;
       lastUpdateTimestamp: Date | null;
-      updateInterval: UpdateIntervalsType;
+      updateInterval: UpdateInterval;
 
       theme: AvailableThemeNames;
 
-      subscription_type: AvailablePlanTypes;
+      subscription_type: SubscriptionPlan;
       lastSubscriptionTimestamp: Date | null;
 
       fullyAuthenticated: boolean;
@@ -63,12 +61,12 @@ export const authOptions: NextAuthOptions = {
         if (u) {
           session.user.automaticallyUpdate = u.automaticallyUpdate === true;
           session.user.lastUpdateTimestamp = u.lastUpdateTimestamp;
-          session.user.updateInterval = u.updateInterval as UpdateIntervalsType;
+          session.user.updateInterval = u.updateInterval as UpdateInterval;
 
           session.user.theme = u.theme as AvailableThemeNames;
 
           session.user.subscription_type =
-            u.subscriptionType as AvailablePlanTypes;
+            u.subscriptionPlan as SubscriptionPlan;
           session.user.lastSubscriptionTimestamp = u.lastSubscriptionTimestamp;
 
           session.user.fullyAuthenticated =
@@ -146,9 +144,9 @@ export const authOptions: NextAuthOptions = {
             });
 
             updateData.stripeCustomerId = stripeCustomer.id;
-            updateData.subscriptionType = Plans.FREE_PLAN;
+            updateData.subscriptionPlan = SubscriptionPlan.Free;
             updateData.theme = "classic";
-            updateData.updateInterval = Intervals.EVERY_MONTH;
+            updateData.updateInterval = UpdateInterval.EVERY_MONTH;
 
             await db.insert(userTable).values(updateData);
           }

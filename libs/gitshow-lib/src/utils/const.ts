@@ -73,27 +73,15 @@ export type AvailableThemeNames = keyof typeof themes;
 
 export const PREMIUM_THEMES = ["dracula", "bnw", "spooky"];
 
-// Intervals
-const EVERY_DAY = 24;
-const EVERY_WEEK = 168;
-const EVERY_MONTH = 720;
+export enum UpdateInterval {
+  EVERY_DAY = 24,
+  EVERY_WEEK = 168,
+  EVERY_MONTH = 720,
+}
 
-export type UpdateIntervalsType =
-  | typeof EVERY_DAY
-  | typeof EVERY_WEEK
-  | typeof EVERY_MONTH;
+export const PREMIUM_INTERVALS = [UpdateInterval.EVERY_MONTH];
 
-export const Intervals = { EVERY_DAY, EVERY_WEEK, EVERY_MONTH };
-export const PremiumIntervals = [EVERY_DAY, EVERY_WEEK];
-
-//Plans
-export const FREE_PLAN: "free" = "free";
-export const PREMIUM_PLAN: "premium" = "premium";
-export const NONE_PLAN: "none" = "none";
-
-export type AvailablePlanTypes =
-  | typeof FREE_PLAN
-  | typeof PREMIUM_PLAN
-  | typeof NONE_PLAN;
-
-export const Plans = { FREE_PLAN, PREMIUM_PLAN, NONE_PLAN };
+export enum SubscriptionPlan {
+  Free = "FREE",
+  Premium = "PREMIUM",
+}

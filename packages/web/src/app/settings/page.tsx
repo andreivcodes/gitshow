@@ -17,9 +17,8 @@ import {
 } from "./actions";
 import IntervalSelect from "@/components/settings/interval-select";
 import ThemeSelect from "@/components/settings/theme-select";
-import SignOut from "@/components/sign-out";
+import SignOut from "@/components/settings/sign-out";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import Update from "@/components/settings/update";
 
 export default async function Settings() {
@@ -67,7 +66,7 @@ export default async function Settings() {
 
       <CardFooter className="w-full flex gap-2 flex-row justify-center">
         <Button variant="default">
-          <Link href="">Change Plan</Link>
+          <Link href="/subscribe">Change Plan</Link>
         </Button>
         <SignOut />
       </CardFooter>

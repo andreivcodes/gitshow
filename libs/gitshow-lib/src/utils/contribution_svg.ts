@@ -3,14 +3,13 @@ import {
   type AvailableThemeNames,
   type Theme,
   themes,
-  FREE_PLAN,
-  type AvailablePlanTypes,
+  SubscriptionPlan,
 } from "./const";
 
 export async function contribSvg(
   username: string,
   theme: AvailableThemeNames,
-  type: AvailablePlanTypes
+  type: SubscriptionPlan
 ): Promise<string> {
   const contributionData = await contribData(username);
 
@@ -93,7 +92,7 @@ export async function contribSvg(
     }</text>`;
   }
 
-  if (type === FREE_PLAN)
+  if (type === SubscriptionPlan.Free)
     svgContent += `<text x="${watermarkX + paddingLeft}" y="${
       watermarkY + paddingTop
     }" font-size="10" fill="${
