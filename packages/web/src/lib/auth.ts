@@ -8,7 +8,7 @@ import {
   AvailablePlanTypes,
   AvailableThemeNames,
   Intervals,
-  IntervalsType,
+  UpdateIntervalsType,
   Plans,
 } from "@gitshow/gitshow-lib";
 import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
@@ -17,9 +17,14 @@ import { stripe } from "./stripe-server";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      subscription_type: AvailablePlanTypes;
+      automaticallyUpdate: boolean;
+      lastUpdateTimestamp: Date | null;
+      updateInterval: UpdateIntervalsType;
+
       theme: AvailableThemeNames;
-      interval: IntervalsType;
+
+      subscription_type: AvailablePlanTypes;
+      lastSubscriptionTimestamp: Date | null;
 
       fullyAuthenticated: boolean;
       twitterAuthenticated: boolean;
@@ -30,8 +35,6 @@ declare module "next-auth" {
       twitterimage: string | null;
 
       githubname: string | null;
-
-      lastSubscriptionTimestamp: Date | null;
     } & DefaultSession["user"];
   }
 }
@@ -58,20 +61,27 @@ export const authOptions: NextAuthOptions = {
           .then(takeUniqueOrNull);
 
         if (u) {
+          session.user.automaticallyUpdate = u.automaticallyUpdate === true;
+          session.user.lastUpdateTimestamp = u.lastUpdateTimestamp;
+          session.user.updateInterval = u.updateInterval as UpdateIntervalsType;
+
+          session.user.theme = u.theme as AvailableThemeNames;
+
           session.user.subscription_type =
             u.subscriptionType as AvailablePlanTypes;
-          session.user.theme = u.theme as AvailableThemeNames;
-          session.user.interval = u.refreshInterval as IntervalsType;
-          session.user.githubAuthenticated = u.githubAuthenticated === true;
-          session.user.twitterAuthenticated = u.twitterAuthenticated === true;
+          session.user.lastSubscriptionTimestamp = u.lastSubscriptionTimestamp;
+
           session.user.fullyAuthenticated =
             session.user.githubAuthenticated &&
             session.user.twitterAuthenticated;
+          session.user.githubAuthenticated = u.githubAuthenticated === true;
+          session.user.twitterAuthenticated = u.twitterAuthenticated === true;
+
           session.user.twittername = u.twitterUsername;
           session.user.twittertag = u.twitterTag;
           session.user.twitterimage = u.twitterPicture;
+
           session.user.githubname = u.githubUsername;
-          session.user.lastSubscriptionTimestamp = u.lastSubscriptionTimestamp;
         }
       }
       return session;
@@ -138,7 +148,7 @@ export const authOptions: NextAuthOptions = {
             updateData.stripeCustomerId = stripeCustomer.id;
             updateData.subscriptionType = Plans.FREE_PLAN;
             updateData.theme = "classic";
-            updateData.refreshInterval = Intervals.EVERY_MONTH;
+            updateData.updateInterval = Intervals.EVERY_MONTH;
 
             await db.insert(userTable).values(updateData);
           }

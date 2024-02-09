@@ -8,6 +8,20 @@
       "when": 1707402993287,
       "tag": "0000_nasty_quasimodo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1707492687603,
+      "tag": "0001_easy_anita_blake",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1707492946494,
+      "tag": "0002_certain_nextwave",
+      "breakpoints": true
     }
   ]
 }

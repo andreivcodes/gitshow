@@ -13,6 +13,26 @@ export const userTable = sqliteTable(
     email: text("email").notNull(),
     name: text("name"),
 
+    automaticallyUpdate: integer("automaticallyUpdate", {
+      mode: "boolean",
+    }).default(true),
+    lastUpdateTimestamp: integer("lastUpdateTimestamp", {
+      mode: "timestamp",
+    }),
+    updateInterval: integer("updateInterval", { mode: "number" })
+      .default(720)
+      .notNull(),
+
+    theme: text("theme", {
+      enum: ["normal", "classic", "githubDark", "dracula", "bnw", "spooky"],
+    }),
+    subscriptionType: text("subscriptionType", {
+      enum: ["free", "premium", "none"],
+    }),
+    lastSubscriptionTimestamp: integer("lastSubscriptionTimestamp", {
+      mode: "timestamp",
+    }),
+
     stripeCustomerId: text("stripeCustomerId"),
 
     githubAuthenticated: integer("githubAuthenticated", {
@@ -32,23 +52,6 @@ export const userTable = sqliteTable(
     twitterPicture: text("twitterPicture"),
     twitterOAuthToken: text("twitterOAuthToken"),
     twitterOAuthTokenSecret: text("twitterOAuthTokenSecret"),
-
-    theme: text("theme", {
-      enum: ["normal", "classic", "githubDark", "dracula", "bnw", "spooky"],
-    }),
-
-    refreshInterval: integer("refreshInterval", { mode: "number" })
-      .default(720)
-      .notNull(),
-    lastRefreshTimestamp: integer("lastRefreshTimestamp", {
-      mode: "timestamp",
-    }),
-    subscriptionType: text("subscriptionType", {
-      enum: ["free", "premium", "none"],
-    }),
-    lastSubscriptionTimestamp: integer("lastSubscriptionTimestamp", {
-      mode: "timestamp",
-    }),
   },
   (user) => ({
     stripeCustomerIdx: uniqueIndex("stripeCustomerId_idx").on(

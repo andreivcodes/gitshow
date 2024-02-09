@@ -78,7 +78,7 @@ const EVERY_DAY = 24;
 const EVERY_WEEK = 168;
 const EVERY_MONTH = 720;
 
-export type IntervalsType =
+export type UpdateIntervalsType =
   | typeof EVERY_DAY
   | typeof EVERY_WEEK
   | typeof EVERY_MONTH;

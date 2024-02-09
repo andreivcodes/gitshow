@@ -4,7 +4,7 @@ import {
   AvailablePlanTypes,
   AvailableThemeNames,
   Intervals,
-  IntervalsType,
+  UpdateIntervalsType,
   PREMIUM_PLAN,
 } from "@gitshow/gitshow-lib";
 import {
@@ -14,24 +14,24 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { useToast } from "./ui/use-toast";
+} from "../ui/select";
+import { useToast } from "../ui/use-toast";
 
 export default function IntervalSelect({
   subscription_type,
   interval,
-  setRefreshInterval,
+  setUpdateInterval,
 }: {
   subscription_type?: AvailablePlanTypes;
-  interval?: IntervalsType;
-  setRefreshInterval: (interval: IntervalsType) => void;
+  interval?: UpdateIntervalsType;
+  setUpdateInterval: (interval: UpdateIntervalsType) => void;
 }) {
   const { toast } = useToast();
 
   return (
     <Select
       onValueChange={(e) => {
-        setRefreshInterval(parseInt(e) as IntervalsType);
+        setUpdateInterval(parseInt(e) as UpdateIntervalsType);
         toast({
           description: "⏱️ Your interval has been changed",
         });

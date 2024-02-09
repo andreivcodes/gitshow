@@ -4,7 +4,7 @@ import {
   AvailablePlanTypes,
   AvailableThemeNames,
   Intervals,
-  IntervalsType,
+  UpdateIntervalsType,
   PREMIUM_PLAN,
 } from "@gitshow/gitshow-lib";
 import {
@@ -14,8 +14,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { useToast } from "./ui/use-toast";
+} from "../ui/select";
+import { useToast } from "../ui/use-toast";
 
 export default function ThemeSelect({
   subscription_type,

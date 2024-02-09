@@ -38,7 +38,7 @@ export default async function RootLayout({
           <main className="orb-container flex min-h-screen flex-col items-center justify-between">
             <div className="orb" />
             <Header />
-            <div className="flex flex-col xl:flex-row w-full justify-around md:items-center gap-8 p-4 xl:p-24">
+            <div className="flex flex-col xl:flex-row w-full justify-around gap-8 p-4 xl:p-24">
               <Contributions
                 name={session?.user.twittername ?? "Linus Torvalds"}
                 twittertag={session?.user.twittertag ?? "@Linus__Torvalds"}
