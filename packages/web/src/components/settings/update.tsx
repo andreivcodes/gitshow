@@ -23,7 +23,7 @@ export default function Update({
           }}
         />
       </div>
-      <Label>
+      <Label className="font-mono">
         Last update: {lastUpdate ? lastUpdate.toLocaleString() : "Unknown"}
       </Label>
     </div>
