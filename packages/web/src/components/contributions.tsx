@@ -104,18 +104,12 @@ export default function Contributions({
   return (
     <div
       ref={chartRef}
-      className="relative h-[16em] mx-4 2xl:w-[30em] min-w-[500px] flex items-center justify-center"
+      className="bg-black rounded-lg relative h-[16em] mx-4 w-[500px] 2xl:w-[30em] min-w-[500px] flex items-center justify-center chart-shadow chart-fade"
       style={{
         ...rotationStyles,
         transformStyle: "preserve-3d",
       }}
     >
-      <div className="chart-shadow" />
-      <div className="chart-fade" />
-
-      <div className="bg-black rounded-t-lg w-[500px] h-[10.25em]" />
-      <div className="bg-black rounded-b-lg w-[500px] h-[6em]" />
-
       <picture>
         <img
           className={

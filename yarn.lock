@@ -2210,16 +2210,16 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@libsql/client@0.3.2":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@libsql/client/-/client-0.3.2.tgz#553e89febd800e83e599beebb5006e73cd51f298"
-  integrity sha512-e0qgf7gFOwhu0ueU/RK68TmD0PnjX3RaeM5lrJowGMEZjvh/shZ4BhwPA26Ec0nSa4oiZ0s0zn/T5YjcgY1bTw==
+"@libsql/client@0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@libsql/client/-/client-0.3.3.tgz#59f09a93e92b88fc55b3a5937d2ea868fbaa3c58"
+  integrity sha512-n5mpnG8ppVd1aNBlg+xRDZhYpZoQABWQfb2CzdP64VTkKncOqXAjUfMpB5MQ2EWhkMDlTkrhJx7V+ScvYaSY7A==
   dependencies:
-    "@libsql/hrana-client" "^0.5.0"
+    "@libsql/hrana-client" "^0.5.1"
     better-sqlite3 "^8.0.1"
     js-base64 "^3.7.5"
 
-"@libsql/hrana-client@^0.5.0":
+"@libsql/hrana-client@^0.5.1":
   version "0.5.6"
   resolved "https://registry.yarnpkg.com/@libsql/hrana-client/-/hrana-client-0.5.6.tgz#a679276a1f40dd1fc6d91297952d06b33e028d64"
   integrity sha512-mjQoAmejZ1atG+M3YR2ZW+rg6ceBByH/S/h17ZoYZkqbWrvohFhXyz2LFxj++ARMoY9m6w3RJJIRdJdmnEUlFg==

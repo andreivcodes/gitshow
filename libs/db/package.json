@@ -9,7 +9,7 @@
     "schema:gen": "drizzle-kit generate:sqlite --out migrations --schema schema.ts"
   },
   "dependencies": {
-    "@libsql/client": "0.3.2",
+    "@libsql/client": "0.3.3",
     "dotenv": "^16.4.1",
     "drizzle-orm": "^0.29.3"
   },
