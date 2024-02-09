@@ -1,12 +1,15 @@
 import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
 import { UpdateUserEvent } from "./update_user";
-import { NONE_PLAN } from "../../../libs/gitshow-lib/src";
 import { db, userTable, lt } from "@gitshow/db";
+import { config } from "dotenv";
+import { NONE_PLAN } from "@gitshow/gitshow-lib";
 
 const sqs = new AWS.SQS();
 
 export async function handler() {
+  config();
+
   const timestampThreshold = new Date();
 
   const users = await db

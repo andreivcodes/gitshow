@@ -1,8 +1,9 @@
 {
   "name": "@gitshow/db",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "./src/index.ts",
   "private": true,
+  "type": "module",
   "scripts": {
     "db:push": "drizzle-kit push:sqlite",
     "schema:gen": "drizzle-kit generate:sqlite --out migrations --schema schema.ts"

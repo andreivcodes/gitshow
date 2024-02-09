@@ -2,12 +2,13 @@ import {
   AvailablePlanTypes,
   AvailableThemeNames,
   contribSvg,
-} from "../../../libs/gitshow-lib/src";
+} from "@gitshow/gitshow-lib";
 import { db, userTable, eq } from "@gitshow/db";
 import { SQSEvent } from "aws-lambda";
 import { AES, enc } from "crypto-js";
 import sharp from "sharp";
 import { TwitterApi } from "twitter-api-v2";
+import { config } from "dotenv";
 
 export interface UpdateUserEvent {
   email: string;
@@ -19,6 +20,7 @@ export interface UpdateUserEvent {
 }
 
 export const handler = async (event: SQSEvent) => {
+  config();
   const result = [];
 
   for (const record of event.Records) {

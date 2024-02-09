@@ -110,43 +110,37 @@ export default function Contributions({
         transformStyle: "preserve-3d",
       }}
     >
-      <Link
-        className="absolute"
-        href={`https://twitter.com/${twittertag}`}
-        target="_blank"
-      >
-        <div className="chart-shadow" />
-        <div className="chart-fade" />
+      <div className="chart-shadow" />
+      <div className="chart-fade" />
 
-        <div className="bg-black rounded-t-lg w-[500px] h-[10.25em]" />
-        <div className="bg-black rounded-b-lg w-[500px] h-[6em]" />
+      <div className="bg-black rounded-t-lg w-[500px] h-[10.25em]" />
+      <div className="bg-black rounded-b-lg w-[500px] h-[6em]" />
 
-        <picture>
-          <img
-            className={
-              "absolute w-auto h-auto rounded-t-lg left-1/2 transform -translate-x-1/2 bottom-[6em]"
-            }
-            src={url}
-            width={500}
-            height={250}
-            alt="Contributions Chart"
-          />
-        </picture>
-
-        <Image
-          className="absolute rounded-full bottom-[4em] left-[1em] w-[5em] h-[5em]"
-          src={picture}
-          quality={100}
-          width={135}
-          height={135}
-          alt="Linus Torvalds"
+      <picture>
+        <img
+          className={
+            "absolute w-auto h-auto rounded-t-lg left-1/2 transform -translate-x-1/2 bottom-[6em]"
+          }
+          src={url}
+          width={500}
+          height={250}
+          alt="Contributions Chart"
         />
+      </picture>
 
-        <div className="absolute flex bottom-[1em] left-[1em] flex-col justify-start">
-          <p className="font-extrabold text-md">{name}</p>
-          <p className="font-thin text-sm">{twittertag}</p>
-        </div>
-      </Link>
+      <Image
+        className="absolute rounded-full bottom-[4em] left-[1em] w-[5em] h-[5em]"
+        src={picture}
+        quality={100}
+        width={135}
+        height={135}
+        alt="Linus Torvalds"
+      />
+
+      <div className="absolute flex bottom-[1em] left-[1em] flex-col justify-start">
+        <p className="font-extrabold text-md">{name}</p>
+        <p className="font-thin text-sm">{twittertag}</p>
+      </div>
     </div>
   );
 }

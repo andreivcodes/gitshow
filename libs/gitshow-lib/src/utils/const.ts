@@ -74,19 +74,17 @@ export type AvailableThemeNames = keyof typeof themes;
 export const PREMIUM_THEMES = ["dracula", "bnw", "spooky"];
 
 // Intervals
-const EVERY_HOUR: 1 = 1;
-const EVERY_DAY: 24 = 24;
-const EVERY_WEEK: 168 = 168;
-const EVERY_MONTH: 720 = 720;
+const EVERY_DAY = 24;
+const EVERY_WEEK = 168;
+const EVERY_MONTH = 720;
 
 export type IntervalsType =
-  | typeof EVERY_HOUR
   | typeof EVERY_DAY
   | typeof EVERY_WEEK
   | typeof EVERY_MONTH;
 
-export const Intervals = { EVERY_HOUR, EVERY_DAY, EVERY_WEEK, EVERY_MONTH };
-export const PremiumIntervals = { EVERY_HOUR, EVERY_DAY };
+export const Intervals = { EVERY_DAY, EVERY_WEEK, EVERY_MONTH };
+export const PremiumIntervals = [EVERY_DAY, EVERY_WEEK];
 
 //Plans
 export const FREE_PLAN: "free" = "free";

@@ -2,6 +2,8 @@ import { Cron, NextjsSite, Queue, StackContext } from "sst/constructs";
 import { config as dotenv_config } from "dotenv";
 
 export function stack({ stack }: StackContext) {
+  dotenv_config();
+
   stack.setDefaultFunctionProps({
     logRetention: "one_day",
     tracing: "disabled",
@@ -9,24 +11,13 @@ export function stack({ stack }: StackContext) {
     architecture: "arm_64",
   });
 
-  dotenv_config();
-
-  const deadletter = new Queue(stack, "DeadLetterQueue", {});
-
   const queue = new Queue(stack, "UpdateQueue", {
     consumer: {
       function: {
         handler: "packages/functions/src/update_user.handler",
         runtime: "nodejs18.x",
         nodejs: {
-          esbuild: {
-            external: [
-              "libsql",
-              "@libsql/client",
-              "@libsql/linux-arm64-gnu",
-              "@libsql/linux-arm64-musl",
-            ],
-          },
+          install: ["libsql", "@libsql/client"],
         },
         environment: {
           TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN ?? "",
@@ -38,12 +29,19 @@ export function stack({ stack }: StackContext) {
         },
       },
     },
-    cdk: {
-      queue: {
-        deadLetterQueue: {
-          maxReceiveCount: 3,
-          queue: deadletter.cdk.queue,
+  });
+
+  new Cron(stack, "cron_update", {
+    schedule: "rate(6 hours)",
+    job: {
+      function: {
+        handler: "packages/functions/src/cron_update.handler",
+        runtime: "nodejs18.x",
+        environment: {
+          TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN ?? "",
+          TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL ?? "",
         },
+        bind: [queue],
       },
     },
   });
@@ -82,17 +80,7 @@ export function stack({ stack }: StackContext) {
       GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID ?? "",
       GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET ?? "",
     },
-  });
-
-  new Cron(stack, "cron_update", {
-    schedule: "rate(1 hour)",
-    job: {
-      function: {
-        runtime: "nodejs18.x",
-        handler: "packages/functions/src/cron_update.handler",
-        bind: [queue],
-      },
-    },
+    bind: [queue],
   });
 
   stack.addOutputs({

@@ -1,5 +1,4 @@
 import { AES } from "crypto-js";
-import NextAuth from "next-auth";
 import { type DefaultSession, type NextAuthOptions } from "next-auth";
 import Github, { GithubProfile } from "next-auth/providers/github";
 import TwitterLegacy, {
