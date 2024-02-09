@@ -13,7 +13,8 @@
     "crypto-js": "^4.2",
     "dotenv": "^16.4.1",
     "sharp": "^0.33.2",
-    "twitter-api-v2": "^1.16"
+    "twitter-api-v2": "^1.16",
+    "@libsql/client": "0.3.3"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.133",
