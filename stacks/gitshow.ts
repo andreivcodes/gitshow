@@ -26,6 +26,7 @@ export function stack({ stack }: StackContext) {
           GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID ?? "",
           TWITTER_CONSUMER_KEY: process.env.TWITTER_CONSUMER_KEY ?? "",
           TWITTER_CONSUMER_SECRET: process.env.TWITTER_CONSUMER_SECRET ?? "",
+          FONTCONFIG_PATH: "/var/task/fonts",
         },
       },
     },
