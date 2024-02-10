@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "61419614-155a-40a1-be81-52efb5807920",
+  "id": "b634f0a8-a05d-4388-ac73-fa7e5ef66140",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "user": {
@@ -24,6 +24,50 @@
         "name": {
           "name": "name",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "automaticallyUpdate": {
+          "name": "automaticallyUpdate",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": true
+        },
+        "lastUpdateTimestamp": {
+          "name": "lastUpdateTimestamp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updateInterval": {
+          "name": "updateInterval",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 720
+        },
+        "theme": {
+          "name": "theme",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "subscriptionPlan": {
+          "name": "subscriptionPlan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "lastSubscriptionTimestamp": {
+          "name": "lastSubscriptionTimestamp",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -113,42 +157,6 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "theme": {
-          "name": "theme",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "refreshInterval": {
-          "name": "refreshInterval",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 720
-        },
-        "lastRefreshTimestamp": {
-          "name": "lastRefreshTimestamp",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "subscriptionType": {
-          "name": "subscriptionType",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "lastSubscriptionTimestamp": {
-          "name": "lastSubscriptionTimestamp",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {
@@ -159,10 +167,10 @@
           ],
           "isUnique": true
         },
-        "subscriptionType_idx": {
-          "name": "subscriptionType_idx",
+        "subscriptionPlan_idx": {
+          "name": "subscriptionPlan_idx",
           "columns": [
-            "subscriptionType"
+            "subscriptionPlan"
           ],
           "isUnique": false
         },

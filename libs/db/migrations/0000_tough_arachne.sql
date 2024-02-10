@@ -2,6 +2,12 @@ CREATE TABLE `user` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`email` text NOT NULL,
 	`name` text,
+	`automaticallyUpdate` integer DEFAULT true,
+	`lastUpdateTimestamp` integer,
+	`updateInterval` integer DEFAULT 720 NOT NULL,
+	`theme` text,
+	`subscriptionPlan` text,
+	`lastSubscriptionTimestamp` integer,
 	`stripeCustomerId` text,
 	`githubAuthenticated` integer DEFAULT false,
 	`twitterAuthenticated` integer DEFAULT false,
@@ -13,14 +19,9 @@ CREATE TABLE `user` (
 	`twitterTag` text,
 	`twitterPicture` text,
 	`twitterOAuthToken` text,
-	`twitterOAuthTokenSecret` text,
-	`theme` text,
-	`refreshInterval` integer DEFAULT 720 NOT NULL,
-	`lastRefreshTimestamp` integer,
-	`subscriptionType` text,
-	`lastSubscriptionTimestamp` integer
+	`twitterOAuthTokenSecret` text
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `stripeCustomerId_idx` ON `user` (`stripeCustomerId`);--> statement-breakpoint
-CREATE INDEX `subscriptionType_idx` ON `user` (`subscriptionType`);--> statement-breakpoint
+CREATE INDEX `subscriptionPlan_idx` ON `user` (`subscriptionPlan`);--> statement-breakpoint
 CREATE INDEX `lastRefreshTimestamp_idx` ON `user` (`lastSubscriptionTimestamp`);
