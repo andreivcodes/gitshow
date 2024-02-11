@@ -1,6 +1,6 @@
 import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
-import { db, userTable, lt } from "@gitshow/db";
+import { db, userTable, lt, eq, and } from "@gitshow/db";
 import { config } from "dotenv";
 import { UpdateUserEvent } from "@gitshow/gitshow-lib";
 
@@ -23,7 +23,13 @@ export async function handler() {
       theme: userTable.theme,
     })
     .from(userTable)
-    .where(lt(userTable.lastUpdateTimestamp, timestampThreshold));
+    .where(
+      and(
+        eq(userTable.automaticallyUpdate, true),
+        eq(userTable.twitterAuthenticated, true),
+        eq(userTable.githubAuthenticated, true)
+      )
+    );
 
   const usersToRefresh = users.filter(
     (u) =>
@@ -34,22 +40,20 @@ export async function handler() {
   console.log(`Updating ${usersToRefresh.length} users.`);
 
   for (const user of usersToRefresh) {
-    await sqs
-      .sendMessage({
-        QueueUrl: Queue.UpdateQueue.queueUrl,
-        MessageBody: JSON.stringify({
-          email: user.email,
-          githubUsername: user.githubUsername,
-          twitterOAuthToken: user.twitterOAuthToken,
-          twitterOAuthTokenSecret: user.twitterOAuthTokenSecret,
-          plan: user.subscriptionPlan,
-          theme: user.theme,
-        } as UpdateUserEvent),
-      })
-      .promise();
+    await sqs.sendMessage({
+      QueueUrl: Queue.UpdateQueue.queueUrl,
+      MessageBody: JSON.stringify({
+        email: user.email,
+        githubUsername: user.githubUsername,
+        twitterOAuthToken: user.twitterOAuthToken,
+        twitterOAuthTokenSecret: user.twitterOAuthTokenSecret,
+        plan: user.subscriptionPlan,
+        theme: user.theme,
+      } as UpdateUserEvent),
+    });
 
     console.log(
-      `Update queued for ${user.githubUsername} - ${user.subscriptionPlan} ${user.theme} ${user.updateInterval}h!`
+      `Update queued for ${user.githubUsername} - ${user.subscriptionPlan} ${user.theme} ${user.updateInterval}min!`
     );
   }
 }

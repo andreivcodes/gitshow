@@ -1,8 +1,4 @@
-import {
-  contribSvg,
-  SubscriptionPlan,
-  UpdateUserEvent,
-} from "@gitshow/gitshow-lib";
+import { contribSvg, UpdateUserEvent } from "@gitshow/gitshow-lib";
 import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
 import { SQSEvent } from "aws-lambda";
 import { AES, enc } from "crypto-js";

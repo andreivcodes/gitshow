@@ -28,7 +28,7 @@ export default async function RootLayout({
   let svg;
 
   if (!session || !session.user || !session.user.githubname) {
-    svg = await contribSvg("torvalds", "classic", SubscriptionPlan.Free);
+    svg = await contribSvg("torvalds", "githubDark", SubscriptionPlan.Premium);
   } else
     svg = await contribSvg(
       session.user.githubname,

@@ -16,4 +16,4 @@ export const takeUniqueOrNull = <T extends any[]>(values: T): T[number] => {
 
 export const db = drizzle(client);
 export * from "./schema";
-export { eq, lt } from "drizzle-orm";
+export { eq, lt, and } from "drizzle-orm";
