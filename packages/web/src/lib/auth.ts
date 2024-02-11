@@ -21,7 +21,7 @@ declare module "next-auth" {
 
       theme: AvailableThemeNames;
 
-      subscription_type: SubscriptionPlan;
+      subscriptionPlan: SubscriptionPlan;
       lastSubscriptionTimestamp: Date | null;
 
       fullyAuthenticated: boolean;
@@ -65,7 +65,7 @@ export const authOptions: NextAuthOptions = {
 
           session.user.theme = u.theme as AvailableThemeNames;
 
-          session.user.subscription_type =
+          session.user.subscriptionPlan =
             u.subscriptionPlan as SubscriptionPlan;
           session.user.lastSubscriptionTimestamp = u.lastSubscriptionTimestamp;
 

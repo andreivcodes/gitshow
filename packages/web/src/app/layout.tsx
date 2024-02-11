@@ -25,11 +25,16 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession(authOptions);
 
-  const svg = await contribSvg(
-    session?.user.githubname ?? "torvalds",
-    session?.user.theme ?? "classic",
-    session?.user.subscription_type ?? SubscriptionPlan.Free
-  );
+  let svg;
+
+  if (!session || !session.user || !session.user.githubname) {
+    svg = await contribSvg("torvalds", "classic", SubscriptionPlan.Free);
+  } else
+    svg = await contribSvg(
+      session.user.githubname,
+      session.user.theme,
+      session.user.subscriptionPlan
+    );
 
   return (
     <html lang="en">

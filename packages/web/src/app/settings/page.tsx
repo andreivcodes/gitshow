@@ -47,7 +47,7 @@ export default async function Settings() {
           <div>
             <Label>Theme</Label>
             <ThemeSelect
-              subscription_type={session?.user.subscription_type}
+              subscription_type={session?.user.subscriptionPlan}
               theme={session?.user.theme}
               setUserTheme={setUserTheme}
             />
@@ -55,7 +55,7 @@ export default async function Settings() {
           <div>
             <Label>Update interval</Label>
             <IntervalSelect
-              subscription_type={session?.user.subscription_type}
+              subscription_type={session?.user.subscriptionPlan}
               interval={session?.user.updateInterval}
               setUpdateInterval={setUpdateInterval}
             />

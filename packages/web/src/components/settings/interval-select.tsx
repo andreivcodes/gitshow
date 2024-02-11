@@ -27,7 +27,10 @@ export default function IntervalSelect({
       onValueChange={(e) => {
         setUpdateInterval(parseInt(e) as UpdateInterval);
         toast({
-          description: "⏱️ Your interval has been changed",
+          description:
+            subscription_type == SubscriptionPlan.Free
+              ? "⏱️ Your interval has been changed. Changes will take effect on next automatic update."
+              : "⏱️ Your interval has been changed.",
         });
       }}
       defaultValue={
@@ -51,8 +54,16 @@ export default function IntervalSelect({
                 <p>Daily</p>
               </div>
             </SelectItem>
-            <SelectItem value={UpdateInterval.EVERY_WEEK.toString()}>
-              <div className="flex flex-row gap-2">Weekly</div>
+            <SelectItem
+              value={UpdateInterval.EVERY_WEEK.toString()}
+              disabled={true}
+            >
+              <div className="flex flex-row gap-2">
+                <p className="animate-premium-select rounded-md px-2">
+                  Pro Only
+                </p>
+                <p>Weekly</p>
+              </div>
             </SelectItem>
             <SelectItem value={UpdateInterval.EVERY_MONTH.toString()}>
               <div className="flex flex-row gap-2">Monthly</div>

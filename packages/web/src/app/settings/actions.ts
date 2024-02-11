@@ -41,9 +41,9 @@ export async function setUpdateInterval(interval: UpdateInterval) {
     .set({ updateInterval: interval })
     .where(eq(userTable.email, session.user.email));
 
-  await queueJob(session.user.email);
+  await queueJob(session.user.email, false);
 
-  redirect("/settings");
+  session.user.updateInterval = interval;
 }
 
 export async function setUserTheme(theme: AvailableThemeNames) {
@@ -71,10 +71,12 @@ export async function setUserTheme(theme: AvailableThemeNames) {
 
   await db
     .update(userTable)
-    .set({ theme: theme as AvailableThemeNames })
+    .set({ theme: theme })
     .where(eq(userTable.email, session.user.email));
 
-  await queueJob(session.user.email);
+  await queueJob(session.user.email, false);
+
+  session.user.theme = theme;
 
   redirect("/settings");
 }
@@ -95,7 +97,7 @@ export async function setAutomaticallyUpdate(update: boolean) {
     .set({ automaticallyUpdate: update })
     .where(eq(userTable.email, session.user.email));
 
-  await queueJob(session.user.email);
+  if (update) await queueJob(session.user.email, false);
 
-  redirect("/settings");
+  session.user.automaticallyUpdate = update;
 }

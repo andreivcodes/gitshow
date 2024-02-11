@@ -1,23 +1,14 @@
 import {
-  SubscriptionPlan,
-  AvailableThemeNames,
   contribSvg,
+  SubscriptionPlan,
+  UpdateUserEvent,
 } from "@gitshow/gitshow-lib";
-import { db, userTable, eq } from "@gitshow/db";
+import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
 import { SQSEvent } from "aws-lambda";
 import { AES, enc } from "crypto-js";
 import sharp from "sharp";
 import { TwitterApi } from "twitter-api-v2";
 import { config } from "dotenv";
-
-export interface UpdateUserEvent {
-  email: string;
-  githubUsername: string;
-  twitterOAuthToken: string;
-  twitterOAuthTokenSecret: string;
-  plan: SubscriptionPlan;
-  theme: AvailableThemeNames;
-}
 
 export const handler = async (event: SQSEvent) => {
   config();
@@ -26,43 +17,46 @@ export const handler = async (event: SQSEvent) => {
   for (const record of event.Records) {
     console.log(JSON.parse(record.body));
 
-    const {
-      email,
-      githubUsername,
-      twitterOAuthToken,
-      twitterOAuthTokenSecret,
-      plan,
-      theme,
-    } = JSON.parse(record.body) as UpdateUserEvent;
+    const event = JSON.parse(record.body) as UpdateUserEvent;
+
+    const u = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.email, event.email))
+      .then(takeUniqueOrNull);
 
     const client = new TwitterApi({
       appKey: process.env.TWITTER_CONSUMER_KEY!,
       appSecret: process.env.TWITTER_CONSUMER_SECRET!,
       accessToken: AES.decrypt(
-        twitterOAuthToken,
+        event.twitterOAuthToken,
         process.env.TOKENS_ENCRYPT!
       ).toString(enc.Utf8),
       accessSecret: AES.decrypt(
-        twitterOAuthTokenSecret,
+        event.twitterOAuthTokenSecret,
         process.env.TOKENS_ENCRYPT!
       ).toString(enc.Utf8),
     });
 
-    const bannerSvg = await contribSvg(githubUsername, theme, plan);
+    const bannerSvg = await contribSvg(
+      event.githubUsername,
+      event.theme,
+      event.plan
+    );
 
-    const bannerPng = await sharp(Buffer.from(bannerSvg), { density: 500 })
-      .png()
+    const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 })
+      .jpeg()
       .toBuffer();
 
-    await client.v1.updateAccountProfileBanner(bannerPng);
+    await client.v1.updateAccountProfileBanner(bannerJpeg);
 
     await db
       .update(userTable)
       .set({ lastUpdateTimestamp: new Date() })
-      .where(eq(userTable.email, email));
+      .where(eq(userTable.email, event.email));
 
-    console.log(`Updated ${githubUsername}`);
-    result.push({ message: `Updated ${githubUsername}` });
+    console.log(`Updated ${event.githubUsername}`);
+    result.push({ message: `Updated ${event.githubUsername}` });
   }
 
   return {

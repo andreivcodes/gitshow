@@ -1,26 +1,11 @@
-"use client";
-
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { PriceMenu } from "@/components/subscribe/menu";
-import { SubscriptionPlan } from "@gitshow/gitshow-lib";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-export default function SignIn() {
-  const session = useSession();
-  const router = useRouter();
+export default async function Subscribe() {
+  const session = await getServerSession(authOptions);
 
-  // if (!session.data) {
-  //   router.push("/signin");
-  //   return;
-  // }
-
-  return (
-    <PriceMenu
-      currentSubscription={
-        session.data
-          ? session.data.user.subscription_type
-          : SubscriptionPlan.Free
-      }
-    />
-  );
+  if (!session || !session.user) redirect("/signin");
+  else return <PriceMenu currentSubscription={session.user.subscriptionPlan} />;
 }

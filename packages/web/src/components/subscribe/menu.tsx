@@ -4,13 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { PriceCard } from "./price-card";
 import { Button } from "../ui/button";
 import { getStripe } from "@/lib/stripe-client";
-import { useSession } from "next-auth/react";
 import { SubscriptionPlan } from "@gitshow/gitshow-lib";
 import Link from "next/link";
+import { CheckoutRequest } from "@/app/api/stripe/checkout/route";
 
 export type ProductType = {
   name: string;
-  type: SubscriptionPlan;
+  plan: SubscriptionPlan;
   recurrence: string;
   price: string;
   description: string[];
@@ -19,14 +19,14 @@ export type ProductType = {
 const products: ProductType[] = [
   {
     name: "Free",
-    type: SubscriptionPlan.Free,
+    plan: SubscriptionPlan.Free,
     recurrence: "year",
     price: "0,00",
     description: ["Free forever", "Monthly updates"],
   },
   {
     name: "Premium",
-    type: SubscriptionPlan.Premium,
+    plan: SubscriptionPlan.Premium,
     recurrence: "year",
     price: "25,00",
     description: ["Hourly updates", "More themes", "No branding"],
@@ -39,7 +39,7 @@ export function PriceMenu({
   currentSubscription: SubscriptionPlan;
 }) {
   const [selectedProduct, setSelectedProduct] = useState<ProductType>(
-    products.find((p) => p.type === currentSubscription) ?? products[0]
+    products.find((p) => p.plan === currentSubscription) ?? products[0]
   );
 
   const productRefs = useRef(new Map()).current;
@@ -59,14 +59,14 @@ export function PriceMenu({
   return (
     <div className="flex flex-col items-center">
       <div className="flex justify-center items-center">
-        <h3 className="text-xl font-semibold">Choose a plan</h3>
+        <h3 className="text-xl font-semibold">Your plan</h3>
       </div>
       <div className="pt-10 flex flex-row items-center md:justify-center overflow-x-auto snap-proximity scroll-smooth snap-x gap-10 mb-5">
         {products.map((product) => (
           <div
             className="snap-center"
-            key={product.type}
-            ref={(el) => productRefs.set(product.type, el)}
+            key={product.plan}
+            ref={(el) => productRefs.set(product.plan, el)}
           >
             <div
               key={product.name}
@@ -78,35 +78,47 @@ export function PriceMenu({
               }}
             >
               <PriceCard
-                selectedPlan={selectedProduct.type}
+                selectedPlan={selectedProduct.plan}
                 product={product}
               />
             </div>
           </div>
         ))}
       </div>
-      {selectedProduct.type == SubscriptionPlan.Free && (
+      {selectedProduct.plan == SubscriptionPlan.Free && (
         <Link href="/">
           <Button variant="default">Go back</Button>
         </Link>
       )}
-      {selectedProduct.type == SubscriptionPlan.Premium && <CheckoutButton />}
+
+      {selectedProduct.plan == SubscriptionPlan.Premium &&
+        selectedProduct.plan == currentSubscription && (
+          <Link href="https://billing.stripe.com/p/login/test_dR63fYgaNapI6Z26or">
+            <Button variant="default">Cancel subscription</Button>
+          </Link>
+        )}
+
+      {selectedProduct.plan == SubscriptionPlan.Premium &&
+        selectedProduct.plan != currentSubscription && (
+          <CheckoutButton selectedProduct={selectedProduct} />
+        )}
     </div>
   );
 }
 
-const CheckoutButton = () => {
-  const session = useSession();
-
+const CheckoutButton = ({
+  selectedProduct,
+}: {
+  selectedProduct: ProductType;
+}) => {
   async function handleCreateCheckoutSession() {
     try {
-      const response = await fetch("/api/stripe/checkout-session", {
+      const response = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          //   type: subscription.subscriptionType,
-          //   theme: subscription.theme,
-        }),
+          plan: selectedProduct.plan,
+        } as CheckoutRequest),
       });
       const { session } = await response.json();
       const stripe = await getStripe();

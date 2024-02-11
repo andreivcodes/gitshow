@@ -9,13 +9,13 @@ export function stack({ stack }: StackContext) {
     tracing: "disabled",
     memorySize: "1 GB",
     architecture: "arm_64",
+    runtime: "nodejs18.x",
   });
 
   const queue = new Queue(stack, "UpdateQueue", {
     consumer: {
       function: {
         handler: "packages/functions/src/update_user.handler",
-        runtime: "nodejs18.x",
         nodejs: {
           install: ["@libsql/client", "libsql"],
         },
@@ -26,7 +26,6 @@ export function stack({ stack }: StackContext) {
           GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID ?? "",
           TWITTER_CONSUMER_KEY: process.env.TWITTER_CONSUMER_KEY ?? "",
           TWITTER_CONSUMER_SECRET: process.env.TWITTER_CONSUMER_SECRET ?? "",
-          FONTCONFIG_PATH: "/var/task/fonts",
         },
       },
     },
@@ -37,7 +36,6 @@ export function stack({ stack }: StackContext) {
     job: {
       function: {
         handler: "packages/functions/src/cron_update.handler",
-        runtime: "nodejs18.x",
         nodejs: {
           install: ["@libsql/client", "libsql"],
         },
@@ -53,7 +51,7 @@ export function stack({ stack }: StackContext) {
   const web = new NextjsSite(stack, "web", {
     path: "packages/web",
     memorySize: "2 GB",
-    warm: 20,
+    warm: 40,
     imageOptimization: {
       memorySize: "2 GB",
     },

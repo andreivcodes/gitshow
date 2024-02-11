@@ -27,7 +27,10 @@ export default function ThemeSelect({
       onValueChange={(e) => {
         setUserTheme(e as AvailableThemeNames);
         toast({
-          description: "🎨 Your theme has been changed",
+          description:
+            subscription_type == SubscriptionPlan.Free
+              ? "🎨 Your theme has been changed. Changes will take effect on next automatic update."
+              : "🎨 Your theme has been changed.",
         });
       }}
       defaultValue={theme ? theme : "classic"}

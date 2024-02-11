@@ -22,13 +22,13 @@ export function PriceCard({
   return (
     <div
       className={`w-52 h-72 transition-transform ease-in-out rounded-lg ${
-        selectedPlan === product.type &&
-        product.type === SubscriptionPlan.Premium
+        selectedPlan === product.plan &&
+        product.plan === SubscriptionPlan.Premium
           ? "p-0.5 animate-premium-select -translate-y-4"
           : "hover:-translate-y-4"
       } 
       ${
-        selectedPlan === product.type && product.type === SubscriptionPlan.Free
+        selectedPlan === product.plan && product.plan === SubscriptionPlan.Free
           ? "p-0.5 animate-free-select -translate-y-4"
           : "hover:-translate-y-4"
       }

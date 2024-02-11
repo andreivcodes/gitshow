@@ -79,9 +79,25 @@ export enum UpdateInterval {
   EVERY_MONTH = 720,
 }
 
-export const PREMIUM_INTERVALS = [UpdateInterval.EVERY_MONTH];
+export const PREMIUM_INTERVALS = [
+  UpdateInterval.EVERY_WEEK,
+  UpdateInterval.EVERY_DAY,
+];
 
 export enum SubscriptionPlan {
   Free = "FREE",
   Premium = "PREMIUM",
+}
+
+export enum StripePlans {
+  Premium = "price_1OiD7MHNuNMEdXGMG66sRk8w",
+}
+
+export interface UpdateUserEvent {
+  email: string;
+  githubUsername: string;
+  twitterOAuthToken: string;
+  twitterOAuthTokenSecret: string;
+  plan: SubscriptionPlan;
+  theme: AvailableThemeNames;
 }
