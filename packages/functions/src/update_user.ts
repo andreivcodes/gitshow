@@ -25,6 +25,8 @@ export const handler = async (event: SQSEvent) => {
       .where(eq(userTable.email, event.email))
       .then(takeUniqueOrNull);
 
+    console.log(u);
+
     const client = new TwitterApi({
       appKey: process.env.TWITTER_CONSUMER_KEY!,
       appSecret: process.env.TWITTER_CONSUMER_SECRET!,
