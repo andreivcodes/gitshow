@@ -11,7 +11,7 @@
   "dependencies": {
     "@gitshow/gitshow-lib": "*",
     "@libsql/client": "0.3.3",
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.4.2",
     "drizzle-orm": "^0.29.3"
   },
   "devDependencies": {

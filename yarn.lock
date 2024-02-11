@@ -4516,10 +4516,10 @@ aws-cdk-lib@2.124.0:
     table "^6.8.1"
     yaml "1.10.2"
 
-aws-cdk-lib@2.126.0:
-  version "2.126.0"
-  resolved "https://registry.yarnpkg.com/aws-cdk-lib/-/aws-cdk-lib-2.126.0.tgz#9b64a798b35f5d4843588b0548ed695e8b5ef5d8"
-  integrity sha512-HlwBYiqNCfhPUyozjoV4zJIBgH0adE/zTVATmeaM1jcNGs6jwkPMpWsF75JuXOoVtkcfpBFyNKloGd82nTiB0A==
+aws-cdk-lib@2.127.0:
+  version "2.127.0"
+  resolved "https://registry.yarnpkg.com/aws-cdk-lib/-/aws-cdk-lib-2.127.0.tgz#dc27045badd07579194c1b1af9f8fdfcfb3093fe"
+  integrity sha512-pEdp2TqgNLYY+kAo68oVzMDEHJevYoRArZJoH+bjM9YTwqRJJiwF1k6tc78e3jca4sCNDZAgX2ytOgqW6lVTWQ==
   dependencies:
     "@aws-cdk/asset-awscli-v1" "^2.2.202"
     "@aws-cdk/asset-kubectl-v20" "^2.1.2"
@@ -4527,7 +4527,7 @@ aws-cdk-lib@2.126.0:
     "@balena/dockerignore" "^1.0.2"
     case "1.6.3"
     fs-extra "^11.2.0"
-    ignore "^5.3.0"
+    ignore "^5.3.1"
     jsonschema "^1.4.1"
     minimatch "^3.1.2"
     punycode "^2.3.1"
@@ -4558,10 +4558,26 @@ aws-iot-device-sdk@^2.2.13:
     mqtt "4.2.8"
     websocket-stream "^5.5.2"
 
-aws-sdk@^2.1501.0, aws-sdk@^2.1542.0, aws-sdk@^2.1554.0:
+aws-sdk@^2.1501.0, aws-sdk@^2.1542.0:
   version "2.1554.0"
   resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1554.0.tgz#69ab8735261ef09a146b53147424d49f806b9ef9"
   integrity sha512-MmCfg80CKCOFeC8K6UMSmDLPPGVesAglOzmO2IMEugHt10UsK2szOa+C31IHO2PEnjhn+l4WoVlaBAN/YQX+tQ==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    util "^0.12.4"
+    uuid "8.0.0"
+    xml2js "0.6.2"
+
+aws-sdk@^2.1555.0:
+  version "2.1555.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1555.0.tgz#7949469e60bde38a7f0662fd6c585e274a061ece"
+  integrity sha512-hjYs1MQkJxdHnoZm8hypqGy4PQKWVUs19McdXRXWNXr97V0il4xcUpIfvjHQ9x9EjP0p/jyIx9/BtyrR68jnUQ==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -5444,10 +5460,15 @@ dot-prop@^6.0.1:
   dependencies:
     is-obj "^2.0.0"
 
-dotenv@^16.0.3, dotenv@^16.4.1:
+dotenv@^16.0.3:
   version "16.4.1"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.1.tgz#1d9931f1d3e5d2959350d1250efab299561f7f11"
   integrity sha512-CjA3y+Dr3FyFDOAMnxZEGtnW9KBR2M0JvvUtXNW+dYJL5ROWxP9DUHCwgFqpMk0OXCc0ljhaNTr2w/kutYIcHQ==
+
+dotenv@^16.4.2:
+  version "16.4.2"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.2.tgz#7ca798f89ae2011846bbdbf6470785307754120d"
+  integrity sha512-rZSSFxke7d9nYQ5NeMIwp5PP+f8wXgKNljpOb7KtH6SKW1cEqcXAz9VSJYVLKe7Jhup/gUYOkaeSVyK8GJ+nBg==
 
 dreamopt@~0.8.0:
   version "0.8.0"
@@ -6683,7 +6704,7 @@ ieee754@^1.1.13, ieee754@^1.1.4, ieee754@^1.2.1:
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
   integrity sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==
 
-ignore@^5.2.0, ignore@^5.3.0:
+ignore@^5.2.0, ignore@^5.3.0, ignore@^5.3.1:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.3.1.tgz#5073e554cd42c5b33b394375f538b8593e34d4ef"
   integrity sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==
@@ -8408,10 +8429,10 @@ react-remove-scroll@2.5.5:
     use-callback-ref "^1.3.0"
     use-sidecar "^1.1.2"
 
-react-resizable-panels@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/react-resizable-panels/-/react-resizable-panels-2.0.3.tgz#63c47721b86f82dbb740b725595d9ac08d651aa5"
-  integrity sha512-m0upi03cdqCt/g/dUxRQkHiBzo0UDtMIYwcf8qhKM+QG0cnpusOVFKOD2ElpGrtxB/oIxTItuKYsDOeu76JHvg==
+react-resizable-panels@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/react-resizable-panels/-/react-resizable-panels-2.0.4.tgz#67b742c77df2f4a3c4a7428edad7062691b22070"
+  integrity sha512-rVPtUxxETRaChQePc6xwdwcXCH3ZoGmALVFye1NllTHMBddvOtCkJ5c7CLLHErfNwInBNYSrF9OOm23DLop7Vw==
 
 react-style-singleton@^2.2.1:
   version "2.2.1"
@@ -8891,10 +8912,10 @@ sst-aws-cdk@2.124.0:
   optionalDependencies:
     fsevents "2.3.2"
 
-sst@2.40.1:
-  version "2.40.1"
-  resolved "https://registry.yarnpkg.com/sst/-/sst-2.40.1.tgz#8b4e350ec02cd50be90280eab47d1c0f66e9c3ec"
-  integrity sha512-hY5fBgtvyqBwUt/7dhSBSNCrgqt/Lc1opxRmaflKHhnilfWYkiQoZ7fBjU0T3pJL90woMv03uIW/+NwF3ALZgA==
+sst@2.40.3:
+  version "2.40.3"
+  resolved "https://registry.yarnpkg.com/sst/-/sst-2.40.3.tgz#d22917719341af81dba9d71fa30c0d870b996e26"
+  integrity sha512-Lwjw8DpIE57fG1Rra0h/Mp7ykwDVsFe/Y1M/UmTFjpH9EunxuDka2miaI24msLYuov3XNaIFRbdeKLAdigMBXg==
   dependencies:
     "@aws-cdk/aws-lambda-python-alpha" "2.124.0-alpha.0"
     "@aws-cdk/cloud-assembly-schema" "2.124.0"

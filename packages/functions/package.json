@@ -9,9 +9,9 @@
   "dependencies": {
     "@gitshow/db": "*",
     "@gitshow/gitshow-lib": "*",
-    "aws-sdk": "^2.1554.0",
+    "aws-sdk": "^2.1555.0",
     "crypto-js": "^4.2",
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.4.2",
     "sharp": "^0.33.2",
     "twitter-api-v2": "^1.16",
     "@libsql/client": "0.3.3"
