@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@gitshow/gitshow-lib": "*",
-    "@libsql/client": "0.3.3",
-    "dotenv": "^16.4.2",
-    "drizzle-orm": "^0.29.3"
+    "@libsql/client": "0.5.2",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.29.4"
   },
   "devDependencies": {
     "drizzle-kit": "^0.20.14",

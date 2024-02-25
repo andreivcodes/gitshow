@@ -9,16 +9,16 @@
   "dependencies": {
     "@gitshow/db": "*",
     "@gitshow/gitshow-lib": "*",
-    "aws-sdk": "^2.1555.0",
+    "aws-sdk": "^2.1565.0",
     "crypto-js": "^4.2",
-    "dotenv": "^16.4.2",
+    "dotenv": "^16.4.5",
     "sharp": "^0.33.2",
     "twitter-api-v2": "^1.16",
-    "@libsql/client": "0.3.3"
+    "@libsql/client": "0.5.2"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.133",
+    "@types/aws-lambda": "^8.10.134",
     "@types/crypto-js": "^4.2.2",
-    "@types/node": "^20.11.17"
+    "@types/node": "^20.11.20"
   }
 }
