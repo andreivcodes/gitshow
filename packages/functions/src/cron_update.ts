@@ -1,6 +1,6 @@
 import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
-import { db, userTable, lt, eq, and } from "@gitshow/db";
+import { db, userTable, eq, and } from "@gitshow/db";
 import { config } from "dotenv";
 import { UpdateUserEvent } from "@gitshow/gitshow-lib";
 

@@ -18,7 +18,7 @@ export function stack({ stack }: StackContext) {
       function: {
         handler: "packages/functions/src/update_user.handler",
         nodejs: {
-          install: ["@libsql/client", "libsql"],
+          install: ["@libsql/client", "@libsql/linux-x64-gnu", "libsql"],
         },
         environment: {
           TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN ?? "",
@@ -38,7 +38,7 @@ export function stack({ stack }: StackContext) {
       function: {
         handler: "packages/functions/src/cron_update.handler",
         nodejs: {
-          install: ["@libsql/client", "libsql"],
+          install: ["@libsql/client", "@libsql/linux-x64-gnu", "libsql"],
         },
         environment: {
           TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN ?? "",

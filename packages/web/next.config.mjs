@@ -15,6 +15,9 @@ const nextConfig = {
     }
     return config;
   },
+  experimental: {
+    serverComponentsExternalPackages: ["@libsql/client", "@libsql/linux-x64-gnu", "libsql"],
+  },
 };
 
 export default nextConfig;
