@@ -9,7 +9,7 @@
     "typecheck": "tsc -noEmit"
   },
   "dependencies": {
-    "aws-sdk": "^2.1565.0",
+    "aws-sdk": "^2.1566.0",
     "cheerio": "^1.0.0-rc.12",
     "crypto-js": "^4.2",
     "sharp": "^0.33.2",

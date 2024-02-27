@@ -1,4 +1,5 @@
 import { Cron, NextjsSite, Queue, StackContext } from "sst/constructs";
+import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { config as dotenv_config } from "dotenv";
 
 export function stack({ stack }: StackContext) {
@@ -57,9 +58,11 @@ export function stack({ stack }: StackContext) {
     },
     customDomain: {
       domainName:
-        stack.stage === "production" ? "git.show" : `${stack.stage}.git.show`,
-      domainAlias: stack.stage === "production" ? "www.git.show" : undefined,
-      hostedZone: "git.show",
+        "git.show",
+      isExternalDomain: true,
+      cdk: {
+        certificate: Certificate.fromCertificateArn(stack, "1cfbc0f1-620b-428c-a4fe-08da7ecfb611", "arn:aws:acm:us-east-1:339712892826:certificate/1cfbc0f1-620b-428c-a4fe-08da7ecfb611"),
+      },
     },
     environment: {
       NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
@@ -87,6 +90,7 @@ export function stack({ stack }: StackContext) {
   });
 
   stack.addOutputs({
-    SiteUrl: web.customDomainUrl || web.url,
+    url: web.url,
+    customDomainUrl: web.customDomainUrl
   });
 }
