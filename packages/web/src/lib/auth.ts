@@ -4,13 +4,14 @@ import Github, { GithubProfile } from "next-auth/providers/github";
 import TwitterLegacy, {
   TwitterLegacyProfile,
 } from "next-auth/providers/twitter";
-import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
+import { db } from "@gitshow/db";
 import { stripe } from "./stripe-server";
 import {
   AvailableThemeNames,
   SubscriptionPlan,
   UpdateInterval,
 } from "@gitshow/gitshow-lib";
+import { user } from "@gitshow/db/src/schema";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -52,22 +53,19 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session }) {
       if (session.user.email) {
-        const u = await db
-          .select()
-          .from(userTable)
-          .where(eq(userTable.email, session.user.email))
-          .then(takeUniqueOrNull);
+
+        const u = await db.selectFrom("user").selectAll().where("email", "=", session.user.email!).executeTakeFirst();
 
         if (u) {
           session.user.automaticallyUpdate = u.automaticallyUpdate === true;
-          session.user.lastUpdateTimestamp = u.lastUpdateTimestamp;
+          session.user.lastUpdateTimestamp = u.lastUpdateTimestamp ?? null;
           session.user.updateInterval = u.updateInterval as UpdateInterval;
 
           session.user.theme = u.theme as AvailableThemeNames;
 
           session.user.subscriptionPlan =
             u.subscriptionPlan as SubscriptionPlan;
-          session.user.lastSubscriptionTimestamp = u.lastSubscriptionTimestamp;
+          session.user.lastSubscriptionTimestamp = u.lastSubscriptionTimestamp ?? null;
 
           session.user.fullyAuthenticated =
             session.user.githubAuthenticated &&
@@ -75,19 +73,18 @@ export const authOptions: NextAuthOptions = {
           session.user.githubAuthenticated = u.githubAuthenticated === true;
           session.user.twitterAuthenticated = u.twitterAuthenticated === true;
 
-          session.user.twittername = u.twitterUsername;
-          session.user.twittertag = u.twitterTag;
-          session.user.twitterimage = u.twitterPicture;
+          session.user.twittername = u.twitterUsername ?? null;
+          session.user.twittertag = u.twitterTag ?? null;
+          session.user.twitterimage = u.twitterPicture ?? null;
 
-          session.user.githubname = u.githubUsername;
+          session.user.githubname = u.githubUsername ?? null;
         }
       }
       return session;
     },
     async jwt({ token, account, profile }) {
       if (account && profile && profile.email) {
-        type NewUser = typeof userTable.$inferInsert;
-        let updateData: NewUser = {
+        let updateData: user = {
           email: profile?.email,
         };
 
@@ -127,17 +124,12 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const existingUser = await db
-            .select()
-            .from(userTable)
-            .where(eq(userTable.email, profile.email))
-            .then(takeUniqueOrNull);
+
+          const existingUser = await db.selectFrom("user").selectAll().where("email", "=", profile.email).executeTakeFirst();
 
           if (existingUser) {
-            await db
-              .update(userTable)
-              .set(updateData)
-              .where(eq(userTable.email, profile.email));
+            await db.updateTable("user").where("email", "=", profile.email).set(updateData).execute();
+
           } else {
             const stripeCustomer = await stripe.customers.create({
               email: profile.email,
@@ -145,10 +137,10 @@ export const authOptions: NextAuthOptions = {
 
             updateData.stripeCustomerId = stripeCustomer.id;
             updateData.subscriptionPlan = SubscriptionPlan.Free;
-            updateData.theme = "classic";
+            updateData.theme = "normal";
             updateData.updateInterval = UpdateInterval.EVERY_MONTH;
 
-            await db.insert(userTable).values(updateData);
+            await db.insertInto("user").values(updateData).execute();
           }
         } catch (error) {
           console.error("Failed to retrieve or update user:", error);

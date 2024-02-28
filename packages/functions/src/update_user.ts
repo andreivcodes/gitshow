@@ -1,10 +1,10 @@
 import { contribSvg, UpdateUserEvent } from "@gitshow/gitshow-lib";
-import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
 import { SQSEvent } from "aws-lambda";
 import { AES, enc } from "crypto-js";
 import sharp from "sharp";
 import { TwitterApi } from "twitter-api-v2";
 import { config } from "dotenv";
+import { db } from "@gitshow/db";
 
 export const handler = async (event: SQSEvent) => {
   config();
@@ -15,11 +15,7 @@ export const handler = async (event: SQSEvent) => {
 
     const event = JSON.parse(record.body) as UpdateUserEvent;
 
-    const u = await db
-      .select()
-      .from(userTable)
-      .where(eq(userTable.email, event.email))
-      .then(takeUniqueOrNull);
+    const u = await db.selectFrom("user").selectAll().where("email", "=", event.email).execute();
 
     console.log(u);
 
@@ -48,10 +44,7 @@ export const handler = async (event: SQSEvent) => {
 
     await client.v1.updateAccountProfileBanner(bannerJpeg);
 
-    await db
-      .update(userTable)
-      .set({ lastUpdateTimestamp: new Date() })
-      .where(eq(userTable.email, event.email));
+    await db.updateTable("user").where("email", "=", event.email).set({ lastUpdateTimestamp: new Date() }).execute()
 
     console.log(`Updated ${event.githubUsername}`);
     result.push({ message: `Updated ${event.githubUsername}` });

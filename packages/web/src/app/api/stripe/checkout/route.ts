@@ -1,9 +1,9 @@
 import { NextRequest } from "next/server";
 import { StripePlans, SubscriptionPlan } from "@gitshow/gitshow-lib";
-import { db, takeUniqueOrNull, userTable, eq } from "@gitshow/db";
 import { stripe } from "@/lib/stripe-server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { db } from "@gitshow/db";
 
 export interface CheckoutRequest {
   plan: SubscriptionPlan;
@@ -32,11 +32,7 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  const u = await db
-    .select()
-    .from(userTable)
-    .where(eq(userTable.email, session.user.email))
-    .then(takeUniqueOrNull);
+  const u = await db.selectFrom("user").selectAll().where("email", "=", session.user.email).executeTakeFirst();
 
   if (!u || !u.stripeCustomerId)
     return Response.json({
@@ -50,7 +46,7 @@ export async function POST(req: NextRequest) {
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "subscription",
-    customer: u.stripeCustomerId!,
+    customer: u.stripeCustomerId,
     line_items: [
       {
         price: productIds[plan],
@@ -58,14 +54,7 @@ export async function POST(req: NextRequest) {
       },
     ],
     success_url: `${process.env.NEXT_PUBLIC_WEBSITE_URL}?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: process.env.NEXT_PUBLIC_WEBSITE_URL,
-    subscription_data: {
-      metadata: {
-        userId: u.id,
-        email: u.email,
-        stripeCustomerId: u.stripeCustomerId!,
-      },
-    },
+    cancel_url: process.env.NEXT_PUBLIC_WEBSITE_URL
   });
 
   if (!checkoutSession.url) {

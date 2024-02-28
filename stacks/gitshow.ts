@@ -1,4 +1,4 @@
-import { Cron, NextjsSite, Queue, StackContext } from "sst/constructs";
+import { Cron, NextjsSite, Queue, RDS, StackContext } from "sst/constructs";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { config as dotenv_config } from "dotenv";
 
@@ -13,21 +13,23 @@ export function stack({ stack }: StackContext) {
     runtime: "nodejs18.x",
   });
 
+  const db = new RDS(stack, "Database", {
+    engine: "postgresql13.9",
+    defaultDatabaseName: "gitshow_db",
+    migrations: "libs/db/migrations",
+  });
+
   const queue = new Queue(stack, "UpdateQueue", {
     consumer: {
       function: {
         handler: "packages/functions/src/update_user.handler",
-        nodejs: {
-          install: ["@libsql/client", "@libsql/linux-x64-gnu", "libsql"],
-        },
         environment: {
-          TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN ?? "",
-          TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL ?? "",
           TOKENS_ENCRYPT: process.env.TOKENS_ENCRYPT ?? "",
           GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID ?? "",
           TWITTER_CONSUMER_KEY: process.env.TWITTER_CONSUMER_KEY ?? "",
           TWITTER_CONSUMER_SECRET: process.env.TWITTER_CONSUMER_SECRET ?? "",
         },
+        bind: [db]
       },
     },
   });
@@ -37,14 +39,7 @@ export function stack({ stack }: StackContext) {
     job: {
       function: {
         handler: "packages/functions/src/cron_update.handler",
-        nodejs: {
-          install: ["@libsql/client", "@libsql/linux-x64-gnu", "libsql"],
-        },
-        environment: {
-          TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN ?? "",
-          TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL ?? "",
-        },
-        bind: [queue],
+        bind: [queue, db],
       },
     },
   });
@@ -75,8 +70,6 @@ export function stack({ stack }: StackContext) {
         stack.stage === "production"
           ? "https://git.show"
           : `https://${stack.stage}.git.show`,
-      TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN ?? "",
-      TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL ?? "",
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ?? "",
       STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ?? "",
       STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET ?? "",
@@ -86,7 +79,7 @@ export function stack({ stack }: StackContext) {
       GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID ?? "",
       GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET ?? "",
     },
-    bind: [queue],
+    bind: [queue, db],
   });
 
   stack.addOutputs({

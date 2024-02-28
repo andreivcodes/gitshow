@@ -2,7 +2,7 @@
 
 import { authOptions } from "@/lib/auth";
 import { queueJob } from "@/lib/sqs";
-import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
+import { db } from "@gitshow/db";
 import {
   AvailableThemeNames,
   PREMIUM_INTERVALS,
@@ -24,11 +24,7 @@ export async function setUpdateInterval(interval: UpdateInterval) {
   )
     redirect("/signin");
 
-  const user = await db
-    .select()
-    .from(userTable)
-    .where(eq(userTable.email, session.user.email!))
-    .then(takeUniqueOrNull);
+  const user = await db.selectFrom("user").selectAll().where("email", "=", session.user.email!).executeTakeFirstOrThrow();
 
   if (
     PREMIUM_INTERVALS.includes(interval) &&
@@ -36,10 +32,11 @@ export async function setUpdateInterval(interval: UpdateInterval) {
   )
     redirect("/subscribe");
 
-  await db
-    .update(userTable)
-    .set({ updateInterval: interval })
-    .where(eq(userTable.email, session.user.email));
+
+  await db.updateTable("user")
+    .where("email", "=", session.user.email)
+    .set({ updateInterval: interval }).execute();
+
 
   await queueJob(session.user.email, false);
 
@@ -57,11 +54,7 @@ export async function setUserTheme(theme: AvailableThemeNames) {
   )
     redirect("/signin");
 
-  const user = await db
-    .select()
-    .from(userTable)
-    .where(eq(userTable.email, session.user.email!))
-    .then(takeUniqueOrNull);
+  const user = await db.selectFrom("user").selectAll().where("email", "=", session.user.email).executeTakeFirstOrThrow();
 
   if (
     PREMIUM_THEMES.includes(theme) &&
@@ -69,10 +62,7 @@ export async function setUserTheme(theme: AvailableThemeNames) {
   )
     redirect("/subscribe");
 
-  await db
-    .update(userTable)
-    .set({ theme: theme })
-    .where(eq(userTable.email, session.user.email));
+  await db.updateTable("user").where("email", "=", session.user.email).set({ theme: theme }).execute();
 
   await queueJob(session.user.email, false);
 
@@ -92,10 +82,7 @@ export async function setAutomaticallyUpdate(update: boolean) {
   )
     redirect("/signin");
 
-  await db
-    .update(userTable)
-    .set({ automaticallyUpdate: update })
-    .where(eq(userTable.email, session.user.email));
+  await db.updateTable("user").where("email", "=", session.user.email).set({ automaticallyUpdate: update }).execute();
 
   if (update) await queueJob(session.user.email, false);
 

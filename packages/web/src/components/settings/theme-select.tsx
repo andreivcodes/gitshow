@@ -33,7 +33,7 @@ export default function ThemeSelect({
               : "🎨 Your theme has been changed.",
         });
       }}
-      defaultValue={theme ? theme : "classic"}
+      defaultValue={theme ? theme : "normal"}
     >
       <SelectTrigger>
         <SelectValue placeholder="Select a theme" />

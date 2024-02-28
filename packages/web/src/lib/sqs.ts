@@ -1,16 +1,13 @@
 import { SubscriptionPlan, UpdateUserEvent } from "@gitshow/gitshow-lib";
 import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
-import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
+import { db } from "@gitshow/db";
 
 const sqs = new AWS.SQS();
 
 export const queueJob = async (email: string, bypassRatelimit?: boolean) => {
-  const u = await db
-    .select()
-    .from(userTable)
-    .where(eq(userTable.email, email))
-    .then(takeUniqueOrNull);
+
+  const u = await db.selectFrom("user").selectAll().where("email", "=", email).executeTakeFirst();
 
   if (!u) {
     throw new Error("Invalid user");

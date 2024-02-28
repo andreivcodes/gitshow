@@ -4,18 +4,8 @@
   "main": "./src/index.ts",
   "private": true,
   "type": "module",
-  "scripts": {
-    "db:push": "drizzle-kit push:sqlite",
-    "schema:gen": "drizzle-kit generate:sqlite --out migrations --schema schema.ts"
-  },
+  "scripts": {},
   "dependencies": {
-    "@gitshow/gitshow-lib": "*",
-    "@libsql/client": "0.5.2",
-    "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.29.4"
-  },
-  "devDependencies": {
-    "drizzle-kit": "^0.20.14",
-    "ts-node": "^10.9.2"
+    "kysely-data-api": "^0.2.1"
   }
 }

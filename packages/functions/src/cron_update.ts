@@ -1,8 +1,8 @@
 import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
-import { db, userTable, eq, and } from "@gitshow/db";
 import { config } from "dotenv";
 import { UpdateUserEvent } from "@gitshow/gitshow-lib";
+import { db } from "@gitshow/db";
 
 const sqs = new AWS.SQS();
 
@@ -11,25 +11,13 @@ export async function handler() {
 
   const timestampThreshold = new Date();
 
-  const users = await db
-    .select({
-      email: userTable.email,
-      githubUsername: userTable.githubUsername,
-      twitterOAuthToken: userTable.twitterOAuthToken,
-      twitterOAuthTokenSecret: userTable.twitterOAuthTokenSecret,
-      subscriptionPlan: userTable.subscriptionPlan,
-      lastUpdateTimestamp: userTable.lastUpdateTimestamp,
-      updateInterval: userTable.updateInterval,
-      theme: userTable.theme,
-    })
-    .from(userTable)
-    .where(
-      and(
-        eq(userTable.automaticallyUpdate, true),
-        eq(userTable.twitterAuthenticated, true),
-        eq(userTable.githubAuthenticated, true)
-      )
-    );
+  const users = await db.selectFrom("user").selectAll()
+    .where((eb) => eb.and([
+      eb('automaticallyUpdate', '=', true),
+      eb('twitterAuthenticated', '=', true),
+      eb('githubAuthenticated', "=", true)
+    ])).execute();
+
 
   const usersToRefresh = users.filter(
     (u) =>
@@ -40,7 +28,7 @@ export async function handler() {
   console.log(`Updating ${usersToRefresh.length} users.`);
 
   for (const user of usersToRefresh) {
-    await sqs.sendMessage({
+    sqs.sendMessage({
       QueueUrl: Queue.UpdateQueue.queueUrl,
       MessageBody: JSON.stringify({
         email: user.email,

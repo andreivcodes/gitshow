@@ -14,3 +14,7 @@ node_modules
 # local env files
 .env
 .env.*
+.idea/gitshow.iml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml

@@ -1,10 +1,9 @@
 import { queueJob } from "@/lib/sqs";
 import { stripe } from "@/lib/stripe-server";
-import { db, userTable, eq, takeUniqueOrNull } from "@gitshow/db";
+import { db } from "@gitshow/db";
 import {
   StripePlans,
   SubscriptionPlan,
-  UpdateInterval,
 } from "@gitshow/gitshow-lib";
 import { NextResponse } from "next/server";
 import { Stripe } from "stripe";
@@ -35,11 +34,7 @@ export async function POST(req: Request) {
 
   console.log(`${event.type} - ${customerId} - ${priceId}`);
 
-  const u = await db
-    .select()
-    .from(userTable)
-    .where(eq(userTable.stripeCustomerId, customerId))
-    .then(takeUniqueOrNull);
+  const u = await db.selectFrom("user").selectAll().where("stripeCustomerId", "=", customerId).executeTakeFirst();
 
   console.log(u);
 
@@ -50,29 +45,22 @@ export async function POST(req: Request) {
   switch (event.type) {
     case "customer.subscription.created": {
       if (priceId == StripePlans.Premium) {
-        await db
-          .update(userTable)
-          .set({
-            subscriptionPlan: SubscriptionPlan.Premium,
-            lastSubscriptionTimestamp: new Date(),
-          })
-          .where(eq(userTable.stripeCustomerId, customerId));
 
-        await queueJob(u.email, true);
+        await db.updateTable("user")
+          .where("stripeCustomerId", "=", customerId)
+          .set({ "subscriptionPlan": SubscriptionPlan.Premium, lastSubscriptionTimestamp: new Date() }).execute();
+
+        await queueJob(u.email!, true);
       }
       break;
     }
     case "customer.subscription.deleted": {
-      await db
-        .update(userTable)
-        .set({
-          subscriptionPlan: SubscriptionPlan.Free,
-          theme: "classic",
-          updateInterval: UpdateInterval.EVERY_MONTH,
-        })
-        .where(eq(userTable.stripeCustomerId, customerId));
 
-      await queueJob(u.email, true);
+      await db.updateTable("user")
+        .where("stripeCustomerId", "=", customerId)
+        .set({ subscriptionPlan: SubscriptionPlan.Free, theme: "classic", lastSubscriptionTimestamp: new Date() }).execute();
+
+      await queueJob(u.email!, true);
       break;
     }
     default:
