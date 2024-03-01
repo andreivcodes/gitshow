@@ -10,18 +10,16 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import {
-  setAutomaticallyUpdate,
-  setUpdateInterval,
-  setUserTheme,
-} from "./actions";
-import IntervalSelect from "@/components/settings/interval-select";
-import ThemeSelect from "@/components/settings/theme-select";
-import SignOut from "@/components/settings/sign-out";
+import IntervalSelect from "./_components/interval-select";
+import ThemeSelect from "./_components/theme-select";
+import SignOut from "./_components/sign-out";
 import { Label } from "@/components/ui/label";
-import Update from "@/components/settings/update";
+import Update from "./_components/update";
+import { initAction } from "./actions";
 
 export default async function Settings() {
+  await initAction();
+
   const session = await getServerSession(authOptions);
 
   if (
@@ -39,9 +37,8 @@ export default async function Settings() {
       <CardContent className="flex flex-col gap-6 w-full">
         <div className="flex flex-col gap-4 justify-center w-full">
           <Update
-            automaticallyUpdate={session.user.automaticallyUpdate}
-            lastUpdate={session.user.lastUpdateTimestamp}
-            setAutomaticallyUpdate={setAutomaticallyUpdate}
+            automaticallyUpdate={session?.user.automaticallyUpdate}
+            lastUpdate={session?.user.lastUpdateTimestamp}
           />
           <hr></hr>
           <div>
@@ -49,7 +46,6 @@ export default async function Settings() {
             <ThemeSelect
               subscription_type={session?.user.subscriptionPlan}
               theme={session?.user.theme}
-              setUserTheme={setUserTheme}
             />
           </div>
           <div>
@@ -57,7 +53,6 @@ export default async function Settings() {
             <IntervalSelect
               subscription_type={session?.user.subscriptionPlan}
               interval={session?.user.updateInterval}
-              setUpdateInterval={setUpdateInterval}
             />
           </div>
         </div>

@@ -1,0 +1,52 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DB_URL")
+}
+
+generator kysely {
+    provider = "prisma-kysely"
+    output   = "./src"
+    fileName = "schema.ts"
+}
+
+model User {
+    id    Int     @id @default(dbgenerated("gen_random_uuid()"))
+    email String  @unique
+    name  String?
+
+    automaticallyUpdate Boolean         @default(true)
+    lastUpdateTimestamp DateTime?
+    updateInterval      RefreshInterval @default(EVERY_MONTH)
+    theme               String          @default("normal")
+
+    subscriptionPlan          SubscriptionPlan @default(FREE)
+    lastSubscriptionTimestamp DateTime?
+    stripeCustomerId          String?
+
+    githubAuthenticated  Boolean @default(false)
+    twitterAuthenticated Boolean @default(false)
+
+    githubId       String?
+    githubUsername String?
+    githubToken    String?
+    twitterId      String?
+
+    twitterUsername         String?
+    twitterTag              String?
+    twitterPicture          String?
+    twitterOAuthToken       String?
+    twitterOAuthTokenSecret String?
+
+    @@map("user")
+}
+
+enum SubscriptionPlan {
+    FREE
+    PREMIUM
+}
+
+enum RefreshInterval {
+    EVERY_DAY
+    EVERY_WEEK
+    EVERY_MONTH
+}

@@ -4,21 +4,15 @@ import Github, { GithubProfile } from "next-auth/providers/github";
 import TwitterLegacy, {
   TwitterLegacyProfile,
 } from "next-auth/providers/twitter";
-import { db } from "@gitshow/db";
+import { RefreshInterval, SubscriptionPlan, NewUser, db, AvailableThemeNames } from "@gitshow/db";
 import { stripe } from "./stripe-server";
-import {
-  AvailableThemeNames,
-  SubscriptionPlan,
-  UpdateInterval,
-} from "@gitshow/gitshow-lib";
-import { user } from "@gitshow/db/src/schema";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       automaticallyUpdate: boolean;
       lastUpdateTimestamp: Date | null;
-      updateInterval: UpdateInterval;
+      updateInterval: RefreshInterval;
 
       theme: AvailableThemeNames;
 
@@ -54,12 +48,12 @@ export const authOptions: NextAuthOptions = {
     async session({ session }) {
       if (session.user.email) {
 
-        const u = await db.selectFrom("user").selectAll().where("email", "=", session.user.email!).executeTakeFirst();
+        const u = await db.selectFrom("user").selectAll().where("email", "=", session.user.email).executeTakeFirst();
 
         if (u) {
           session.user.automaticallyUpdate = u.automaticallyUpdate === true;
           session.user.lastUpdateTimestamp = u.lastUpdateTimestamp ?? null;
-          session.user.updateInterval = u.updateInterval as UpdateInterval;
+          session.user.updateInterval = u.updateInterval as RefreshInterval;
 
           session.user.theme = u.theme as AvailableThemeNames;
 
@@ -84,7 +78,7 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, account, profile }) {
       if (account && profile && profile.email) {
-        let updateData: user = {
+        let updateData: NewUser = {
           email: profile?.email,
         };
 
@@ -136,9 +130,9 @@ export const authOptions: NextAuthOptions = {
             });
 
             updateData.stripeCustomerId = stripeCustomer.id;
-            updateData.subscriptionPlan = SubscriptionPlan.Free;
+            updateData.subscriptionPlan = SubscriptionPlan.FREE;
             updateData.theme = "normal";
-            updateData.updateInterval = UpdateInterval.EVERY_MONTH;
+            updateData.updateInterval = RefreshInterval.EVERY_MONTH;
 
             await db.insertInto("user").values(updateData).execute();
           }

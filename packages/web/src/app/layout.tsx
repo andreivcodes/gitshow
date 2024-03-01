@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "./_components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { Header } from "@/components/header";
-import Feedback from "@/components/feedback";
-import { Footer } from "@/components/footer";
-import Contributions from "@/components/contributions";
-import { SubscriptionPlan, contribSvg } from "@gitshow/gitshow-lib";
+import { Header } from "./_components/header";
+import Feedback from "./_components/feedback";
+import { Footer } from "./_components/footer";
+import Contributions from "./_components/contributions";
+import { contribSvg } from "@gitshow/gitshow-lib";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { SubscriptionPlan } from "@gitshow/db";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,7 +29,7 @@ export default async function RootLayout({
   let svg;
 
   if (!session || !session.user || !session.user.githubname) {
-    svg = await contribSvg("torvalds", "githubDark", SubscriptionPlan.Premium);
+    svg = await contribSvg("torvalds", "githubDark", SubscriptionPlan.PREMIUM);
   } else
     svg = await contribSvg(
       session.user.githubname,
@@ -41,7 +42,7 @@ export default async function RootLayout({
       <body className={`${inter.className}`}>
         <ThemeProvider attribute="class" defaultTheme="dark">
           <main className="orb-container flex min-h-screen flex-col items-center justify-between">
-            <div className="orb" />
+            <div className="orb -z-10" />
             <Header />
             <div className="flex flex-col xl:flex-row w-full justify-around gap-8 p-4 xl:p-24">
               <Contributions

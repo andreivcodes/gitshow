@@ -44,7 +44,7 @@ export default function SignIn() {
               variant="ghost"
               className="pointer-events-none border border-green-600"
             >
-              <Icons.gitHub className="mr-2 h-4 w-4" />
+              <Icons.Github className="mr-2 h-4 w-4" />
               Github
             </Button>
           ) : (
@@ -53,7 +53,7 @@ export default function SignIn() {
               className="w-full p-0"
               onClick={() => signIn("github")}
             >
-              <Icons.gitHub className="mr-2 h-4 w-4" />
+              <Icons.Github className="mr-2 h-4 w-4" />
               Github
             </Button>
           )}
@@ -63,7 +63,7 @@ export default function SignIn() {
               variant="ghost"
               className="pointer-events-none border border-green-600"
             >
-              <Icons.twitter className="mr-2 h-4 w-4" />X
+              <Icons.Twitter className="mr-2 h-4 w-4" />X
             </Button>
           ) : (
             <Button
@@ -71,7 +71,7 @@ export default function SignIn() {
               className="w-full p-0"
               onClick={() => signIn("twitter")}
             >
-              <Icons.twitter className="mr-2 h-4 w-4" />X
+              <Icons.Twitter className="mr-2 h-4 w-4" />X
             </Button>
           )}
         </div>

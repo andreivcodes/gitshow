@@ -1,5 +1,16 @@
 import { sql } from 'kysely'
 
+const SubscriptionPlan = {
+  FREE: "FREE",
+  PREMIUM: "PREMIUM"
+}
+
+const RefreshInterval = {
+  EVERY_DAY: "EVERY_DAY",
+  EVERY_WEEK: "EVERY_WEEK",
+  EVERY_MONTH: "EVERY_MONTH"
+}
+
 export async function up(db) {
   console.log("Running init migration");
 
@@ -9,10 +20,10 @@ export async function up(db) {
     .addColumn("email", "text", (col) => col.notNull())
     .addColumn("name", "text")
     .addColumn("automaticallyUpdate", "boolean", (col) => col.notNull().defaultTo(true))
-    .addColumn("lastUpdateTimestamp", "timestamp", (col) => col.notNull().defaultTo(new Date()))
-    .addColumn("updateInterval", "integer", (col) => col.notNull().defaultTo(720))
+    .addColumn("lastUpdateTimestamp", "timestamp", (col) => col.defaultTo(sql`now()`).notNull())
+    .addColumn("updateInterval", "text", (col) => col.notNull().defaultTo(RefreshInterval.EVERY_MONTH))
     .addColumn("theme", "text", (col) => col.notNull().defaultTo("normal"))
-    .addColumn("subscriptionPlan", "text", (col) => col.notNull().defaultTo("FREE"))
+    .addColumn("subscriptionPlan", "text", (col) => col.notNull().defaultTo(SubscriptionPlan.FREE))
     .addColumn("lastSubscriptionTimestamp", "timestamp")
     .addColumn("stripeCustomerId", "text")
     .addColumn("githubAuthenticated", "boolean", (col) => col.notNull().defaultTo(false))

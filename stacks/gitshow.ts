@@ -1,6 +1,7 @@
 import { Cron, NextjsSite, Queue, RDS, StackContext } from "sst/constructs";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { config as dotenv_config } from "dotenv";
+import { Duration } from "aws-cdk-lib";
 
 export function stack({ stack }: StackContext) {
   dotenv_config();
@@ -29,9 +30,15 @@ export function stack({ stack }: StackContext) {
           TWITTER_CONSUMER_KEY: process.env.TWITTER_CONSUMER_KEY ?? "",
           TWITTER_CONSUMER_SECRET: process.env.TWITTER_CONSUMER_SECRET ?? "",
         },
-        bind: [db]
+        bind: [db],
+        timeout: "5 minutes"
       },
     },
+    cdk: {
+      queue: {
+        visibilityTimeout: Duration.minutes(5)
+      }
+    }
   });
 
   new Cron(stack, "cron_update", {
@@ -40,17 +47,19 @@ export function stack({ stack }: StackContext) {
       function: {
         handler: "packages/functions/src/cron_update.handler",
         bind: [queue, db],
+        timeout: "5 minutes"
       },
     },
   });
 
   const web = new NextjsSite(stack, "web", {
     path: "packages/web",
+    timeout: "60 seconds",
     memorySize: "2 GB",
-    warm: 40,
     imageOptimization: {
       memorySize: "2 GB",
     },
+    warm: 10,
     customDomain: {
       domainName:
         "git.show",

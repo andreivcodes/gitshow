@@ -1,10 +1,10 @@
-import { contribSvg, UpdateUserEvent } from "@gitshow/gitshow-lib";
+import { contribSvg } from "@gitshow/gitshow-lib";
 import { SQSEvent } from "aws-lambda";
 import { AES, enc } from "crypto-js";
 import sharp from "sharp";
 import { TwitterApi } from "twitter-api-v2";
 import { config } from "dotenv";
-import { db } from "@gitshow/db";
+import { UpdateUserEvent, db } from "@gitshow/db";
 
 export const handler = async (event: SQSEvent) => {
   config();

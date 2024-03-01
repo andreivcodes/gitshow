@@ -1,6 +1,6 @@
 "use client";
 
-import { SubscriptionPlan, UpdateInterval } from "@gitshow/gitshow-lib";
+import { SubscriptionPlan, RefreshInterval } from "@gitshow/db";
 import {
   Select,
   SelectContent,
@@ -8,44 +8,47 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { useToast } from "../ui/use-toast";
+} from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+import { setUpdateInterval } from "@/app/settings/actions";
+import { useTransition } from "react";
 
 export default function IntervalSelect({
   subscription_type,
   interval,
-  setUpdateInterval,
 }: {
   subscription_type?: SubscriptionPlan;
-  interval?: UpdateInterval;
-  setUpdateInterval: (interval: UpdateInterval) => void;
+  interval?: RefreshInterval;
 }) {
   const { toast } = useToast();
+  const [_, startTransition] = useTransition();
 
   return (
     <Select
       onValueChange={(e) => {
-        setUpdateInterval(parseInt(e) as UpdateInterval);
         toast({
           description:
-            subscription_type == SubscriptionPlan.Free
+            subscription_type == "FREE"
               ? "⏱️ Your interval has been changed. Changes will take effect on next automatic update."
               : "⏱️ Your interval has been changed.",
         });
+        startTransition(() => {
+          setUpdateInterval((e) as RefreshInterval);
+        });
       }}
       defaultValue={
-        interval ? interval.toString() : UpdateInterval.EVERY_MONTH.toString()
+        interval ? interval : "EVERY_MONTH"
       }
     >
       <SelectTrigger>
         <SelectValue placeholder="Select an update interval" />
       </SelectTrigger>
       <SelectContent>
-        {subscription_type != SubscriptionPlan.Premium ? (
+        {subscription_type != "PREMIUM" ? (
           <SelectGroup>
             <SelectItem
               disabled={true}
-              value={UpdateInterval.EVERY_DAY.toString()}
+              value={"EVERY_DAY"}
             >
               <div className="flex flex-row gap-2">
                 <p className="animate-premium-select rounded-md px-2">
@@ -55,7 +58,7 @@ export default function IntervalSelect({
               </div>
             </SelectItem>
             <SelectItem
-              value={UpdateInterval.EVERY_WEEK.toString()}
+              value={"EVERY_WEEK"}
               disabled={true}
             >
               <div className="flex flex-row gap-2">
@@ -65,21 +68,21 @@ export default function IntervalSelect({
                 <p>Weekly</p>
               </div>
             </SelectItem>
-            <SelectItem value={UpdateInterval.EVERY_MONTH.toString()}>
+            <SelectItem value={"EVERY_MONTH"}>
               <div className="flex flex-row gap-2">Monthly</div>
             </SelectItem>
           </SelectGroup>
         ) : (
           <SelectGroup>
-            <SelectItem value={UpdateInterval.EVERY_DAY.toString()}>
+            <SelectItem value={"EVERY_DAY"}>
               <div className="flex flex-row gap-2">
                 <p>Daily</p>
               </div>
             </SelectItem>
-            <SelectItem value={UpdateInterval.EVERY_WEEK.toString()}>
+            <SelectItem value={"EVERY_WEEK"}>
               <div className="flex flex-row gap-2">Weekly</div>
             </SelectItem>
-            <SelectItem value={UpdateInterval.EVERY_MONTH.toString()}>
+            <SelectItem value={"EVERY_MONTH"}>
               <div className="flex flex-row gap-2">Monthly</div>
             </SelectItem>
           </SelectGroup>

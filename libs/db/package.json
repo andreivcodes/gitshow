@@ -4,8 +4,14 @@
   "main": "./src/index.ts",
   "private": true,
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "generate": "prisma generate"
+  },
   "dependencies": {
     "kysely-data-api": "^0.2.1"
+  },
+  "devDependencies": {
+    "prisma": "^5.10.2",
+    "prisma-kysely": "^1.8.0"
   }
 }

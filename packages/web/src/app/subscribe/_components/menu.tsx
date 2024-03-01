@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { PriceCard } from "./price-card";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { getStripe } from "@/lib/stripe-client";
-import { SubscriptionPlan } from "@gitshow/gitshow-lib";
 import Link from "next/link";
 import { CheckoutRequest } from "@/app/api/stripe/checkout/route";
+import { SubscriptionPlan } from "@gitshow/db";
 
 export type ProductType = {
   name: string;
@@ -19,14 +19,14 @@ export type ProductType = {
 const products: ProductType[] = [
   {
     name: "Free",
-    plan: SubscriptionPlan.Free,
+    plan: "FREE",
     recurrence: "year",
     price: "0,00",
     description: ["Free forever", "Monthly updates"],
   },
   {
     name: "Premium",
-    plan: SubscriptionPlan.Premium,
+    plan: "PREMIUM",
     recurrence: "year",
     price: "25,00",
     description: ["Hourly updates", "More themes", "No branding"],
@@ -36,7 +36,7 @@ const products: ProductType[] = [
 export function PriceMenu({
   currentSubscription,
 }: {
-  currentSubscription: SubscriptionPlan;
+  currentSubscription?: SubscriptionPlan;
 }) {
   const [selectedProduct, setSelectedProduct] = useState<ProductType>(
     products.find((p) => p.plan === currentSubscription) ?? products[0]
@@ -85,20 +85,20 @@ export function PriceMenu({
           </div>
         ))}
       </div>
-      {selectedProduct.plan == SubscriptionPlan.Free && (
+      {selectedProduct.plan == "FREE" && (
         <Link href="/">
           <Button variant="default">Go back</Button>
         </Link>
       )}
 
-      {selectedProduct.plan == SubscriptionPlan.Premium &&
+      {selectedProduct.plan == "PREMIUM" &&
         selectedProduct.plan == currentSubscription && (
           <Link href="https://billing.stripe.com/p/login/test_dR63fYgaNapI6Z26or">
             <Button variant="default">Cancel subscription</Button>
           </Link>
         )}
 
-      {selectedProduct.plan == SubscriptionPlan.Premium &&
+      {selectedProduct.plan == "PREMIUM" &&
         selectedProduct.plan != currentSubscription && (
           <CheckoutButton selectedProduct={selectedProduct} />
         )}

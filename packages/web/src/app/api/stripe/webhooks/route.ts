@@ -1,10 +1,6 @@
 import { queueJob } from "@/lib/sqs";
 import { stripe } from "@/lib/stripe-server";
-import { db } from "@gitshow/db";
-import {
-  StripePlans,
-  SubscriptionPlan,
-} from "@gitshow/gitshow-lib";
+import { StripePlans, SubscriptionPlan, db } from "@gitshow/db";
 import { NextResponse } from "next/server";
 import { Stripe } from "stripe";
 
@@ -48,7 +44,7 @@ export async function POST(req: Request) {
 
         await db.updateTable("user")
           .where("stripeCustomerId", "=", customerId)
-          .set({ "subscriptionPlan": SubscriptionPlan.Premium, lastSubscriptionTimestamp: new Date() }).execute();
+          .set({ "subscriptionPlan": SubscriptionPlan.PREMIUM, lastSubscriptionTimestamp: new Date() }).execute();
 
         await queueJob(u.email!, true);
       }
@@ -58,7 +54,7 @@ export async function POST(req: Request) {
 
       await db.updateTable("user")
         .where("stripeCustomerId", "=", customerId)
-        .set({ subscriptionPlan: SubscriptionPlan.Free, theme: "classic", lastSubscriptionTimestamp: new Date() }).execute();
+        .set({ subscriptionPlan: SubscriptionPlan.FREE, theme: "classic", lastSubscriptionTimestamp: new Date() }).execute();
 
       await queueJob(u.email!, true);
       break;

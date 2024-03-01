@@ -1,6 +1,5 @@
 "use client";
 
-import { AvailableThemeNames, SubscriptionPlan } from "@gitshow/gitshow-lib";
 import {
   Select,
   SelectContent,
@@ -8,29 +7,34 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { useToast } from "../ui/use-toast";
+} from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+import { AvailableThemeNames, SubscriptionPlan } from "@gitshow/db";
+import { setUserTheme } from "@/app/settings/actions";
+import { useTransition } from "react";
 
 export default function ThemeSelect({
   subscription_type,
   theme,
-  setUserTheme,
 }: {
   subscription_type?: SubscriptionPlan;
   theme?: AvailableThemeNames;
-  setUserTheme: (theme: AvailableThemeNames) => void;
 }) {
   const { toast } = useToast();
+  const [_, startTransition] = useTransition();
+
 
   return (
     <Select
       onValueChange={(e) => {
-        setUserTheme(e as AvailableThemeNames);
         toast({
           description:
-            subscription_type == SubscriptionPlan.Free
+            subscription_type == "FREE"
               ? "🎨 Your theme has been changed. Changes will take effect on next automatic update."
               : "🎨 Your theme has been changed.",
+        });
+        startTransition(() => {
+          setUserTheme(e as AvailableThemeNames)
         });
       }}
       defaultValue={theme ? theme : "normal"}
@@ -39,7 +43,7 @@ export default function ThemeSelect({
         <SelectValue placeholder="Select a theme" />
       </SelectTrigger>
       <SelectContent>
-        {subscription_type != SubscriptionPlan.Premium ? (
+        {subscription_type != "PREMIUM" ? (
           <SelectGroup>
             <SelectItem value="normal">
               <p>Normal</p>

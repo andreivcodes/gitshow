@@ -1,9 +1,8 @@
 import { NextRequest } from "next/server";
-import { StripePlans, SubscriptionPlan } from "@gitshow/gitshow-lib";
 import { stripe } from "@/lib/stripe-server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@gitshow/db";
+import { StripePlans, SubscriptionPlan, db } from "@gitshow/db";
 
 export interface CheckoutRequest {
   plan: SubscriptionPlan;
@@ -14,8 +13,8 @@ type SubscriptionIdMap = {
 };
 
 const productIds: SubscriptionIdMap = {
-  [SubscriptionPlan.Free]: "",
-  [SubscriptionPlan.Premium]: StripePlans.Premium,
+  [SubscriptionPlan.FREE]: "",
+  [SubscriptionPlan.PREMIUM]: StripePlans.Premium,
 };
 
 export async function POST(req: NextRequest) {

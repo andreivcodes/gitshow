@@ -1,4 +1,5 @@
 import { authOptions } from "@/lib/auth";
+import { db } from "@gitshow/db";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 

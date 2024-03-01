@@ -3,203 +3,206 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 20 14.3% 4.1%;
-    --card: 0 0% 100%;
-    --card-foreground: 20 14.3% 4.1%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 14.3% 4.1%;
-    --primary: 24 9.8% 10%;
-    --primary-foreground: 60 9.1% 97.8%;
-    --secondary: 60 4.8% 95.9%;
-    --secondary-foreground: 24 9.8% 10%;
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
-    --accent: 60 4.8% 95.9%;
-    --accent-foreground: 24 9.8% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
-    --ring: 20 14.3% 4.1%;
-    --radius: 0.5rem;
-  }
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 20 14.3% 4.1%;
+        --card: 0 0% 100%;
+        --card-foreground: 20 14.3% 4.1%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 20 14.3% 4.1%;
+        --primary: 24 9.8% 10%;
+        --primary-foreground: 60 9.1% 97.8%;
+        --secondary: 60 4.8% 95.9%;
+        --secondary-foreground: 24 9.8% 10%;
+        --muted: 60 4.8% 95.9%;
+        --muted-foreground: 25 5.3% 44.7%;
+        --accent: 60 4.8% 95.9%;
+        --accent-foreground: 24 9.8% 10%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 60 9.1% 97.8%;
+        --border: 20 5.9% 90%;
+        --input: 20 5.9% 90%;
+        --ring: 20 14.3% 4.1%;
+        --radius: 0.5rem;
+    }
 
-  .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 60 9.1% 97.8%;
-    --card: 20 14.3% 4.1%;
-    --card-foreground: 60 9.1% 97.8%;
-    --popover: 20 14.3% 4.1%;
-    --popover-foreground: 60 9.1% 97.8%;
-    --primary: 60 9.1% 97.8%;
-    --primary-foreground: 24 9.8% 10%;
-    --secondary: 12 6.5% 15.1%;
-    --secondary-foreground: 60 9.1% 97.8%;
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 60 9.1% 97.8%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
-    --border: 12 6.5% 15.1%;
-    --input: 12 6.5% 15.1%;
-    --ring: 24 5.7% 82.9%;
-  }
+    .dark {
+        --background: 20 14.3% 4.1%;
+        --foreground: 60 9.1% 97.8%;
+        --card: 20 14.3% 4.1%;
+        --card-foreground: 60 9.1% 97.8%;
+        --popover: 20 14.3% 4.1%;
+        --popover-foreground: 60 9.1% 97.8%;
+        --primary: 60 9.1% 97.8%;
+        --primary-foreground: 24 9.8% 10%;
+        --secondary: 12 6.5% 15.1%;
+        --secondary-foreground: 60 9.1% 97.8%;
+        --muted: 12 6.5% 15.1%;
+        --muted-foreground: 24 5.4% 63.9%;
+        --accent: 12 6.5% 15.1%;
+        --accent-foreground: 60 9.1% 97.8%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 60 9.1% 97.8%;
+        --border: 12 6.5% 15.1%;
+        --input: 12 6.5% 15.1%;
+        --ring: 24 5.7% 82.9%;
+    }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
 }
 
 @keyframes free-select {
-  0%,
-  100% {
-    background-size: 200% 200%;
-    background-position: 0% 50%;
-  }
-  50% {
-    background-size: 200% 200%;
-    background-position: 100% 50%;
-  }
+
+    0%,
+    100% {
+        background-size: 200% 200%;
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-size: 200% 200%;
+        background-position: 100% 50%;
+    }
 }
 
 @keyframes free-select {
-  0%,
-  100% {
-    background: rgba(121, 145, 176, 0.75);
-    background-size: 200% 200%;
-    background-position: 0% 50%;
-  }
-  50% {
-    background: rgba(121, 145, 176, 0.75);
-    background-size: 200% 200%;
-    background-position: 0% 50%;
-  }
+
+    0%,
+    100% {
+        background: rgba(121, 145, 176, 0.75);
+        background-size: 200% 200%;
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background: rgba(121, 145, 176, 0.75);
+        background-size: 200% 200%;
+        background-position: 0% 50%;
+    }
 }
 
 @keyframes premium-select {
-  0%,
-  100% {
-    background-image: linear-gradient(
-      90deg,
-      rgba(251, 191, 36, 0.5),
-      rgba(244, 114, 182, 0.5),
-      rgba(147, 51, 234, 0.5),
-      rgba(59, 130, 246, 0.5),
-      rgba(110, 231, 183, 0.5)
-    );
-    background-size: 500% 500%;
-    background-position: 0% 50%;
-  }
-  50% {
-    background-image: linear-gradient(
-      90deg,
-      rgba(251, 191, 36, 0.5),
-      rgba(244, 114, 182, 0.5),
-      rgba(147, 51, 234, 0.5),
-      rgba(59, 130, 246, 0.5),
-      rgba(110, 231, 183, 0.5)
-    );
-    background-size: 500% 500%;
-    background-position: 100% 50%;
-  }
+
+    0%,
+    100% {
+        background-image: linear-gradient(90deg,
+                rgba(251, 191, 36, 0.5),
+                rgba(244, 114, 182, 0.5),
+                rgba(147, 51, 234, 0.5),
+                rgba(59, 130, 246, 0.5),
+                rgba(110, 231, 183, 0.5));
+        background-size: 500% 500%;
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-image: linear-gradient(90deg,
+                rgba(251, 191, 36, 0.5),
+                rgba(244, 114, 182, 0.5),
+                rgba(147, 51, 234, 0.5),
+                rgba(59, 130, 246, 0.5),
+                rgba(110, 231, 183, 0.5));
+        background-size: 500% 500%;
+        background-position: 100% 50%;
+    }
 }
 
 @keyframes moveAndGlow {
-  0% {
-    box-shadow: 0 0 60px 30px rgba(123, 31, 162, 0.2),
-      0 0 120px 60px rgba(76, 201, 240, 0.1),
-      0 0 200px 100px rgba(255, 198, 93, 0.05);
-    transform: translate(50vw, 50vh);
-    background: rgba(123, 31, 162, 0.6);
-    border-radius: 60% 40% 50% 50%;
-    opacity: 0.25;
-  }
-  100% {
-    box-shadow: 0 0 60px 30px rgba(123, 31, 162, 0.2),
-      0 0 120px 60px rgba(76, 201, 240, 0.1),
-      0 0 200px 100px rgba(255, 198, 93, 0.05);
-    transform: translate(25%, 65%) scale(1);
-    background: rgba(123, 31, 162, 0.6);
-    border-radius: 40% 40% 50% 50%;
-    opacity: 0.55;
-  }
-  25% {
-    box-shadow: 0 0 80px 40px rgba(255, 105, 180, 0.3),
-      0 0 160px 80px rgba(255, 87, 34, 0.2),
-      0 0 240px 120px rgba(255, 193, 7, 0.1);
-    transform: translate(10vw, 15vh) scale(1.1);
-    background: rgba(255, 105, 180, 0.6);
-    border-radius: 45% 55% 50% 50%;
-    opacity: 0.35;
-  }
-  50% {
-    box-shadow: 0 0 100px 50px rgba(0, 150, 136, 0.3),
-      0 0 200px 100px rgba(0, 188, 212, 0.2),
-      0 0 300px 150px rgba(0, 230, 118, 0.1);
-    transform: translate(-10vw, 60vh) scale(0.9);
-    background: rgba(0, 150, 136, 0.6);
-    border-radius: 30% 60% 50% 50%;
-    opacity: 0.4;
-  }
-  75% {
-    box-shadow: 0 0 80px 40px rgba(156, 39, 176, 0.3),
-      0 0 160px 80px rgba(103, 58, 183, 0.2),
-      0 0 240px 120px rgba(63, 81, 181, 0.1);
-    transform: translate(55vw, -15vh) scale(1.05);
-    background: rgba(156, 39, 176, 0.6);
-    border-radius: 50% 50% 50% 50%;
-    opacity: 0.15;
-  }
+    0% {
+        box-shadow: 0 0 60px 30px rgba(123, 31, 162, 0.2),
+            0 0 120px 60px rgba(76, 201, 240, 0.1),
+            0 0 200px 100px rgba(255, 198, 93, 0.05);
+        transform: translate(50vw, 50vh);
+        background: rgba(123, 31, 162, 0.6);
+        border-radius: 60% 40% 50% 50%;
+        opacity: 0.25;
+    }
+
+    100% {
+        box-shadow: 0 0 60px 30px rgba(123, 31, 162, 0.2),
+            0 0 120px 60px rgba(76, 201, 240, 0.1),
+            0 0 200px 100px rgba(255, 198, 93, 0.05);
+        transform: translate(25%, 65%) scale(1);
+        background: rgba(123, 31, 162, 0.6);
+        border-radius: 40% 40% 50% 50%;
+        opacity: 0.55;
+    }
+
+    25% {
+        box-shadow: 0 0 80px 40px rgba(255, 105, 180, 0.3),
+            0 0 160px 80px rgba(255, 87, 34, 0.2),
+            0 0 240px 120px rgba(255, 193, 7, 0.1);
+        transform: translate(10vw, 15vh) scale(1.1);
+        background: rgba(255, 105, 180, 0.6);
+        border-radius: 45% 55% 50% 50%;
+        opacity: 0.35;
+    }
+
+    50% {
+        box-shadow: 0 0 100px 50px rgba(0, 150, 136, 0.3),
+            0 0 200px 100px rgba(0, 188, 212, 0.2),
+            0 0 300px 150px rgba(0, 230, 118, 0.1);
+        transform: translate(-10vw, 60vh) scale(0.9);
+        background: rgba(0, 150, 136, 0.6);
+        border-radius: 30% 60% 50% 50%;
+        opacity: 0.4;
+    }
+
+    75% {
+        box-shadow: 0 0 80px 40px rgba(156, 39, 176, 0.3),
+            0 0 160px 80px rgba(103, 58, 183, 0.2),
+            0 0 240px 120px rgba(63, 81, 181, 0.1);
+        transform: translate(55vw, -15vh) scale(1.05);
+        background: rgba(156, 39, 176, 0.6);
+        border-radius: 50% 50% 50% 50%;
+        opacity: 0.15;
+    }
 }
 
 .orb {
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  animation: moveAndGlow 20s infinite alternate ease-in-out;
-  filter: blur(200px);
-  z-index: -1;
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    animation: moveAndGlow 20s infinite alternate ease-in-out;
+    filter: blur(200px);
 }
 
 .orb-container {
-  position: relative;
-  overflow: hidden;
-  }
-
-.chart-shadow::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  box-shadow: 0px 15px 35px rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  transition: box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-@media screen and (max-width: 500px) {
-  .chart-fade::before {
+.chart-shadow::before {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0) 10%,
-      rgba(0, 0, 0, 1) 100%
-    );
-    transition: background-color 1s ease-in-out;
-  }
+    box-shadow: 0px 15px 35px rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    transition: box-shadow 0.3s ease;
+}
+
+@media screen and (max-width: 500px) {
+    .chart-fade::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right,
+                rgba(0, 0, 0, 0) 10%,
+                rgba(0, 0, 0, 1) 100%);
+        transition: background-color 1s ease-in-out;
+    }
 }

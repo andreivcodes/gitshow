@@ -2,18 +2,13 @@
 
 import { authOptions } from "@/lib/auth";
 import { queueJob } from "@/lib/sqs";
-import { db } from "@gitshow/db";
-import {
-  AvailableThemeNames,
-  PREMIUM_INTERVALS,
-  PREMIUM_THEMES,
-  SubscriptionPlan,
-  UpdateInterval,
-} from "@gitshow/gitshow-lib";
+import { AvailableThemeNames, PREMIUM_INTERVALS, PREMIUM_THEMES, RefreshInterval, SubscriptionPlan, db } from "@gitshow/db";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
-export async function setUpdateInterval(interval: UpdateInterval) {
+export async function initAction() { }
+
+export async function setUpdateInterval(interval: RefreshInterval) {
   const session = await getServerSession(authOptions);
 
   if (
@@ -28,7 +23,7 @@ export async function setUpdateInterval(interval: UpdateInterval) {
 
   if (
     PREMIUM_INTERVALS.includes(interval) &&
-    user.subscriptionPlan != SubscriptionPlan.Premium
+    user.subscriptionPlan != SubscriptionPlan.PREMIUM
   )
     redirect("/subscribe");
 
@@ -58,7 +53,7 @@ export async function setUserTheme(theme: AvailableThemeNames) {
 
   if (
     PREMIUM_THEMES.includes(theme) &&
-    user.subscriptionPlan != SubscriptionPlan.Premium
+    user.subscriptionPlan != SubscriptionPlan.PREMIUM
   )
     redirect("/subscribe");
 

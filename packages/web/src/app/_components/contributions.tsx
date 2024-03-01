@@ -68,17 +68,17 @@ export default function Contributions({
             rotateXUncapped < -tiltEffectSettings.maxx
               ? -tiltEffectSettings.maxx
               : rotateXUncapped > tiltEffectSettings.maxx
-              ? tiltEffectSettings.maxx
-              : rotateXUncapped;
+                ? tiltEffectSettings.maxx
+                : rotateXUncapped;
           const rotateY =
             rotateYUncapped < -tiltEffectSettings.maxy
               ? -tiltEffectSettings.maxy
               : rotateYUncapped > tiltEffectSettings.maxy
-              ? tiltEffectSettings.maxy
-              : rotateYUncapped;
+                ? tiltEffectSettings.maxy
+                : rotateYUncapped;
 
           setRotationStyles({
-            transform: `perspective(${tiltEffectSettings.perspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) 
+            transform: `perspective(${tiltEffectSettings.perspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)
                           scale3d(${tiltEffectSettings.scale}, ${tiltEffectSettings.scale}, ${tiltEffectSettings.scale})`,
             transition: `transform ${tiltEffectSettings.speed}s ${tiltEffectSettings.easing}`,
           });
@@ -127,7 +127,7 @@ export default function Contributions({
         quality={100}
         width={135}
         height={135}
-        alt="Linus Torvalds"
+        alt={twittertag}
       />
 
       <div className="absolute flex bottom-[1em] left-[1em] flex-col justify-start">

@@ -1,10 +1,6 @@
+import { themes, type AvailableThemeNames, type Theme } from "@gitshow/db";
 import { contribData } from "./contribution_data";
-import {
-  type AvailableThemeNames,
-  type Theme,
-  themes,
-  SubscriptionPlan,
-} from "./const";
+import { SubscriptionPlan } from "@gitshow/db/src/schema";
 
 export async function contribSvg(
   username: string,
@@ -97,7 +93,7 @@ export async function contribSvg(
       }</text>`;
   }
 
-  if (type == SubscriptionPlan.Free) {
+  if (type == SubscriptionPlan.FREE) {
     svgContent += `<text x="${watermarkX + paddingLeft}" y="${watermarkY + paddingTop
       }" font-size="10" fill="${currentTheme.text
       }" text-anchor="middle" style="font-family: 'Roboto';">Get yours from git.show</text>`;

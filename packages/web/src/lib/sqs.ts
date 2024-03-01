@@ -1,7 +1,6 @@
-import { SubscriptionPlan, UpdateUserEvent } from "@gitshow/gitshow-lib";
 import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
-import { db } from "@gitshow/db";
+import { SubscriptionPlan, UpdateUserEvent, db } from "@gitshow/db";
 
 const sqs = new AWS.SQS();
 
@@ -19,7 +18,7 @@ export const queueJob = async (email: string, bypassRatelimit?: boolean) => {
     currentDate.getTime() - new Date(u.lastUpdateTimestamp ?? 0).getTime();
 
   if (
-    u.subscriptionPlan == SubscriptionPlan.Free &&
+    u.subscriptionPlan == SubscriptionPlan.FREE &&
     timeDifferenceInMillis < oneMonthInMillis &&
     !bypassRatelimit
   )
