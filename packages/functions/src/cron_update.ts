@@ -20,12 +20,13 @@ export async function handler() {
 
   const usersToRefresh = users.filter(
     (u) =>
-      (u.updateInterval == RefreshInterval.EVERY_DAY && (u.lastUpdateTimestamp.getTime() <
+      u.lastUpdateTimestamp &&
+      ((u.updateInterval == RefreshInterval.EVERY_DAY && (new Date(u.lastUpdateTimestamp).getTime() <
         timestampThreshold.getTime() + 24 * 60 * 60 * 1000)) ||
-      (u.updateInterval == RefreshInterval.EVERY_WEEK && (u.lastUpdateTimestamp.getTime() <
-        timestampThreshold.getTime() + 168 * 60 * 60 * 1000)) ||
-      (u.updateInterval == RefreshInterval.EVERY_MONTH && (u.lastUpdateTimestamp.getTime() <
-        timestampThreshold.getTime() + 720 * 60 * 60 * 1000))
+        (u.updateInterval == RefreshInterval.EVERY_WEEK && (new Date(u.lastUpdateTimestamp).getTime() <
+          timestampThreshold.getTime() + 168 * 60 * 60 * 1000)) ||
+        (u.updateInterval == RefreshInterval.EVERY_MONTH && (new Date(u.lastUpdateTimestamp).getTime() <
+          timestampThreshold.getTime() + 720 * 60 * 60 * 1000)))
   );
 
   console.log(`Updating ${usersToRefresh.length} users.`);
