@@ -31,12 +31,12 @@ export async function contribSvg(
 
   let svgContent = `<svg width="${width}" height="${adjustedHeight}" viewBox="0 0 ${width} ${adjustedHeight}" xmlns="http://www.w3.org/2000/svg">`;
 
-  // Font
-  svgContent += `<defs>
-                  <style type="text/css">
-                    @import url('https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic');
-                  </style>
-                </defs>`;
+  // // Font
+  // svgContent += `<defs>
+  //                 <style type="text/css">
+  //                   @import url('https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic');
+  //                 </style>
+  //               </defs>`;
 
   // Add the background rectangle
   svgContent += `<rect width="${width}" height="${adjustedHeight}" fill="${currentTheme.background}" />`;
@@ -50,7 +50,7 @@ export async function contribSvg(
         if (day === "1")
           svgContent += `<text x="${x}" y="${10 + paddingTop}" font-size="10" fill="${
             currentTheme.text
-          }" style="font-family: 'Roboto';">${months[parseInt(month) - 1]}</text>`;
+          }">${months[parseInt(month) - 1]}</text>`;
 
         const contribution = contributionData.contributions[year]![month]![day];
         const color = currentTheme[`intensity${contribution!.intensity}` as keyof Theme];
@@ -74,15 +74,13 @@ export async function contribSvg(
   for (let i = 0; i < days.length; i++) {
     svgContent += `<text x="${10 + paddingLeft}" y="${
       paddingTop + 20 + i * (cellSize + cellGap) + cellSize / 2 + centerYOffset
-    }" font-size="10" fill="${currentTheme.text}" dominant-baseline="central" style="font-family: 'Roboto';">${
-      days[i]
-    }</text>`;
+    }" font-size="10" fill="${currentTheme.text}" dominant-baseline="central">${days[i]}</text>`;
   }
 
   if (type == SubscriptionPlan.FREE) {
     svgContent += `<text x="${watermarkX + paddingLeft}" y="${watermarkY + paddingTop}" font-size="10" fill="${
       currentTheme.text
-    }" text-anchor="middle" style="font-family: 'Roboto';">Get yours from git.show</text>`;
+    }" text-anchor="middle">Get yours from git.show</text>`;
   }
   svgContent += "</svg>";
 
