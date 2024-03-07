@@ -1,11 +1,11 @@
 import { AvailableThemeNames, Theme, themes } from "../types";
 import { contribData } from "./contributions_data";
-import { SubscriptionPlan } from "@prisma/client"
+import { SubscriptionPlan } from "@prisma/client";
 
 export async function contribSvg(
   username: string,
   theme: AvailableThemeNames,
-  type: SubscriptionPlan
+  type: SubscriptionPlan,
 ): Promise<string> {
   const contributionData = await contribData(username);
 
@@ -13,20 +13,7 @@ export async function contribSvg(
   const cellGap = 2;
   const weeks = 53;
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   const paddingTop = 50;
   const paddingRight = 50;
@@ -59,16 +46,14 @@ export async function contribSvg(
 
   for (const year in contributionData.contributions) {
     for (const month in contributionData.contributions[year]) {
-      for (const day in contributionData.contributions[year][month]) {
+      for (const day in contributionData.contributions[year]![month]) {
         if (day === "1")
-          svgContent += `<text x="${x}" y="${10 + paddingTop
-            }" font-size="10" fill="${currentTheme.text
-            }" style="font-family: 'Roboto';">${months[parseInt(month) - 1]
-            }</text>`;
+          svgContent += `<text x="${x}" y="${10 + paddingTop}" font-size="10" fill="${
+            currentTheme.text
+          }" style="font-family: 'Roboto';">${months[parseInt(month) - 1]}</text>`;
 
-        const contribution = contributionData.contributions[year][month][day];
-        const color =
-          currentTheme[`intensity${contribution.intensity}` as keyof Theme];
+        const contribution = contributionData.contributions[year]![month]![day];
+        const color = currentTheme[`intensity${contribution!.intensity}` as keyof Theme];
 
         svgContent += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="${color}" />`;
 
@@ -87,16 +72,17 @@ export async function contribSvg(
   const centerYOffset = cellSize / 2 - 1;
 
   for (let i = 0; i < days.length; i++) {
-    svgContent += `<text x="${10 + paddingLeft}" y="${paddingTop + 20 + i * (cellSize + cellGap) + cellSize / 2 + centerYOffset
-      }" font-size="10" fill="${currentTheme.text
-      }" dominant-baseline="central" style="font-family: 'Roboto';">${days[i]
-      }</text>`;
+    svgContent += `<text x="${10 + paddingLeft}" y="${
+      paddingTop + 20 + i * (cellSize + cellGap) + cellSize / 2 + centerYOffset
+    }" font-size="10" fill="${currentTheme.text}" dominant-baseline="central" style="font-family: 'Roboto';">${
+      days[i]
+    }</text>`;
   }
 
   if (type == SubscriptionPlan.FREE) {
-    svgContent += `<text x="${watermarkX + paddingLeft}" y="${watermarkY + paddingTop
-      }" font-size="10" fill="${currentTheme.text
-      }" text-anchor="middle" style="font-family: 'Roboto';">Get yours from git.show</text>`;
+    svgContent += `<text x="${watermarkX + paddingLeft}" y="${watermarkY + paddingTop}" font-size="10" fill="${
+      currentTheme.text
+    }" text-anchor="middle" style="font-family: 'Roboto';">Get yours from git.show</text>`;
   }
   svgContent += "</svg>";
 

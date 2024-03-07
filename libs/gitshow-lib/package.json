@@ -2,8 +2,12 @@
   "name": "@gitshow/gitshow-lib",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "./src/index.ts",
-  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build",
+    "start": "yarn build --watch"
+  },
   "devDependencies": {
     "prisma": "^5.10.2"
   },

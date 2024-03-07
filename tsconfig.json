@@ -1,0 +1,4 @@
+{
+  "files": [],
+  "references": [{ "path": "apps/updater" }, { "path": "apps/web" }, { "path": "libs/gitshow-lib" }]
+}
