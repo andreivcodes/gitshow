@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "postinstall": "npx prisma generate",
-    "build-web": "yarn workspace @gitshow/web build",
+    "build-lib": "yarn workspace @gitshow/gitshow-lib build",
+    "build-web": "yarn build-lib && yarn workspace @gitshow/web build",
     "build-updater": "yarn workspace @gitshow/updater build",
     "start-web": "yarn workspace @gitshow/web start",
     "start-updater": "yarn workspace @gitshow/updater start"
