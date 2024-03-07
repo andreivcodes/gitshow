@@ -1,26 +1,15 @@
 {
-  "name": "gitshow",
-  "version": "0.1.0",
+  "name": "git.show",
+  "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "sst dev --profile=gitshow",
-    "build": "sst build --profile=gitshow",
-    "deploy": "sst deploy --profile=gitshow",
-    "remove": "sst remove --profile=gitshow",
-    "console": "sst console --profile=gitshow",
-    "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "@tsconfig/node18": "^18.2.2",
-    "constructs": "10.3.0",
-    "kysely": "0.25",
-    "sst": "2.40.5",
-    "typescript": "^5.3.3",
-    "vitest": "^1.3.1"
+    "build-web": "yarn workspace @gitshow/web build",
+    "build-updater": "yarn workspace @gitshow/updater build",
+    "start-web": "yarn workspace @gitshow/web start",
+    "start-updater": "yarn workspace @gitshow/updater start"
   },
   "workspaces": [
-    "packages/*",
-    "libs/*"
+    "libs/*",
+    "apps/*"
   ]
 }

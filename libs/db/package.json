@@ -1,17 +1,9 @@
 {
   "name": "@gitshow/db",
-  "version": "0.1.0",
-  "main": "./src/index.ts",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "generate": "prisma generate"
-  },
-  "dependencies": {
-    "kysely-data-api": "^0.2.1"
-  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
   "devDependencies": {
-    "prisma": "^5.10.2",
-    "prisma-kysely": "^1.8.0"
+    "prisma": "^5.10.2"
   }
 }

@@ -1,20 +1,5 @@
-# dependencies
-node_modules
-
-# sst
-.sst
-.build
-
-# opennext
-.open-next
-
-# misc
-.DS_Store
-
-# local env files
 .env
-.env.*
-.idea/gitshow.iml
-.idea/modules.xml
-.idea/vcs.xml
-.idea/workspace.xml
+.env.production
+node_modules
+dist
+.DS_Store
