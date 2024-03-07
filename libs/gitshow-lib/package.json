@@ -8,9 +8,6 @@
     "build": "tsc --build",
     "start": "yarn build --watch"
   },
-  "devDependencies": {
-    "prisma": "^5.10.2"
-  },
   "dependencies": {
     "@prisma/client": "^5.10.2",
     "cheerio": "^1.0.0-rc.12"

@@ -9,9 +9,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@gitshow/db": "*",
     "@gitshow/gitshow-lib": "*",
-    "@prisma/client": "^5.10.2",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
