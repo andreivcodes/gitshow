@@ -19,8 +19,8 @@ app.get("/", (_req, res) => {
   res.send("ok");
 });
 
-app.listen(3000, () => {
-  console.log(`Healthcheck is running at http://localhost:3000`);
+app.listen(3333, () => {
+  console.log(`Healthcheck is running at http://localhost:3333`);
 });
 
 cron.schedule("0 */6 * * *", async () => {
