@@ -113,7 +113,9 @@ export const authOptions: NextAuthOptions = {
           const existingUser = await prisma.user.findFirst({ where: { email: profile.email } });
 
           if (existingUser) {
-            await prisma.user.update({ where: { email: profile.email }, data: updateData });
+            const user = await prisma.user.update({ where: { email: profile.email }, data: updateData });
+
+            await redis.publish("update", JSON.stringify({ userId: user.id }));
           } else {
             const stripeCustomer = await stripe.customers.create({
               email: profile.email,
@@ -124,7 +126,8 @@ export const authOptions: NextAuthOptions = {
             updateData.theme = "normal";
             updateData.updateInterval = RefreshInterval.EVERY_MONTH;
 
-            await prisma.user.create({ data: updateData });
+            const user = await prisma.user.create({ data: updateData });
+            await redis.publish("update", JSON.stringify({ userId: user.id }));
           }
         } catch (error) {
           console.error("Failed to retrieve or update user:", error);
