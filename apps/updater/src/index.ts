@@ -56,11 +56,11 @@ redis.subscribe("update", (err, count) => {
   }
 });
 
-redis.on("message", (channel, message) => {
+redis.on("message", async (channel, message) => {
   console.log(`Got message ${message} on ${channel}`);
   const { userId }: { userId: string } = JSON.parse(message);
 
-  update_user({ userId });
+  await update_user({ userId });
 });
 
 const update_user = async ({ userId }: { userId: string }) => {
