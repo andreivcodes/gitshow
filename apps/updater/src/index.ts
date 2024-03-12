@@ -43,9 +43,11 @@ cron.schedule("0 */6 * * *", async () => {
 
   console.log(`Updating ${usersToRefresh.length} users.`);
 
-  for (const user of usersToRefresh) {
-    await redis.publish("update", JSON.stringify({ userId: user.id }));
-  }
+  await Promise.all(
+    usersToRefresh.map(async (user) => {
+      await redis.publish("update", JSON.stringify({ userId: user.id }));
+    }),
+  );
 });
 
 redis.subscribe("update", (err, count) => {
