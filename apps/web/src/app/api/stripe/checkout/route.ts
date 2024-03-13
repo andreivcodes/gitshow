@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { SubscriptionPlan } from "@prisma/client";
 import { StripePlans } from "@gitshow/gitshow-lib";
-import { prisma } from "@/lib/db"
+import { prisma } from "@/lib/db";
 
 export interface CheckoutRequest {
   plan: SubscriptionPlan;
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       },
     ],
     success_url: `${process.env.NEXT_PUBLIC_WEBSITE_URL}?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: process.env.NEXT_PUBLIC_WEBSITE_URL
+    cancel_url: process.env.NEXT_PUBLIC_WEBSITE_URL,
   });
 
   if (!checkoutSession.url) {
