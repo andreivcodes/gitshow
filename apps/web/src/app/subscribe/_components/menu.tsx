@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { PriceCard } from "./price-card";
 import { Button } from "@/components/ui/button";
-import { getStripe } from "@/lib/stripe-client";
 import Link from "next/link";
 import { CheckoutRequest } from "@/app/api/stripe/checkout/route";
 import { SubscriptionPlan } from "@prisma/client";
+import getStripe from "@/lib/stripe-client";
 
 export type ProductType = {
   name: string;
