@@ -105,8 +105,6 @@ const CheckoutButton = ({ selectedProduct }: { selectedProduct: ProductType }) =
       });
       const { session } = await response.json();
 
-      console.log(`key: ${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!}`);
-
       const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
       await stripe?.redirectToCheckout({ sessionId: session.id });
