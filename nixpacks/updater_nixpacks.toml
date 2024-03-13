@@ -2,7 +2,7 @@ providers = ['node']
 buildImage = 'ghcr.io/railwayapp/nixpacks:latest'
 
 [start]
-cmd = 'yarn start-updater'
+cmd = 'yarn add sharp --ignore-engines -W && yarn start-updater'
 
 [phases.build]
 cmds = ['yarn build-updater']
