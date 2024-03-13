@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CheckoutRequest } from "@/app/api/stripe/checkout/route";
 import { SubscriptionPlan } from "@prisma/client";
-import { loadStripe } from "@stripe/stripe-js";
+import getStripe from "@/lib/stripe-client";
 
 export type ProductType = {
   name: string;
@@ -105,8 +105,7 @@ const CheckoutButton = ({ selectedProduct }: { selectedProduct: ProductType }) =
       });
       const { session } = await response.json();
 
-      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-
+      const stripe = await getStripe();
       await stripe?.redirectToCheckout({ sessionId: session.id });
     } catch (error) {
       console.warn("Failed to create checkout session", error);
