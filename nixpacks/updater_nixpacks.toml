@@ -6,3 +6,4 @@ cmd = 'yarn add sharp --ignore-engines -W && yarn start-updater'
 
 [phases.build]
 cmds = ['yarn build-updater']
+nixPkgs = ['...', 'fontconfig']
