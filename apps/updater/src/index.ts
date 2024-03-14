@@ -16,7 +16,7 @@ const redis = new Redis(process.env.REDIS_URL!);
 const app = express();
 
 app.get("/", (_req, res) => {
-  res.send("ok");
+  res.send("OK");
 });
 
 app.listen(3000, () => {
