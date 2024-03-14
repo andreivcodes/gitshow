@@ -3,7 +3,7 @@ buildImage = 'ghcr.io/railwayapp/nixpacks:latest'
 
 [start]
 cmd = 'yarn add sharp --ignore-engines -W && yarn start-updater'
+aptPkgs = ["...", "fontconfig"]
 
 [phases.build]
 cmds = ['yarn build-updater']
-nixPkgs = ['...', 'fontconfig']
