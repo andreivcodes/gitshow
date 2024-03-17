@@ -2,15 +2,18 @@
   "name": "git.show",
   "version": "1.0.0",
   "private": true,
+  "workspaces": [
+    "libs/*",
+    "apps/*"
+  ],
   "scripts": {
-    "postinstall": "npx prisma generate",
     "build-lib": "yarn workspace @gitshow/gitshow-lib build",
-    "build-web": "yarn build-lib && yarn workspace @gitshow/web build",
     "build-updater": "yarn build-lib && yarn workspace @gitshow/updater build",
-    "start-web": "yarn workspace @gitshow/web start",
-    "start-updater": "yarn workspace @gitshow/updater start"
+    "build-web": "yarn build-lib && yarn workspace @gitshow/web build",
+    "postinstall": "npx prisma generate",
+    "start-updater": "yarn workspace @gitshow/updater start",
+    "start-web": "yarn workspace @gitshow/web start"
   },
-  "workspaces": ["libs/*", "apps/*"],
   "devDependencies": {
     "prisma": "^5.11.0"
   },
