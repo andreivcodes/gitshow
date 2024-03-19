@@ -24,21 +24,26 @@ app.listen(3000, () => {
 });
 
 cron.schedule("0 */6 * * *", async () => {
-  const timestampThreshold = new Date();
-
   const users = await prisma.user.findMany({
-    where: { automaticallyUpdate: true, twitterAuthenticated: true, githubAuthenticated: true },
+    where: {
+      automaticallyUpdate: true,
+      twitterAuthenticated: true,
+      githubAuthenticated: true,
+    },
   });
 
   const usersToRefresh = users.filter(
     (u) =>
       u.lastUpdateTimestamp &&
       ((u.updateInterval == RefreshInterval.EVERY_DAY &&
-        new Date(u.lastUpdateTimestamp).getTime() < timestampThreshold.getTime() + 24 * 60 * 60 * 1000) ||
+        new Date(u.lastUpdateTimestamp).getTime() <
+          new Date().getTime() + 24 * 60 * 60 * 1000) ||
         (u.updateInterval == RefreshInterval.EVERY_WEEK &&
-          new Date(u.lastUpdateTimestamp).getTime() < timestampThreshold.getTime() + 168 * 60 * 60 * 1000) ||
+          new Date(u.lastUpdateTimestamp).getTime() <
+            new Date().getTime() + 168 * 60 * 60 * 1000) ||
         (u.updateInterval == RefreshInterval.EVERY_MONTH &&
-          new Date(u.lastUpdateTimestamp).getTime() < timestampThreshold.getTime() + 720 * 60 * 60 * 1000)),
+          new Date(u.lastUpdateTimestamp).getTime() <
+            new Date().getTime() + 720 * 60 * 60 * 1000))
   );
 
   console.log(`Updating ${usersToRefresh.length} users.`);
@@ -46,7 +51,7 @@ cron.schedule("0 */6 * * *", async () => {
   await Promise.all(
     usersToRefresh.map(async (user) => {
       await redis.publish("update", JSON.stringify({ userId: user.id }));
-    }),
+    })
   );
 });
 
@@ -54,7 +59,9 @@ redis.subscribe("update", (err, count) => {
   if (err) {
     console.error("Failed to subscribe: %s", err.message);
   } else {
-    console.log(`Subscribed successfully! This client is currently subscribed to ${count} channels.`);
+    console.log(
+      `Subscribed successfully! This client is currently subscribed to ${count} channels.`
+    );
   }
 });
 
@@ -71,15 +78,30 @@ const update_user = async ({ userId }: { userId: string }) => {
   const client = new TwitterApi({
     appKey: process.env.TWITTER_CONSUMER_KEY!,
     appSecret: process.env.TWITTER_CONSUMER_SECRET!,
-    accessToken: AES.decrypt(user.twitterOAuthToken!, process.env.TOKENS_ENCRYPT!).toString(enc.Utf8),
-    accessSecret: AES.decrypt(user.twitterOAuthTokenSecret!, process.env.TOKENS_ENCRYPT!).toString(enc.Utf8),
+    accessToken: AES.decrypt(
+      user.twitterOAuthToken!,
+      process.env.TOKENS_ENCRYPT!
+    ).toString(enc.Utf8),
+    accessSecret: AES.decrypt(
+      user.twitterOAuthTokenSecret!,
+      process.env.TOKENS_ENCRYPT!
+    ).toString(enc.Utf8),
   });
 
-  const bannerSvg = await contribSvg(user.githubUsername!, user.theme as AvailableThemeNames, user.subscriptionPlan);
+  const bannerSvg = await contribSvg(
+    user.githubUsername!,
+    user.theme as AvailableThemeNames,
+    user.subscriptionPlan
+  );
 
-  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 }).jpeg().toBuffer();
+  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 })
+    .jpeg()
+    .toBuffer();
 
   await client.v1.updateAccountProfileBanner(bannerJpeg);
 
-  await prisma.user.update({ where: { id: user.id }, data: { lastUpdateTimestamp: new Date() } });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { lastUpdateTimestamp: new Date() },
+  });
 };
