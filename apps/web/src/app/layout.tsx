@@ -36,7 +36,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <Script defer data-domain="nicepfp.art" src="https://plausible.andreiv.xyz/js/script.js" />
+      <Script defer data-domain="git.show" src="https://plausible.andreiv.xyz/js/script.js" />
       <body className={`${inter.className}`}>
         <ThemeProvider attribute="class" defaultTheme="dark">
           <main className="orb-container flex min-h-screen flex-col items-center justify-between">
