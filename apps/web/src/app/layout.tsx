@@ -11,7 +11,6 @@ import { contribSvg } from "@gitshow/gitshow-lib";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { SubscriptionPlan } from "@prisma/client";
-import Head from "next/head";
 import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
