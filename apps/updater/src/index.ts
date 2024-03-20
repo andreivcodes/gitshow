@@ -37,40 +37,35 @@ cron.schedule("0 */6 * * *", async () => {
     (u) =>
       u.lastUpdateTimestamp &&
       ((u.updateInterval == RefreshInterval.EVERY_DAY &&
-        new Date(u.lastUpdateTimestamp).getTime() <
-          new Date().getTime() + 24 * 60 * 60 * 1000) ||
+        new Date(u.lastUpdateTimestamp).getTime() < new Date().getTime() + 24 * 60 * 60 * 1000) ||
         (u.updateInterval == RefreshInterval.EVERY_WEEK &&
-          new Date(u.lastUpdateTimestamp).getTime() <
-            new Date().getTime() + 7 * 24 * 60 * 60 * 1000) ||
+          new Date(u.lastUpdateTimestamp).getTime() < new Date().getTime() + 7 * 24 * 60 * 60 * 1000) ||
         (u.updateInterval == RefreshInterval.EVERY_MONTH &&
-          new Date(u.lastUpdateTimestamp).getTime() <
-            new Date().getTime() + 30 * 24 * 60 * 60 * 1000))
+          new Date(u.lastUpdateTimestamp).getTime() < new Date().getTime() + 30 * 24 * 60 * 60 * 1000)),
   );
 
   console.log(`Updating ${usersToRefresh.length} users.`);
 
-  await Promise.all(
-    usersToRefresh.map(async (user) => {
-      await redis.publish("update", JSON.stringify({ userId: user.id }));
-    })
-  );
+  for (const user of usersToRefresh) {
+    await redis.publish("update", JSON.stringify({ userId: user.id }));
+  }
 });
 
 redis.subscribe("update", (err, count) => {
   if (err) {
     console.error("Failed to subscribe: %s", err.message);
   } else {
-    console.log(
-      `Subscribed successfully! This client is currently subscribed to ${count} channels.`
-    );
+    console.log(`Subscribed successfully! This client is currently subscribed to ${count} channels.`);
   }
 });
 
-redis.on("message", async (channel, message) => {
+redis.on("message", (channel, message) => {
   console.log(`Got message ${message} on ${channel}`);
   const { userId }: { userId: string } = JSON.parse(message);
 
-  await update_user({ userId });
+  update_user({ userId })
+    .then(() => console.log(`updated ${userId}`))
+    .catch((e) => console.log(`failed to update ${userId} - ${e}`));
 });
 
 const update_user = async ({ userId }: { userId: string }) => {
@@ -81,25 +76,13 @@ const update_user = async ({ userId }: { userId: string }) => {
   const client = new TwitterApi({
     appKey: process.env.TWITTER_CONSUMER_KEY!,
     appSecret: process.env.TWITTER_CONSUMER_SECRET!,
-    accessToken: AES.decrypt(
-      user.twitterOAuthToken!,
-      process.env.TOKENS_ENCRYPT!
-    ).toString(enc.Utf8),
-    accessSecret: AES.decrypt(
-      user.twitterOAuthTokenSecret!,
-      process.env.TOKENS_ENCRYPT!
-    ).toString(enc.Utf8),
+    accessToken: AES.decrypt(user.twitterOAuthToken!, process.env.TOKENS_ENCRYPT!).toString(enc.Utf8),
+    accessSecret: AES.decrypt(user.twitterOAuthTokenSecret!, process.env.TOKENS_ENCRYPT!).toString(enc.Utf8),
   });
 
-  const bannerSvg = await contribSvg(
-    user.githubUsername!,
-    user.theme as AvailableThemeNames,
-    user.subscriptionPlan
-  );
+  const bannerSvg = await contribSvg(user.githubUsername!, user.theme as AvailableThemeNames, user.subscriptionPlan);
 
-  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 })
-    .jpeg()
-    .toBuffer();
+  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 }).jpeg().toBuffer();
 
   await client.v1.updateAccountProfileBanner(bannerJpeg);
 
