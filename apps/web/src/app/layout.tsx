@@ -12,6 +12,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { SubscriptionPlan } from "@prisma/client";
 import Head from "next/head";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,9 +36,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <Head>
-        <script defer data-domain="nicepfp.art" src="https://plausible.andreiv.xyz/js/script.js"></script>
-      </Head>
+      <Script defer data-domain="nicepfp.art" src="https://plausible.andreiv.xyz/js/script.js" />
       <body className={`${inter.className}`}>
         <ThemeProvider attribute="class" defaultTheme="dark">
           <main className="orb-container flex min-h-screen flex-col items-center justify-between">
