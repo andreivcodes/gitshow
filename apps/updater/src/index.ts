@@ -10,7 +10,6 @@ import cron from "node-cron";
 
 dotenv_config();
 
-const prisma = new PrismaClient();
 const redis = new Redis(process.env.REDIS_URL!);
 
 const app = express();
@@ -24,6 +23,8 @@ app.listen(3000, () => {
 });
 
 cron.schedule("0 */6 * * *", async () => {
+  const prisma = new PrismaClient();
+
   const users = await prisma.user.findMany({
     where: {
       automaticallyUpdate: true,
@@ -40,10 +41,10 @@ cron.schedule("0 */6 * * *", async () => {
           new Date().getTime() + 24 * 60 * 60 * 1000) ||
         (u.updateInterval == RefreshInterval.EVERY_WEEK &&
           new Date(u.lastUpdateTimestamp).getTime() <
-            new Date().getTime() + 168 * 60 * 60 * 1000) ||
+            new Date().getTime() + 7 * 24 * 60 * 60 * 1000) ||
         (u.updateInterval == RefreshInterval.EVERY_MONTH &&
           new Date(u.lastUpdateTimestamp).getTime() <
-            new Date().getTime() + 720 * 60 * 60 * 1000))
+            new Date().getTime() + 30 * 24 * 60 * 60 * 1000))
   );
 
   console.log(`Updating ${usersToRefresh.length} users.`);
@@ -73,6 +74,8 @@ redis.on("message", async (channel, message) => {
 });
 
 const update_user = async ({ userId }: { userId: string }) => {
+  const prisma = new PrismaClient();
+
   const user = await prisma.user.findFirstOrThrow({ where: { id: userId } });
 
   const client = new TwitterApi({
