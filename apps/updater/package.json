@@ -12,7 +12,7 @@
     "@gitshow/gitshow-lib": "*",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
-    "express": "^4.19.0",
+    "express": "^4.19.1",
     "ioredis": "^5.3.2",
     "node-cron": "^3.0.3",
     "sharp": "^0.33.2",
@@ -22,6 +22,6 @@
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.30",
     "@types/node-cron": "^3.0.11",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.3"
   }
 }
