@@ -6,7 +6,7 @@ import { TwitterApi } from "twitter-api-v2";
 import { AES, enc } from "crypto-js";
 import { AvailableThemeNames, contribSvg } from "@gitshow/gitshow-lib";
 import sharp from "sharp";
-import cron from "node-cron";
+import schedule from "node-schedule";
 
 dotenv_config();
 
@@ -22,7 +22,7 @@ app.listen(3000, () => {
   console.log(`Healthcheck is running at http://localhost:3000`);
 });
 
-cron.schedule("0 */6 * * *", async () => {
+schedule.scheduleJob("0 */6 * * *", async () => {
   const prisma = new PrismaClient();
 
   const users = await prisma.user.findMany({
@@ -37,19 +37,17 @@ cron.schedule("0 */6 * * *", async () => {
     (u) =>
       u.lastUpdateTimestamp &&
       ((u.updateInterval == RefreshInterval.EVERY_DAY &&
-        new Date(u.lastUpdateTimestamp).getTime() <
-          new Date().getTime() + 24 * 60 * 60 * 1000) ||
+        new Date(u.lastUpdateTimestamp).getTime() < new Date().getTime() + 24 * 60 * 60 * 1000) ||
         (u.updateInterval == RefreshInterval.EVERY_WEEK &&
-          new Date(u.lastUpdateTimestamp).getTime() <
-            new Date().getTime() + 7 * 24 * 60 * 60 * 1000) ||
+          new Date(u.lastUpdateTimestamp).getTime() < new Date().getTime() + 7 * 24 * 60 * 60 * 1000) ||
         (u.updateInterval == RefreshInterval.EVERY_MONTH &&
-          new Date(u.lastUpdateTimestamp).getTime() <
-            new Date().getTime() + 30 * 24 * 60 * 60 * 1000))
+          new Date(u.lastUpdateTimestamp).getTime() < new Date().getTime() + 30 * 24 * 60 * 60 * 1000)),
   );
 
   console.log(`Updating ${usersToRefresh.length} users.`);
 
   for (const user of usersToRefresh) {
+    console.log(`Request update for ${user.id}`);
     await redis.publish("update", JSON.stringify({ userId: user.id }));
   }
 });
@@ -58,19 +56,17 @@ redis.subscribe("update", (err, count) => {
   if (err) {
     console.error("Failed to subscribe: %s", err.message);
   } else {
-    console.log(
-      `Subscribed successfully! This client is currently subscribed to ${count} channels.`
-    );
+    console.log(`Subscribed successfully! This client is currently subscribed to ${count} channels.`);
   }
 });
 
 redis.on("message", async (channel, message) => {
-  console.log(`Got message ${message} on ${channel}`);
+  console.log(`Got request ${message} on ${channel}`);
   const { userId }: { userId: string } = JSON.parse(message);
 
   update_user({ userId })
-    .then(() => console.log(`updated ${userId}`))
-    .catch((e) => console.log(`failed to update ${userId} - ${e}`));
+    .then(() => console.log(`Updated ${userId}`))
+    .catch((e) => console.log(`Failed to update ${userId} - ${e}`));
 });
 
 const update_user = async ({ userId }: { userId: string }) => {
@@ -81,25 +77,13 @@ const update_user = async ({ userId }: { userId: string }) => {
   const client = new TwitterApi({
     appKey: process.env.TWITTER_CONSUMER_KEY!,
     appSecret: process.env.TWITTER_CONSUMER_SECRET!,
-    accessToken: AES.decrypt(
-      user.twitterOAuthToken!,
-      process.env.TOKENS_ENCRYPT!
-    ).toString(enc.Utf8),
-    accessSecret: AES.decrypt(
-      user.twitterOAuthTokenSecret!,
-      process.env.TOKENS_ENCRYPT!
-    ).toString(enc.Utf8),
+    accessToken: AES.decrypt(user.twitterOAuthToken!, process.env.TOKENS_ENCRYPT!).toString(enc.Utf8),
+    accessSecret: AES.decrypt(user.twitterOAuthTokenSecret!, process.env.TOKENS_ENCRYPT!).toString(enc.Utf8),
   });
 
-  const bannerSvg = await contribSvg(
-    user.githubUsername!,
-    user.theme as AvailableThemeNames,
-    user.subscriptionPlan
-  );
+  const bannerSvg = await contribSvg(user.githubUsername!, user.theme as AvailableThemeNames, user.subscriptionPlan);
 
-  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 })
-    .jpeg()
-    .toBuffer();
+  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 }).jpeg().toBuffer();
 
   await client.v1.updateAccountProfileBanner(bannerJpeg);
 
