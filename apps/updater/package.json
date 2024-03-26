@@ -12,7 +12,7 @@
     "@gitshow/gitshow-lib": "*",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
-    "express": "^4.19.1",
+    "express": "^4.19.2",
     "ioredis": "^5.3.2",
     "node-schedule": "^2.1.1",
     "sharp": "^0.33.3",

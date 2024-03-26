@@ -10,7 +10,8 @@ import schedule from "node-schedule";
 
 dotenv_config();
 
-const redis = new Redis(process.env.REDIS_URL!);
+const redispub = new Redis(process.env.REDIS_URL!);
+const redissub = new Redis(process.env.REDIS_URL!);
 
 const app = express();
 
@@ -48,11 +49,11 @@ schedule.scheduleJob("0 */6 * * *", async () => {
 
   for (const user of usersToRefresh) {
     console.log(`Request update for ${user.id}`);
-    await redis.publish("update", JSON.stringify({ userId: user.id }));
+    await redispub.publish("update", JSON.stringify({ userId: user.id }));
   }
 });
 
-redis.subscribe("update", (err, count) => {
+redissub.subscribe("update", (err, count) => {
   if (err) {
     console.error("Failed to subscribe: %s", err.message);
   } else {
@@ -60,7 +61,7 @@ redis.subscribe("update", (err, count) => {
   }
 });
 
-redis.on("message", async (channel, message) => {
+redissub.on("message", async (channel, message) => {
   console.log(`Got request ${message} on ${channel}`);
   const { userId }: { userId: string } = JSON.parse(message);
 
