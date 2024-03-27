@@ -51,6 +51,7 @@ schedule.scheduleJob("0 */6 * * *", async () => {
     console.log(`Request update for ${user.id}`);
     await redispub.publish("update", JSON.stringify({ userId: user.id }));
   }
+  prisma.$disconnect();
 });
 
 redissub.subscribe("update", (err, count) => {
@@ -92,4 +93,6 @@ const update_user = async ({ userId }: { userId: string }) => {
     where: { id: user.id },
     data: { lastUpdateTimestamp: new Date() },
   });
+
+  prisma.$disconnect();
 };
