@@ -5,8 +5,7 @@ import TwitterLegacy, { TwitterLegacyProfile } from "next-auth/providers/twitter
 import { stripe } from "./stripe-server";
 import { RefreshInterval, SubscriptionPlan } from "@prisma/client";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
-import { QUEUE_NAME, Rabbit_Message, prisma } from "@/lib/db";
-import amqplib from "amqplib";
+import { QUEUE_NAME, Rabbit_Message, prisma, rbmq_ch } from "@/lib/db";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -116,15 +115,11 @@ export const authOptions: NextAuthOptions = {
           if (existingUser) {
             const user = await prisma.user.update({ where: { email: profile.email }, data: updateData });
 
-            let rbmq_conn = await amqplib.connect(process.env.RABBITMQ_URL!);
-            let rbmq_ch = await rbmq_conn.createChannel();
-
             const message: Rabbit_Message = {
               userId: user.id,
             };
 
-            if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
-            rbmq_conn.close();
+            rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
           } else {
             const stripeCustomer = await stripe.customers.create({
               email: profile.email,
@@ -137,15 +132,11 @@ export const authOptions: NextAuthOptions = {
 
             const user = await prisma.user.create({ data: updateData });
 
-            let rbmq_conn = await amqplib.connect(process.env.RABBITMQ_URL!);
-            let rbmq_ch = await rbmq_conn.createChannel();
-
             const message: Rabbit_Message = {
               userId: user.id,
             };
 
-            if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
-            rbmq_conn.close();
+            rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
           }
         } catch (error) {
           console.error("Failed to retrieve or update user:", error);

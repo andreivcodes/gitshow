@@ -1,10 +1,9 @@
-import { QUEUE_NAME, Rabbit_Message, prisma } from "@/lib/db";
+import { QUEUE_NAME, Rabbit_Message, prisma, rbmq_ch } from "@/lib/db";
 import { stripe } from "@/lib/stripe-server";
 import { StripePlans } from "@gitshow/gitshow-lib";
 import { SubscriptionPlan } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { Stripe } from "stripe";
-import amqplib from "amqplib";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -55,15 +54,11 @@ export async function POST(req: Request) {
           },
         });
 
-        let rbmq_conn = await amqplib.connect(process.env.RABBITMQ_URL!);
-        let rbmq_ch = await rbmq_conn.createChannel();
-
         const message: Rabbit_Message = {
           userId: u.id,
         };
 
-        if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
-        await rbmq_conn.close();
+        rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
       }
       break;
     }
@@ -77,15 +72,11 @@ export async function POST(req: Request) {
         },
       });
 
-      let rbmq_conn = await amqplib.connect(process.env.RABBITMQ_URL!);
-      let rbmq_ch = await rbmq_conn.createChannel();
-
       const message: Rabbit_Message = {
         userId: u.id,
       };
 
-      if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
-      await rbmq_conn.close();
+      rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
 
       break;
     }
