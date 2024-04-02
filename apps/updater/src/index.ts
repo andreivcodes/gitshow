@@ -1,4 +1,3 @@
-import Redis from "ioredis";
 import { config as dotenv_config } from "dotenv";
 import { PrismaClient, RefreshInterval } from "@prisma/client";
 import express from "express";
@@ -7,21 +6,47 @@ import { AES, enc } from "crypto-js";
 import { AvailableThemeNames, contribSvg } from "@gitshow/gitshow-lib";
 import sharp from "sharp";
 import schedule from "node-schedule";
+import amqplib from "amqplib";
 
 dotenv_config();
 
-const redispub = new Redis(process.env.REDIS_URL!);
-const redissub = new Redis(process.env.REDIS_URL!);
+let rbmq_conn: amqplib.Connection | undefined;
+let rbmq_ch: amqplib.Channel | undefined;
 
-const app = express();
+const QUEUE_NAME = "update";
 
-app.get("/", (_req, res) => {
-  res.send("OK");
-});
+type Message = {
+  userId: string;
+};
 
-app.listen(3000, () => {
-  console.log(`Healthcheck is running at http://localhost:3000`);
-});
+async function setupQueue() {
+  rbmq_conn = await amqplib.connect(process.env.RABBITMQ_URL!);
+  rbmq_ch = await rbmq_conn.createChannel();
+  await rbmq_ch.assertQueue(QUEUE_NAME);
+
+  rbmq_ch.consume(QUEUE_NAME, async (msg) => {
+    if (msg !== null) {
+      const message = JSON.parse(msg.content.toString()) as Message;
+
+      await update_user(message)
+        .then(() => {
+          console.log(`Updated ${message.userId}`);
+          rbmq_ch!.ack(msg);
+        })
+        .catch((e) => {
+          console.log(`Failed to update ${message.userId} - ${e}`);
+          rbmq_ch!.nack(msg);
+        });
+    }
+  });
+}
+
+setupQueue()
+  .then(() => console.log("RabbitMQ set up!"))
+  .catch((err) => {
+    console.error("Error setting up RabbitMQ:", err);
+    process.exit(1);
+  });
 
 schedule.scheduleJob("0 */6 * * *", async () => {
   const prisma = new PrismaClient();
@@ -49,26 +74,14 @@ schedule.scheduleJob("0 */6 * * *", async () => {
 
   for (const user of usersToRefresh) {
     console.log(`Request update for ${user.id}`);
-    await redispub.publish("update", JSON.stringify({ userId: user.id }));
+
+    const message: Message = {
+      userId: user.id,
+    };
+
+    if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
   }
   prisma.$disconnect();
-});
-
-redissub.subscribe("update", (err, count) => {
-  if (err) {
-    console.error("Failed to subscribe: %s", err.message);
-  } else {
-    console.log(`Subscribed successfully! This client is currently subscribed to ${count} channels.`);
-  }
-});
-
-redissub.on("message", async (channel, message) => {
-  console.log(`Got request ${message} on ${channel}`);
-  const { userId }: { userId: string } = JSON.parse(message);
-
-  update_user({ userId })
-    .then(() => console.log(`Updated ${userId}`))
-    .catch((e) => console.log(`Failed to update ${userId} - ${e}`));
 });
 
 const update_user = async ({ userId }: { userId: string }) => {
@@ -96,3 +109,13 @@ const update_user = async ({ userId }: { userId: string }) => {
 
   prisma.$disconnect();
 };
+
+const app = express();
+
+app.get("/", (_req, res) => {
+  res.send("OK");
+});
+
+app.listen(3000, () => {
+  console.log(`Healthcheck is running at http://localhost:3000`);
+});
