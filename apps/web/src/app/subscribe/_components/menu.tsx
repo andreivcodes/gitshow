@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
 import { PriceCard } from "./price-card";
 import { Button } from "@/components/ui/button";
@@ -38,10 +37,10 @@ export function PriceMenu({ currentSubscription }: { currentSubscription?: Subsc
     products.find((p) => p.plan === currentSubscription) ?? products[0],
   );
 
-  const productRefs = useRef(new Map()).current;
+  const productRefs = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
-    const selectedRef = productRefs.get(selectedProduct);
+    const selectedRef = productRefs.current.find((ref) => ref.dataset.plan === selectedProduct.plan);
     if (selectedRef) {
       selectedRef.scrollIntoView({
         behavior: "smooth",
@@ -49,8 +48,7 @@ export function PriceMenu({ currentSubscription }: { currentSubscription?: Subsc
         block: "nearest",
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSubscription]);
+  }, [currentSubscription, selectedProduct.plan]);
 
   return (
     <div className="flex flex-col items-center">
@@ -59,7 +57,16 @@ export function PriceMenu({ currentSubscription }: { currentSubscription?: Subsc
       </div>
       <div className="mb-5 flex snap-x snap-proximity flex-row items-center gap-10 overflow-x-auto scroll-smooth pt-10 md:justify-center">
         {products.map((product) => (
-          <div className="snap-center" key={product.plan} ref={(el) => productRefs.set(product.plan, el)}>
+          <div
+            className="snap-center"
+            key={product.plan}
+            ref={(el) => {
+              if (el && !productRefs.current.find((ref) => ref.dataset.plan === product.plan)) {
+                productRefs.current.push(el);
+                el.dataset.plan = product.plan;
+              }
+            }}
+          >
             <div
               key={product.name}
               onClick={() => {
@@ -74,19 +81,19 @@ export function PriceMenu({ currentSubscription }: { currentSubscription?: Subsc
           </div>
         ))}
       </div>
-      {selectedProduct.plan == "FREE" && (
+      {selectedProduct.plan === "FREE" && (
         <Link href="/">
           <Button variant="default">Go back</Button>
         </Link>
       )}
 
-      {selectedProduct.plan == "PREMIUM" && selectedProduct.plan == currentSubscription && (
+      {selectedProduct.plan === "PREMIUM" && selectedProduct.plan === currentSubscription && (
         <Link href="https://billing.stripe.com/p/login/test_dR63fYgaNapI6Z26or">
           <Button variant="default">Cancel subscription</Button>
         </Link>
       )}
 
-      {selectedProduct.plan == "PREMIUM" && selectedProduct.plan != currentSubscription && (
+      {selectedProduct.plan === "PREMIUM" && selectedProduct.plan !== currentSubscription && (
         <CheckoutButton selectedProduct={selectedProduct} />
       )}
     </div>

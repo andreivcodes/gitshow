@@ -5,7 +5,8 @@ import { AvailableThemeNames, PREMIUM_INTERVALS, PREMIUM_THEMES } from "@gitshow
 import { RefreshInterval, SubscriptionPlan } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { prisma, redis } from "@/lib/db";
+import { QUEUE_NAME, Rabbit_Message, prisma } from "@/lib/db";
+import amqplib from "amqplib";
 
 export async function initAction() {}
 
@@ -26,7 +27,15 @@ export async function setUpdateInterval(interval: RefreshInterval) {
 
   await prisma.user.update({ where: { email: session.user.email }, data: { updateInterval: interval } });
 
-  await redis.publish("update", JSON.stringify({ userId: user.id }));
+  let rbmq_conn = await amqplib.connect(process.env.RABBITMQ_URL!);
+  let rbmq_ch = await rbmq_conn.createChannel();
+
+  const message: Rabbit_Message = {
+    userId: user.id,
+  };
+
+  if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
+  rbmq_conn.close();
 
   session.user.updateInterval = interval;
 }
@@ -48,7 +57,15 @@ export async function setUserTheme(theme: AvailableThemeNames) {
 
   await prisma.user.update({ where: { email: session.user.email }, data: { theme: theme } });
 
-  await redis.publish("update", JSON.stringify({ userId: user.id }));
+  let rbmq_conn = await amqplib.connect(process.env.RABBITMQ_URL!);
+  let rbmq_ch = await rbmq_conn.createChannel();
+
+  const message: Rabbit_Message = {
+    userId: user.id,
+  };
+
+  if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
+  rbmq_conn.close();
 
   session.user.theme = theme;
 
@@ -71,7 +88,15 @@ export async function setAutomaticallyUpdate(update: boolean) {
     data: { automaticallyUpdate: update },
   });
 
-  if (update) await redis.publish("update", JSON.stringify({ userId: user.id }));
+  let rbmq_conn = await amqplib.connect(process.env.RABBITMQ_URL!);
+  let rbmq_ch = await rbmq_conn.createChannel();
+
+  const message: Rabbit_Message = {
+    userId: user.id,
+  };
+
+  if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
+  rbmq_conn.close();
 
   session.user.automaticallyUpdate = update;
 }
