@@ -12,6 +12,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { SubscriptionPlan } from "@prisma/client";
 import Script from "next/script";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,12 +43,14 @@ export default async function RootLayout({
             <div className="orb -z-10" />
             <Header />
             <div className="flex w-full flex-col justify-around gap-8 p-4 xl:flex-row xl:p-24">
-              <Contributions
-                name={session?.user.twittername ?? "Linus Torvalds"}
-                twittertag={session?.user.twittertag ?? "@Linus__Torvalds"}
-                picture={session?.user.twitterimage ?? "/linus.jpeg"}
-                svg={svg}
-              />
+              <Suspense>
+                <Contributions
+                  name={session?.user.twittername ?? "Linus Torvalds"}
+                  twittertag={session?.user.twittertag ?? "@Linus__Torvalds"}
+                  picture={session?.user.twitterimage ?? "/linus.jpeg"}
+                  svg={svg}
+                />
+              </Suspense>
               {children}
             </div>
             <Feedback />
