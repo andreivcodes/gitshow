@@ -35,7 +35,7 @@ export async function setUpdateInterval(interval: RefreshInterval) {
   };
 
   if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
-  rbmq_conn.close();
+  await rbmq_conn.close();
 
   session.user.updateInterval = interval;
 }
@@ -65,7 +65,7 @@ export async function setUserTheme(theme: AvailableThemeNames) {
   };
 
   if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
-  rbmq_conn.close();
+  await rbmq_conn.close();
 
   session.user.theme = theme;
 
@@ -96,7 +96,7 @@ export async function setAutomaticallyUpdate(update: boolean) {
   };
 
   if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
-  rbmq_conn.close();
+  await rbmq_conn.close();
 
   session.user.automaticallyUpdate = update;
 }

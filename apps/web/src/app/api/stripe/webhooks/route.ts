@@ -63,7 +63,7 @@ export async function POST(req: Request) {
         };
 
         if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
-        rbmq_conn.close();
+        await rbmq_conn.close();
       }
       break;
     }
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       };
 
       if (rbmq_ch) rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
-      rbmq_conn.close();
+      await rbmq_conn.close();
 
       break;
     }
