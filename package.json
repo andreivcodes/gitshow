@@ -15,7 +15,7 @@
     "start-web": "yarn workspace @gitshow/web start"
   },
   "devDependencies": {
-    "prisma": "^5.12.0"
+    "prisma": "^5.12.1"
   },
   "prisma": {
     "schema": "./libs/db/prisma/schema.prisma"
