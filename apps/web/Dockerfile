@@ -55,20 +55,5 @@ COPY libs/gitshow-lib/ libs/gitshow-lib/
 # Build the project
 RUN yarn build-web
 
-# Use a minimal Node.js image for the final stage
-FROM node:alpine
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the built project and required files from the builder stage
-COPY --from=builder /app/apps/web/ /app/apps/web/
-COPY --from=builder /app/libs/gitshow-lib/ /app/libs/gitshow-lib/
-COPY --from=builder /app/node_modules/ /app/node_modules/
-COPY --from=builder /app/package.json /app/
-COPY --from=builder /app/yarn.lock /app/
-COPY --from=builder /app/.yarnrc.yml /app/
-COPY --from=builder /app/.yarn /app/.yarn
-
 # Set the default command
 CMD ["yarn", "start-web"]

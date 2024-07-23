@@ -16,13 +16,6 @@ COPY prisma/ prisma/
 # Install dependencies
 RUN npm install -g corepack@latest && corepack enable
 
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    libpng-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 RUN yarn install --mode=update-lockfile
 RUN yarn install
 
@@ -50,21 +43,6 @@ COPY libs/gitshow-lib/ libs/gitshow-lib/
 
 # Build the project
 RUN yarn build-updater
-
-# Use a minimal Node.js image for the final stage
-FROM node:alpine
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the built project and required files from the builder stage
-COPY --from=builder /app/apps/updater/ /app/apps/updater/
-COPY --from=builder /app/libs/gitshow-lib/ /app/libs/gitshow-lib/
-COPY --from=builder /app/node_modules/ /app/node_modules/
-COPY --from=builder /app/package.json /app/
-COPY --from=builder /app/yarn.lock /app/
-COPY --from=builder /app/.yarnrc.yml /app/
-COPY --from=builder /app/.yarn /app/.yarn
 
 # Set the default command
 CMD ["yarn", "start-updater"]
