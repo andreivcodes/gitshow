@@ -338,6 +338,7 @@ __metadata:
   dependencies:
     "@gitshow/gitshow-lib": "npm:*"
     "@prisma/client": "npm:^5.17.0"
+    "@types/crypto-js": "npm:^4.2.2"
     "@types/express": "npm:^4.17.21"
     "@types/node": "npm:^20.14.11"
     "@types/node-cron": "npm:^3.0.11"

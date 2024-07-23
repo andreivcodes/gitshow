@@ -19,6 +19,7 @@
     "twitter-api-v2": "^1.17.2"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/express": "^4.17.21",
     "@types/node": "^20.14.11",
     "@types/node-cron": "^3.0.11",
