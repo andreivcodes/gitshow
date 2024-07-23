@@ -16,13 +16,6 @@ COPY prisma/ prisma/
 # Install dependencies
 RUN npm install -g corepack@latest && corepack enable
 
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    libpng-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 RUN yarn install --mode=update-lockfile
 RUN yarn install
 
