@@ -48,6 +48,9 @@ export default function ThemeSelect({
           <SelectItem value="spooky">
             <p>Spooky</p>
           </SelectItem>
+          <SelectItem value="winter">
+            <p>Winter</p>
+          </SelectItem>
           <SelectItem value="bnw">
             <p>Black and White</p>
           </SelectItem>

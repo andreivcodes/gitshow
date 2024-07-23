@@ -1,5 +1,4 @@
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -9,10 +8,7 @@ import ThemeSelect from "./_components/theme-select";
 import SignOut from "./_components/sign-out";
 import { Label } from "@/components/ui/label";
 import Update from "./_components/update";
-import { initAction, setAutomaticallyUpdate } from "./actions";
-
-import { useToast } from "@/components/ui/use-toast";
-import Link from "next/link";
+import { initAction, } from "./actions";
 import { cn } from "@/lib/utils";
 
 export default async function Settings() {

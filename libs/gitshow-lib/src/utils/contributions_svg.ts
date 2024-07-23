@@ -51,7 +51,7 @@ export async function contribSvg(
     const level = contributionsMap.get(dateString) || "0";
     const color = currentTheme[`level${level}` as keyof Theme];
 
-    svgContent += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="${color}" />`;
+    svgContent += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="${color}" rx="2" ry="2" />`;
 
     y += cellSize + cellGap;
     if (date.getDay() === 6) { // Saturday

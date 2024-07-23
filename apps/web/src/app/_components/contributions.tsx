@@ -17,14 +17,6 @@ export default function Contributions({
   const [rotationStyles, setRotationStyles] = useState<React.CSSProperties>({});
   const chartRef = useRef<HTMLDivElement>(null);
 
-  const [url, setUrl] = useState("");
-
-  useEffect(() => {
-    const blob = new Blob([svg], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(blob);
-    setUrl(url);
-  }, [svg]);
-
   const tiltEffectSettings = {
     maxx: 15,
     maxy: 15,
@@ -94,12 +86,6 @@ export default function Contributions({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!url) {
-    return (
-      <div className="relative h-[16em] mx-4 2xl:w-[30em] min-w-[500px] flex items-center justify-center"></div>
-    );
-  }
-
   return (
     <div
       ref={chartRef}
@@ -107,19 +93,19 @@ export default function Contributions({
       style={{
         ...rotationStyles,
         transformStyle: "preserve-3d",
+        overflow: "hidden",
       }}
     >
-      <picture>
-        <img
-          className={
-            "absolute w-auto h-auto rounded-t-lg left-1/2 transform -translate-x-1/2 bottom-[6em]"
-          }
-          src={url}
-          width={500}
-          height={250}
-          alt="Contributions Chart"
-        />
-      </picture>
+      <div
+        className="absolute w-auto h-auto rounded-t-lg left-1/2 transform -translate-x-1/2 bottom-[3em]"
+        style={{
+          width: "100%",
+          height: "100%",
+          overflow: "hidden",
+          display: "flex",
+        }}
+        dangerouslySetInnerHTML={{ __html: svg }}
+      />
 
       <Image
         className="absolute rounded-full bottom-[4em] left-[1em] w-[5em] h-[5em]"
