@@ -9,7 +9,7 @@ import { setUpdateInterval } from "../actions";
 export default function IntervalSelect({
   interval,
 }: {
-  interval?: RefreshInterval;
+  interval: RefreshInterval;
 }) {
   const { toast } = useToast();
   const [_, startTransition] = useTransition();
@@ -25,7 +25,7 @@ export default function IntervalSelect({
           setUpdateInterval(e as RefreshInterval);
         });
       }}
-      defaultValue={interval ? interval : "EVERY_MONTH"}
+      defaultValue={interval}
     >
       <SelectTrigger>
         <SelectValue placeholder="Select an update interval" />

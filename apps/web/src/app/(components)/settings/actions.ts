@@ -6,6 +6,7 @@ import { RefreshInterval, } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { revalidateTag } from "next/cache";
 
 export async function initAction() { }
 
@@ -52,7 +53,7 @@ export async function setUserTheme(theme: AvailableThemeNames) {
 
   session.user.theme = theme;
 
-  redirect("/");
+  revalidateTag(user.githubUsername ?? "torvalds");
 }
 
 export async function setAutomaticallyUpdate(update: boolean) {

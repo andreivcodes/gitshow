@@ -9,7 +9,7 @@ import { setUserTheme } from "../actions";
 export default function ThemeSelect({
   theme,
 }: {
-  theme?: AvailableThemeNames;
+  theme: AvailableThemeNames;
 }) {
   const { toast } = useToast();
   const [_, startTransition] = useTransition();
@@ -25,7 +25,7 @@ export default function ThemeSelect({
           setUserTheme(e as AvailableThemeNames);
         });
       }}
-      defaultValue={theme ? theme : "normal"}
+      defaultValue={theme}
     >
       <SelectTrigger>
         <SelectValue placeholder="Select a theme" />

@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth/next";
 import SignIn from "./(components)/signin/signin";
 import Settings from './(components)/settings/settings';
 import Contributions from './(components)/contributions';
+import { unstable_cache } from 'next/cache';
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -14,18 +15,28 @@ export default async function Home() {
       <Suspense fallback={<LoadingContribs />}>
         <Contribs />
       </Suspense>
-      {session ? <Settings /> : <SignIn />}
+      <Suspense fallback={<LoadingContribs />}>
+        {session ? <Settings /> : <SignIn />}
+      </Suspense>
     </div>
   );
 }
 
+
 async function Contribs() {
   const session = await getServerSession(authOptions);
 
-  const svg = await contribSvg(
-    session?.user.githubname ?? "torvalds",
-    session?.user.theme ?? "githubDark"
+  const getCachedSvg = unstable_cache(
+    async (githubUsername, theme) => await contribSvg(
+      githubUsername,
+      theme
+    ),
+    [session?.user.githubname ?? "torvalds"],
+    { revalidate: 60 * 60 }
   );
+
+  const svg = await getCachedSvg(session?.user.githubname ?? "torvalds",
+    session?.user.theme ?? "githubDark");
 
   return <Contributions
     name={session?.user.twittername ?? "Linus Torvalds"}

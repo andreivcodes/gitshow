@@ -12,7 +12,7 @@ export default function SignIn() {
     <Card className="flex min-w-[300px] flex-col justify-evenly p-4">
       <CardHeader className="space-y-1">
         <CardTitle className="flex justify-center text-2xl">Connect your accounts</CardTitle>
-        <CardDescription className="pt-2 text-center">
+        <CardDescription className="pt-2 text-center text-amber-700">
           Your Github and X accounts must use the same email address!
         </CardDescription>
       </CardHeader>

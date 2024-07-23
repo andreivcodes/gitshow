@@ -12,6 +12,11 @@ import { useSession } from "next-auth/react";
 export default function Settings() {
   const { data } = useSession();
 
+  if (!data)
+    return <Card className={cn("m-4 flex flex-col items-start gap-4 xl:min-w-[400px] h-[27.8rem]")}>
+
+    </Card >
+
   return (
     <Card className={cn("m-4 flex flex-col items-start gap-4 xl:min-w-[400px]")}>
       <CardHeader>
