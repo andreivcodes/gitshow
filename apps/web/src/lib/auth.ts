@@ -4,6 +4,8 @@ import TwitterLegacy, { TwitterLegacyProfile } from "next-auth/providers/twitter
 import { RefreshInterval, } from "@prisma/client";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
 import { prisma } from "@/lib/db";
+import AES from "crypto-js/aes";
+
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -80,7 +82,7 @@ export const authOptions: NextAuthOptions = {
             updateData.githubUsername = (profile as GithubProfile).login;
             updateData.name = (profile as GithubProfile).name ?? "Unknown";
 
-            updateData.githubToken = account.access_token;
+            updateData.githubToken = AES.encrypt(JSON.stringify(account.access_token), process.env.TOKENS_SECRET!).toString();
             updateData.githubAuthenticated = true;
             break;
 
@@ -93,8 +95,8 @@ export const authOptions: NextAuthOptions = {
               ".jpg",
             );
 
-            updateData.twitterOAuthToken = account.oauth_token;
-            updateData.twitterOAuthTokenSecret = account.oauth_token_secret;
+            updateData.twitterOAuthToken = AES.encrypt(JSON.stringify(account.oauth_token), process.env.TOKENS_SECRET!).toString();
+            updateData.twitterOAuthTokenSecret = AES.encrypt(JSON.stringify(account.oauth_token_secret), process.env.TOKENS_SECRET!).toString();
             updateData.twitterAuthenticated = true;
             break;
         }

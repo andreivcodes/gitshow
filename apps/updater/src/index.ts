@@ -5,6 +5,8 @@ import { AvailableThemeNames, contribSvg } from "@gitshow/gitshow-lib";
 import sharp from "sharp";
 import schedule from "node-schedule";
 import { PrismaClient, RefreshInterval } from "@prisma/client"
+import AES from "crypto-js/aes";
+import CryptoJS from "crypto-js";
 
 dotenv_config();
 
@@ -88,11 +90,17 @@ schedule.scheduleJob("0 */6 * * *", async () => {
 const update_user = async ({ userId }: { userId: string }) => {
   const user = await prisma.user.findFirstOrThrow({ where: { id: userId } });
 
+  var accessToken = AES.decrypt(user.twitterOAuthToken!, process.env.TOKENS_SECRET!);
+  var decryptedAccessToken = JSON.parse(accessToken.toString(CryptoJS.enc.Utf8));
+
+  var accessSecret = AES.decrypt(user.twitterOAuthTokenSecret!, process.env.TOKENS_SECRET!);
+  var decryptedAccessSecret = JSON.parse(accessSecret.toString(CryptoJS.enc.Utf8));
+
   const client = new TwitterApi({
     appKey: process.env.TWITTER_CONSUMER_KEY!,
     appSecret: process.env.TWITTER_CONSUMER_SECRET!,
-    accessToken: user.twitterOAuthToken!,
-    accessSecret: user.twitterOAuthTokenSecret!,
+    accessToken: decryptedAccessToken,
+    accessSecret: decryptedAccessSecret,
   });
 
   const bannerSvg = await contribSvg(user.githubUsername!, user.theme as AvailableThemeNames);
