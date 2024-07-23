@@ -1,0 +1,74 @@
+# Use the latest Node.js version for the build stage
+FROM node:latest as builder
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package-related files
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn .yarn/
+
+# Copy project-specific package files
+COPY apps/web/package.json apps/web/
+COPY libs/gitshow-lib/package.json libs/gitshow-lib/
+COPY prisma/ prisma/
+
+# Install dependencies
+RUN npm install -g corepack@latest && corepack enable
+
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    libpng-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN yarn install --mode=update-lockfile
+RUN yarn install
+
+# Define build argument
+ARG DATABASE_URL
+ARG BROWSERLESS_WSS
+ARG BROWSERLESS_TOKEN
+ARG GITHUB_CLIENT_ID
+ARG GITHUB_CLIENT_SECRET
+ARG TWITTER_CONSUMER_KEY
+ARG TWITTER_CONSUMER_SECRET
+ARG NEXTAUTH_SECRET
+ARG NEXTAUTH_URL
+
+# Set the environment variable for the build phase
+ENV DATABASE_URL=${DATABASE_URL}
+ENV BROWSERLESS_WSS=${BROWSERLESS_WSS}
+ENV BROWSERLESS_TOKEN=${BROWSERLESS_TOKEN}
+ENV GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+ENV GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+ENV TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
+ENV TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+ENV NEXTAUTH_URL=${NEXTAUTH_URL}
+
+# Copy the remaining project files
+COPY apps/web/ apps/web/
+COPY libs/gitshow-lib/ libs/gitshow-lib/
+
+# Build the project
+RUN yarn build-web
+
+# Use a minimal Node.js image for the final stage
+FROM node:alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the built project and required files from the builder stage
+COPY --from=builder /app/apps/web/ /app/apps/web/
+COPY --from=builder /app/libs/gitshow-lib/ /app/libs/gitshow-lib/
+COPY --from=builder /app/node_modules/ /app/node_modules/
+COPY --from=builder /app/package.json /app/
+COPY --from=builder /app/yarn.lock /app/
+COPY --from=builder /app/.yarnrc.yml /app/
+COPY --from=builder /app/.yarn /app/.yarn
+
+# Set the default command
+CMD ["yarn", "start-web"]

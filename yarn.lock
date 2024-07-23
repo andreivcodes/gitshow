@@ -318,12 +318,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gitshow/db@workspace:libs/db":
-  version: 0.0.0-use.local
-  resolution: "@gitshow/db@workspace:libs/db"
-  languageName: unknown
-  linkType: soft
-
 "@gitshow/gitshow-lib@npm:*, @gitshow/gitshow-lib@workspace:libs/gitshow-lib":
   version: 0.0.0-use.local
   resolution: "@gitshow/gitshow-lib@workspace:libs/gitshow-lib"
