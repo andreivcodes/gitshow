@@ -1,7 +1,6 @@
-import * as React from "react";
 import { Icons } from "@/components/ui/icons";
 
-export function Footer({ className }: React.HTMLAttributes<HTMLElement>) {
+export function Footer() {
   return (
     <div className="container flex items-center justify-center mt-auto pb-24 xl:pb-4">
       <div className="flex flex-col items-center gap-4">
