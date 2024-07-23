@@ -2,9 +2,9 @@
 
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { setUserTheme } from "@/app/settings/actions";
 import { useTransition } from "react";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
+import { setUserTheme } from "../actions";
 
 export default function ThemeSelect({
   theme,

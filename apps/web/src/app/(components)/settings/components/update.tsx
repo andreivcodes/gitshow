@@ -1,9 +1,10 @@
 "use client";
 
-import { setAutomaticallyUpdate } from "@/app/settings/actions";
+
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useTransition } from "react";
+import { setAutomaticallyUpdate } from "../actions";
 
 export default function Update({
   automaticallyUpdate,

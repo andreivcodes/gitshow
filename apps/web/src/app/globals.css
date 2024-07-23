@@ -120,7 +120,7 @@
         box-shadow: 0 0 60px 30px rgba(123, 31, 162, 0.2),
             0 0 120px 60px rgba(76, 201, 240, 0.1),
             0 0 200px 100px rgba(255, 198, 93, 0.05);
-        transform: translate(50vw, 50vh);
+        transform: translate(20vw, 20vh);
         background: rgba(123, 31, 162, 0.6);
         border-radius: 60% 40% 50% 50%;
         opacity: 0.25;

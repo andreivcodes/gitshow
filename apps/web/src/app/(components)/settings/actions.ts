@@ -18,7 +18,7 @@ export async function setUpdateInterval(interval: RefreshInterval) {
     (session.user && session.user.githubAuthenticated === false) ||
     (session.user && session.user.twitterAuthenticated === false)
   )
-    redirect("/signin");
+    redirect("/");
 
   const user = await prisma.user.findFirstOrThrow({ where: { email: session.user.email } });
 
@@ -40,7 +40,7 @@ export async function setUserTheme(theme: AvailableThemeNames) {
     (session.user && session.user.githubAuthenticated === false) ||
     (session.user && session.user.twitterAuthenticated === false)
   )
-    redirect("/signin");
+    redirect("/");
 
   const user = await prisma.user.findFirstOrThrow({ where: { email: session.user.email } });
 
@@ -52,7 +52,7 @@ export async function setUserTheme(theme: AvailableThemeNames) {
 
   session.user.theme = theme;
 
-  redirect("/settings");
+  redirect("/");
 }
 
 export async function setAutomaticallyUpdate(update: boolean) {
@@ -64,7 +64,7 @@ export async function setAutomaticallyUpdate(update: boolean) {
     (session.user && session.user.githubAuthenticated === false) ||
     (session.user && session.user.twitterAuthenticated === false)
   )
-    redirect("/signin");
+    redirect("/");
 
   const user = await prisma.user.update({
     where: { email: session.user.email },

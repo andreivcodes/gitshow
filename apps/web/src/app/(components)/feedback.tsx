@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 
-export default async function Feedback() {
+export default function Feedback() {
   return (
     <div className="absolute -bottom-2 -right-2 xl:-bottom-4 xl:-right-4">
       <Card>

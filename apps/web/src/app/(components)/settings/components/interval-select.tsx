@@ -2,9 +2,9 @@
 
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { setUpdateInterval } from "@/app/settings/actions";
 import { useTransition } from "react";
 import { RefreshInterval, } from "@prisma/client";
+import { setUpdateInterval } from "../actions";
 
 export default function IntervalSelect({
   interval,

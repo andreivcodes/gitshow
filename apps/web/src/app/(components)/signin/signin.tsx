@@ -2,24 +2,11 @@
 
 import { signIn, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../../components/ui/card";
-import { Icons } from "../../components/ui/icons";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Icons } from "@/components/ui/icons";
 
 export default function SignIn() {
   const session = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (
-      router &&
-      session.status == "authenticated" &&
-      session.data.user.githubAuthenticated == true &&
-      session.data.user.twitterAuthenticated == true
-    )
-      router.push("/settings");
-  }, [session, router]);
 
   return (
     <Card className="flex min-w-[300px] flex-col justify-evenly p-4">
