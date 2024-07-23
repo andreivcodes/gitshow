@@ -1,23 +1,24 @@
 {
   "name": "git.show",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
+  "type": "module",
   "workspaces": [
     "libs/*",
     "apps/*"
   ],
   "scripts": {
-    "build-lib": "yarn workspace @gitshow/gitshow-lib build",
-    "build-updater": "yarn build-lib && yarn workspace @gitshow/updater build",
-    "build-web": "yarn build-lib && yarn workspace @gitshow/web build",
-    "postinstall": "npx prisma generate",
-    "start-updater": "yarn workspace @gitshow/updater start",
-    "start-web": "yarn workspace @gitshow/web start"
+    "build-lib": "yarn workspace @gitshow/gitshow-lib run build",
+    "build-updater": "yarn run build-lib && yarn workspace @gitshow/updater run build",
+    "build-web": "yarn run build-lib && yarn workspace @gitshow/web run  build",
+    "start-updater": "yarn workspace @gitshow/updater run start",
+    "start-web": "yarn workspace @gitshow/web run start"
   },
   "devDependencies": {
-    "prisma": "^5.12.1"
+    "@tsconfig/recommended": "1.0.7"
   },
-  "prisma": {
-    "schema": "./libs/db/prisma/schema.prisma"
-  }
+  "engines": {
+    "node": "20"
+  },
+  "packageManager": "yarn@4.3.1"
 }

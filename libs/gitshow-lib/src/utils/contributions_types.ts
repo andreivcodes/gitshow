@@ -1,19 +1,13 @@
-export type ContributionDay = {
+export interface ContributionDay {
   date: string;
-  intensity: string;
-};
+  level: string;
+}
 
-export type ContributionData = {
+export interface ContributionData {
   total: number;
   range: {
     start: string;
     end: string;
   };
-  contributions: {
-    [year: string]: {
-      [month: string]: {
-        [day: string]: ContributionDay;
-      };
-    };
-  };
-};
+  contributions: ContributionDay[];
+}

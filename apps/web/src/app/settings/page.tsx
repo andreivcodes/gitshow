@@ -1,6 +1,6 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -9,7 +9,11 @@ import ThemeSelect from "./_components/theme-select";
 import SignOut from "./_components/sign-out";
 import { Label } from "@/components/ui/label";
 import Update from "./_components/update";
-import { initAction } from "./actions";
+import { initAction, setAutomaticallyUpdate } from "./actions";
+
+import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default async function Settings() {
   await initAction();
@@ -24,11 +28,11 @@ export default async function Settings() {
     redirect("/signin");
 
   return (
-    <Card className="m-4 flex flex-col items-start gap-4 xl:min-w-[400px]">
+    <Card className={cn("m-4 flex flex-col items-start gap-4 xl:min-w-[400px]")}>
       <CardHeader>
         <CardTitle>Settings</CardTitle>
       </CardHeader>
-      <CardContent className="flex w-full flex-col gap-6">
+      <CardContent className={cn("flex w-full flex-col gap-6")}>
         <div className="flex w-full flex-col justify-center gap-4">
           <Update
             automaticallyUpdate={session?.user.automaticallyUpdate}
@@ -37,12 +41,11 @@ export default async function Settings() {
           <hr></hr>
           <div>
             <Label>Theme</Label>
-            <ThemeSelect subscription_type={session?.user.subscriptionPlan} theme={session?.user.theme} />
+            <ThemeSelect theme={session?.user.theme} />
           </div>
           <div>
             <Label>Update interval</Label>
             <IntervalSelect
-              subscription_type={session?.user.subscriptionPlan}
               interval={session?.user.updateInterval}
             />
           </div>
@@ -50,12 +53,9 @@ export default async function Settings() {
         <hr></hr>
       </CardContent>
 
-      <CardFooter className="flex w-full flex-row justify-center gap-2">
-        <Button variant="default">
-          <Link href="/subscribe">Change Plan</Link>
-        </Button>
+      <CardFooter className={cn("flex w-full flex-row justify-center gap-2")}>
         <SignOut />
       </CardFooter>
-    </Card>
+    </Card >
   );
 }

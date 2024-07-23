@@ -10,7 +10,6 @@ import Contributions from "./_components/contributions";
 import { contribSvg } from "@gitshow/gitshow-lib";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { SubscriptionPlan } from "@prisma/client";
 import Script from "next/script";
 import { Suspense } from "react";
 
@@ -31,8 +30,8 @@ export default async function RootLayout({
   let svg;
 
   if (!session || !session.user || !session.user.githubname) {
-    svg = await contribSvg("torvalds", "githubDark", SubscriptionPlan.PREMIUM);
-  } else svg = await contribSvg(session.user.githubname, session.user.theme, session.user.subscriptionPlan);
+    svg = await contribSvg("torvalds", "githubDark",);
+  } else svg = await contribSvg(session.user.githubname, session.user.theme);
 
   return (
     <html lang="en">

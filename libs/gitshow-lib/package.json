@@ -1,9 +1,8 @@
 {
   "name": "@gitshow/gitshow-lib",
   "version": "1.0.0",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "main": "./src/index.ts",
   "scripts": {
     "build": "tsc --build",
     "start": "yarn build --watch"
@@ -12,5 +11,11 @@
     "@prisma/client": "^5.12.1",
     "dotenv": "^16.4.5",
     "puppeteer": "^22.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.11",
+    "prisma": "^5.17.0",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4"
   }
 }

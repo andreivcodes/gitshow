@@ -2,10 +2,11 @@
 
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function SignOut() {
   return (
-    <Button variant="outline" onClick={() => signOut()}>
+    <Button className={cn("w-full")} variant="outline" onClick={() => signOut()}>
       Sign out
     </Button>
   );

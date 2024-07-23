@@ -1,11 +1,9 @@
-import { AES } from "crypto-js";
 import { type DefaultSession, type NextAuthOptions } from "next-auth";
 import Github, { GithubProfile } from "next-auth/providers/github";
 import TwitterLegacy, { TwitterLegacyProfile } from "next-auth/providers/twitter";
-import { stripe } from "./stripe-server";
-import { RefreshInterval, SubscriptionPlan } from "@prisma/client";
+import { RefreshInterval, } from "@prisma/client";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
-import { QUEUE_NAME, Rabbit_Message, prisma, rbmq_ch } from "@/lib/db";
+import { prisma } from "@/lib/db";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -16,7 +14,6 @@ declare module "next-auth" {
 
       theme: AvailableThemeNames;
 
-      subscriptionPlan: SubscriptionPlan;
       lastSubscriptionTimestamp: Date | null;
 
       fullyAuthenticated: boolean;
@@ -56,8 +53,7 @@ export const authOptions: NextAuthOptions = {
 
           session.user.theme = u.theme as AvailableThemeNames;
 
-          session.user.subscriptionPlan = u.subscriptionPlan as SubscriptionPlan;
-          session.user.lastSubscriptionTimestamp = u.lastSubscriptionTimestamp ?? null;
+          session.user.lastSubscriptionTimestamp = u.lastUpdateTimestamp ?? null;
 
           session.user.fullyAuthenticated = session.user.githubAuthenticated && session.user.twitterAuthenticated;
           session.user.githubAuthenticated = u.githubAuthenticated === true;
@@ -84,7 +80,7 @@ export const authOptions: NextAuthOptions = {
             updateData.githubUsername = (profile as GithubProfile).login;
             updateData.name = (profile as GithubProfile).name ?? "Unknown";
 
-            updateData.githubToken = AES.encrypt(account.access_token ?? "", process.env.TOKENS_ENCRYPT!).toString();
+            updateData.githubToken = account.access_token;
             updateData.githubAuthenticated = true;
             break;
 
@@ -97,14 +93,8 @@ export const authOptions: NextAuthOptions = {
               ".jpg",
             );
 
-            updateData.twitterOAuthToken = AES.encrypt(
-              (account.oauth_token as string) ?? "",
-              process.env.TOKENS_ENCRYPT!,
-            ).toString();
-            updateData.twitterOAuthTokenSecret = AES.encrypt(
-              (account.oauth_token_secret as string) ?? "",
-              process.env.TOKENS_ENCRYPT!,
-            ).toString();
+            updateData.twitterOAuthToken = account.oauth_token;
+            updateData.twitterOAuthTokenSecret = account.oauth_token_secret;
             updateData.twitterAuthenticated = true;
             break;
         }
@@ -115,28 +105,19 @@ export const authOptions: NextAuthOptions = {
           if (existingUser) {
             const user = await prisma.user.update({ where: { email: profile.email }, data: updateData });
 
-            const message: Rabbit_Message = {
-              userId: user.id,
-            };
-
-            rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
-          } else {
-            const stripeCustomer = await stripe.customers.create({
-              email: profile.email,
+            await prisma.queue.create({
+              data: { userId: user.id }
             });
 
-            updateData.stripeCustomerId = stripeCustomer.id;
-            updateData.subscriptionPlan = SubscriptionPlan.FREE;
+          } else {
             updateData.theme = "normal";
             updateData.updateInterval = RefreshInterval.EVERY_MONTH;
 
             const user = await prisma.user.create({ data: updateData });
 
-            const message: Rabbit_Message = {
-              userId: user.id,
-            };
-
-            rbmq_ch.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)));
+            await prisma.queue.create({
+              data: { userId: user.id }
+            });
           }
         } catch (error) {
           console.error("Failed to retrieve or update user:", error);
