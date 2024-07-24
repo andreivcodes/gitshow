@@ -40,7 +40,7 @@ async function processQueue() {
         });
       }
     } else {
-      await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds before checking again
+      await new Promise(resolve => setTimeout(resolve, 60 * 1000));
     }
   }
 }
@@ -52,7 +52,7 @@ processQueue()
     process.exit(1);
   });
 
-schedule.scheduleJob("0 */6 * * *", async () => {
+schedule.scheduleJob("0 */1 * * *", async () => {
   const users = await prisma.user.findMany({
     where: {
       automaticallyUpdate: true,
