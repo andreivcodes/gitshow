@@ -78,3 +78,19 @@ export async function setAutomaticallyUpdate(update: boolean) {
 
   session.user.automaticallyUpdate = update;
 }
+
+
+export async function deleteAccount() {
+  const session = await getServerSession(authOptions);
+
+  if (
+    !session ||
+    !session.user.email
+  )
+    redirect("/");
+
+  await prisma.user.delete({
+    where: { email: session.user.email },
+  });
+
+}

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import Update from "./components/update";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
+import Delete from "./components/delete";
 
 export default function Settings() {
   const { data } = useSession();
@@ -44,6 +45,7 @@ export default function Settings() {
       </CardContent>
 
       <CardFooter className={cn("flex w-full flex-row justify-center gap-2")}>
+        <Delete />
         <SignOut />
       </CardFooter>
     </Card >

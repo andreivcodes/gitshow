@@ -80,7 +80,6 @@ export const authOptions: NextAuthOptions = {
           case "github":
             updateData.githubId = account.providerAccountId;
             updateData.githubUsername = (profile as GithubProfile).login;
-            updateData.name = (profile as GithubProfile).name ?? "Unknown";
 
             updateData.githubToken = AES.encrypt(JSON.stringify(account.access_token), process.env.TOKENS_SECRET!).toString();
             updateData.githubAuthenticated = true;
