@@ -16,7 +16,7 @@ export default async function Home() {
         <Contribs />
       </Suspense>
       <Suspense fallback={<LoadingContribs />}>
-        {session ? <Settings /> : <SignIn />}
+        {session && session.user.twitterAuthenticated && session.user.githubAuthenticated ? <Settings /> : <SignIn />}
       </Suspense>
     </div>
   );
