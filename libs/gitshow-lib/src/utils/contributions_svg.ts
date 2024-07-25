@@ -31,6 +31,7 @@ export async function contribSvg(
   const width = weeks * (cellSize + cellGap) + paddingLeft + paddingRight;
   const height = daysInWeek * (cellSize + cellGap) + paddingTop + paddingBottom;
 
+
   let svgContent = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
 
   svgContent += `<defs>
@@ -46,23 +47,6 @@ export async function contribSvg(
 
   // Fill the days
   for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
-    const dateString = date.toISOString().split('T')[0];
-    const level = contributionsMap.get(dateString) || "0";
-    const color = currentTheme[`level${level}` as keyof Theme];
-
-    svgContent += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="${color}" rx="2" ry="2" />`;
-
-    y += cellSize + cellGap;
-    if (date.getDay() === 6) { // Saturday
-      x += cellSize + cellGap;
-      y = paddingTop;
-    }
-  }
-
-  // Draw remaining days in the last week if the last week is incomplete
-  const lastDay = new Date(endDate);
-  lastDay.setDate(lastDay.getDate() + (daysInWeek - lastDay.getDay() - 1));
-  for (let date = new Date(endDate.getTime() + 86400000); date <= lastDay; date.setDate(date.getDate() + 1)) {
     const dateString = date.toISOString().split('T')[0];
     const level = contributionsMap.get(dateString) || "0";
     const color = currentTheme[`level${level}` as keyof Theme];
