@@ -5,9 +5,9 @@ import { config as dotenvConfig } from "dotenv";
 dotenvConfig();
 
 async function fetchContributionData(page: Page, username: string): Promise<ContributionData> {
-  await page.goto(`https://github.com/users/${username}/contributions`, { waitUntil: 'networkidle2' });
+  await page.goto(`https://github.com/users/${username}/contributions`, { waitUntil: 'networkidle0' });
 
-  await page.waitForSelector(".js-calendar-graph-table", { timeout: 60000 });
+  await page.waitForSelector(".js-calendar-graph-table", { timeout: 15000 });
 
   const contributionsCount = await page.evaluate(() => {
     const contributionsElement = document.querySelector(".js-yearly-contributions h2");
