@@ -122,5 +122,5 @@ app.get("/", (_req, res) => {
 });
 
 app.listen(3001, () => {
-  console.log(`Healthcheck is running at http://localhost:3000`);
+  console.log(`Healthcheck is running at http://localhost:3001`);
 });
