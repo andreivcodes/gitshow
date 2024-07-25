@@ -46,17 +46,20 @@ async function fetchContributionData(page: Page, username: string): Promise<Cont
 }
 
 export async function contribData(username: string): Promise<ContributionData> {
-  const browser = await puppeteer.connect({
-    browserWSEndpoint: `${process.env.BROWSERLESS_WSS}?token=${process.env.BROWSERLESS_TOKEN}`,
-  });
-
-  const page = await browser.newPage();
-
-  let data: ContributionData;
+  let browser;
+  let page;
 
   try {
+    browser = await puppeteer.connect({
+      browserWSEndpoint: `${process.env.BROWSERLESS_WSS}?token=${process.env.BROWSERLESS_TOKEN}`,
+    });
+
+    page = await browser.newPage();
+
     const maxRetries = 3;
     let attempt = 0;
+    let data;
+
     while (attempt < maxRetries) {
       try {
         data = await fetchContributionData(page, username);
@@ -69,16 +72,25 @@ export async function contribData(username: string): Promise<ContributionData> {
         console.warn(`Retrying (${attempt}/${maxRetries}) due to error: ${(error as Error).message}`);
       }
     }
+
+    return data!;
   } catch (error) {
     console.error("Error fetching contribution data:", error);
     throw error;
   } finally {
-    try {
-      await page.close();
-      await browser.close();
+    if (page && !page.isClosed()) {
+      try {
+        await page.close();
+      } catch (error) {
+        console.error("Error closing page:", error);
+      }
     }
-    catch (e) { }
+    if (browser) {
+      try {
+        await browser.close();
+      } catch (error) {
+        console.error("Error closing browser:", error);
+      }
+    }
   }
-
-  return data!;
 }
