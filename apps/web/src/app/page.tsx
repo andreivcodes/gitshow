@@ -22,7 +22,7 @@ export default function Home() {
 
 function ContribsWrapper() {
   return (
-    <Suspense fallback={<LoadingCard />}>
+    <Suspense fallback={<LoadingCard />} >
       <ContribsData />
     </Suspense>
   );
@@ -53,12 +53,13 @@ async function ContribsData() {
   }
 
   return (
+    <div className='w-full flex items-center justify-center'>
     <Contributions
       name={session?.user.twittername ?? "Linus Torvalds"}
       twittertag={session?.user.twittertag ?? "@Linus__Torvalds"}
       picture={session?.user.twitterimage ?? "/linus.jpeg"}
       svg={svg}
-    />
+    /></div>
   );
 }
 
