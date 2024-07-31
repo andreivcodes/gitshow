@@ -77,6 +77,8 @@ export async function setAutomaticallyUpdate(update: boolean) {
   });
 
   session.user.automaticallyUpdate = update;
+
+  revalidateTag(user.githubUsername ?? "torvalds");
 }
 
 
