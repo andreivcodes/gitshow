@@ -238,7 +238,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/config-array@npm:^0.17.0":
+"@eslint/config-array@npm:^0.17.1":
   version: 0.17.1
   resolution: "@eslint/config-array@npm:0.17.1"
   dependencies:
@@ -266,10 +266,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.7.0":
-  version: 9.7.0
-  resolution: "@eslint/js@npm:9.7.0"
-  checksum: 10c0/73fc10666f6f4aed6f58e407e09f42ceb0d42fa60c52701c64ea9f59a81a6a8ad5caecdfd423d03088481515fe7ec17eb461acb4ef1ad70b649b6eae465b3164
+"@eslint/js@npm:9.8.0":
+  version: 9.8.0
+  resolution: "@eslint/js@npm:9.8.0"
+  checksum: 10c0/42edaae6b020436410454579509dcb6a8cd5b260e9f18e037fd803ae28d35eb13663d4019f0ab8ba686a19d3c4a43b0e11394c148e23345377ab694da0e83262
   languageName: node
   linkType: hard
 
@@ -340,7 +340,7 @@ __metadata:
     "@prisma/client": "npm:^5.17.0"
     "@types/crypto-js": "npm:^4.2.2"
     "@types/express": "npm:^4.17.21"
-    "@types/node": "npm:^20.14.11"
+    "@types/node": "npm:^22.0.0"
     "@types/node-cron": "npm:^3.0.11"
     "@types/node-schedule": "npm:^2.1.7"
     crypto-js: "npm:^4.2.0"
@@ -349,7 +349,7 @@ __metadata:
     node-schedule: "npm:^2.1.1"
     prisma: "npm:^5.17.0"
     sharp: "npm:^0.33.4"
-    tsx: "npm:^4.16.2"
+    tsx: "npm:^4.16.3"
     twitter-api-v2: "npm:^1.17.2"
     typescript: "npm:^5.5.4"
   languageName: unknown
@@ -391,7 +391,7 @@ __metadata:
     "@radix-ui/react-tooltip": "npm:^1.1.2"
     "@stripe/stripe-js": "npm:^4.1.0"
     "@types/crypto-js": "npm:^4.2.2"
-    "@types/node": "npm:^20.14.11"
+    "@types/node": "npm:^22.0.0"
     "@types/react": "npm:^18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     autoprefixer: "npm:^10.4.19"
@@ -401,26 +401,26 @@ __metadata:
     crypto-js: "npm:^4.2.0"
     date-fns: "npm:^3.6.0"
     embla-carousel-react: "npm:^8.1.7"
-    eslint: "npm:^9.7.0"
+    eslint: "npm:^9.8.0"
     eslint-config-next: "npm:14.2.5"
-    lucide-react: "npm:^0.414.0"
+    lucide-react: "npm:^0.418.0"
     next: "npm:14.2.5"
     next-auth: "npm:^4.24.7"
     next-themes: "npm:^0.3.0"
-    postcss: "npm:^8.4.39"
+    postcss: "npm:^8.4.40"
     prisma: "npm:^5.17.0"
     react: "npm:^18.3.1"
-    react-day-picker: "npm:9.0.3"
+    react-day-picker: "npm:9.0.6"
     react-dom: "npm:^18.3.1"
     react-hook-form: "npm:^7.52.1"
     react-resizable-panels: "npm:^2.0.22"
     sharp: "npm:^0.33.4"
     sonner: "npm:^1.5.0"
-    stripe: "npm:^16.2.0"
+    stripe: "npm:^16.5.0"
     tailwind-merge: "npm:^2.4.0"
-    tailwindcss: "npm:^3.4.6"
+    tailwindcss: "npm:^3.4.7"
     tailwindcss-animate: "npm:^1.0.7"
-    tsx: "npm:^4.16.2"
+    tsx: "npm:^4.16.3"
     typescript: "npm:^5.5.4"
     vaul: "npm:^0.9.1"
     zod: "npm:^3.23.8"
@@ -2467,6 +2467,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^22.0.0":
+  version: 22.0.0
+  resolution: "@types/node@npm:22.0.0"
+  dependencies:
+    undici-types: "npm:~6.11.1"
+  checksum: 10c0/af26a8ec7266c857b0ced75dc3a93c6b65280d1fa40d1b4488c814d30831c5c752489c99ecb5698daec1376145b1a9ddd08350882dc2e07769917a5f22a460bc
+  languageName: node
+  linkType: hard
+
 "@types/prop-types@npm:*":
   version: 15.7.12
   resolution: "@types/prop-types@npm:15.7.12"
@@ -4242,15 +4251,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.7.0":
-  version: 9.7.0
-  resolution: "eslint@npm:9.7.0"
+"eslint@npm:^9.8.0":
+  version: 9.8.0
+  resolution: "eslint@npm:9.8.0"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.2.0"
     "@eslint-community/regexpp": "npm:^4.11.0"
-    "@eslint/config-array": "npm:^0.17.0"
+    "@eslint/config-array": "npm:^0.17.1"
     "@eslint/eslintrc": "npm:^3.1.0"
-    "@eslint/js": "npm:9.7.0"
+    "@eslint/js": "npm:9.8.0"
     "@humanwhocodes/module-importer": "npm:^1.0.1"
     "@humanwhocodes/retry": "npm:^0.3.0"
     "@nodelib/fs.walk": "npm:^1.2.8"
@@ -4282,7 +4291,7 @@ __metadata:
     text-table: "npm:^0.2.0"
   bin:
     eslint: bin/eslint.js
-  checksum: 10c0/e2369a9534404f62f37ee5560e56fb84e0776a9c8f084550170017992772e7034d73571bdf4060e2fe9b836f136d45b07d50407d4b9361de720ee77794259274
+  checksum: 10c0/a2ee0cce1147565d011fe185733af482f34d5466f5df5f390d0ea2ecf78097883cf568ed6c771d687138609c63cd55cd1e3ff12de7393c03f54fcffcdd0f225d
   languageName: node
   linkType: hard
 
@@ -5563,12 +5572,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lucide-react@npm:^0.414.0":
-  version: 0.414.0
-  resolution: "lucide-react@npm:0.414.0"
+"lucide-react@npm:^0.418.0":
+  version: 0.418.0
+  resolution: "lucide-react@npm:0.418.0"
   peerDependencies:
     react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10c0/280123f5f43cad653aa74f519ad2294fdc82c32028c780e3228c2a92997e987e4708a20527af64731882a9dedc6117f98ba0582946e86751a8f02f8297f8f815
+  checksum: 10c0/0fd3ec93546dc9d82315b121cef3de91131ed7bd4e0b93173923cef48719d534d63a471c9ee043bbaaef5a2b3557809dbeb518f8039db802d98ed10738d715cf
   languageName: node
   linkType: hard
 
@@ -6430,7 +6439,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.23, postcss@npm:^8.4.39":
+"postcss@npm:^8.4.23":
   version: 8.4.39
   resolution: "postcss@npm:8.4.39"
   dependencies:
@@ -6438,6 +6447,17 @@ __metadata:
     picocolors: "npm:^1.0.1"
     source-map-js: "npm:^1.2.0"
   checksum: 10c0/16f5ac3c4e32ee76d1582b3c0dcf1a1fdb91334a45ad755eeb881ccc50318fb8d64047de4f1601ac96e30061df203f0f2e2edbdc0bfc49b9c57bc9fb9bedaea3
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.40":
+  version: 8.4.40
+  resolution: "postcss@npm:8.4.40"
+  dependencies:
+    nanoid: "npm:^3.3.7"
+    picocolors: "npm:^1.0.1"
+    source-map-js: "npm:^1.2.0"
+  checksum: 10c0/65ed67573e5443beaeb582282ff27a6be7c7fe3b4d9fa15761157616f2b97510cb1c335023c26220b005909f007337026d6e3ff092f25010b484ad484e80ea7f
   languageName: node
   linkType: hard
 
@@ -6647,14 +6667,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-day-picker@npm:9.0.3":
-  version: 9.0.3
-  resolution: "react-day-picker@npm:9.0.3"
+"react-day-picker@npm:9.0.6":
+  version: 9.0.6
+  resolution: "react-day-picker@npm:9.0.6"
   dependencies:
     date-fns: "npm:^3.6.0"
   peerDependencies:
     react: ">=16.8.0"
-  checksum: 10c0/d58ad0c101a043983854d9f462623907ab48aef1cc1f8f4d991d8128f064eec528fce08934648bbf1052c9c806081828478b7b58a99a4c47e767202de2aad56e
+  checksum: 10c0/b56ddaea9f5ca9a87f41a43c3acd1f01a324560b58b419877821350b20f14fab3f434a67a11634a69b4a21018aa06133423308383e1326fd36719d39ebb124b6
   languageName: node
   linkType: hard
 
@@ -7415,13 +7435,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stripe@npm:^16.2.0":
-  version: 16.2.0
-  resolution: "stripe@npm:16.2.0"
+"stripe@npm:^16.5.0":
+  version: 16.5.0
+  resolution: "stripe@npm:16.5.0"
   dependencies:
     "@types/node": "npm:>=8.1.0"
     qs: "npm:^6.11.0"
-  checksum: 10c0/893bdca9ee43d11f59e2c44b5d9f6816415ec1ac7e0430b149583a20745ca6ed25f77a31bbefbca08204c1cc32ecc35ca6a8c9350859f50b598e4d4f6f2b77e0
+  checksum: 10c0/2241cb78df88654fc80eca1f2779f59943788d1c6397ee9c56dd364c2a5a5e752248cb16c3d59761eab2d329b645a710a4c4e32c0538a76d84e3acfaad21b817
   languageName: node
   linkType: hard
 
@@ -7500,9 +7520,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:^3.4.6":
-  version: 3.4.6
-  resolution: "tailwindcss@npm:3.4.6"
+"tailwindcss@npm:^3.4.7":
+  version: 3.4.7
+  resolution: "tailwindcss@npm:3.4.7"
   dependencies:
     "@alloc/quick-lru": "npm:^5.2.0"
     arg: "npm:^5.0.2"
@@ -7529,7 +7549,7 @@ __metadata:
   bin:
     tailwind: lib/cli.js
     tailwindcss: lib/cli.js
-  checksum: 10c0/8d82b697ecf41d8cd100ab3369e3cbcb30e350afc5b595a000b201ba666628a68543154297f96c5b2a3f2614f37bb981af4766556ebaae832079fa9a436e8563
+  checksum: 10c0/dd74c29ae0ec314d46300a1163b106b84d3ca58d71e4e16c2c8ad9ee3d7ba6cfeab4a97176c0e9bfeebc5e9cd9636531648a3f3874ede376751a572d230dd979
   languageName: node
   linkType: hard
 
@@ -7690,6 +7710,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsx@npm:^4.16.3":
+  version: 4.16.3
+  resolution: "tsx@npm:4.16.3"
+  dependencies:
+    esbuild: "npm:~0.21.5"
+    fsevents: "npm:~2.3.3"
+    get-tsconfig: "npm:^4.7.5"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    tsx: dist/cli.mjs
+  checksum: 10c0/bb7e5fa8c5fbb3f7f4a1de3142d617139158cbfa5bbb02927fe2bdf792ac7202aa1b63e33a31fa43050fe9666b15c20f516947ea938cb327e926933fd2c56ee4
+  languageName: node
+  linkType: hard
+
 "twitter-api-v2@npm:^1.17.2":
   version: 1.17.2
   resolution: "twitter-api-v2@npm:1.17.2"
@@ -7814,6 +7850,13 @@ __metadata:
   version: 5.26.5
   resolution: "undici-types@npm:5.26.5"
   checksum: 10c0/bb673d7876c2d411b6eb6c560e0c571eef4a01c1c19925175d16e3a30c4c428181fb8d7ae802a261f283e4166a0ac435e2f505743aa9e45d893f9a3df017b501
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~6.11.1":
+  version: 6.11.1
+  resolution: "undici-types@npm:6.11.1"
+  checksum: 10c0/d8f5739a8e6c779d72336c82deb49c56d5ac9f9f6e0eb2e8dd4d3f6929ae9db7cde370d2e46516fe6cad04ea53e790c5e16c4c75eed7cd0f9bd31b0763bb2fa3
   languageName: node
   linkType: hard
 
