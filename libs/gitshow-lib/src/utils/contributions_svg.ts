@@ -25,7 +25,7 @@ export async function contribSvg(
 
   const startDate = new Date(contributionData.range.start);
   const endDate = new Date(contributionData.range.end);
-  const totalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  const totalDays = contributionData.contributions.length;
   const weeks = Math.ceil(totalDays / daysInWeek) + 1;
 
   const width = weeks * (cellSize + cellGap) + paddingLeft + paddingRight;
