@@ -1,14 +1,14 @@
 "use server";
 
 import { authOptions } from "@/lib/auth";
-import { AvailableThemeNames, } from "@gitshow/gitshow-lib";
-import { RefreshInterval, } from "@prisma/client";
+import { AvailableThemeNames } from "@gitshow/gitshow-lib";
+import { RefreshInterval } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { revalidateTag } from "next/cache";
 
-export async function initAction() { }
+export async function initAction() {}
 
 export async function setUpdateInterval(interval: RefreshInterval) {
   const session = await getServerSession(authOptions);
@@ -21,12 +21,17 @@ export async function setUpdateInterval(interval: RefreshInterval) {
   )
     redirect("/");
 
-  const user = await prisma.user.findFirstOrThrow({ where: { email: session.user.email } });
+  const user = await prisma.user.findFirstOrThrow({
+    where: { email: session.user.email },
+  });
 
-  await prisma.user.update({ where: { email: session.user.email }, data: { updateInterval: interval } });
+  await prisma.user.update({
+    where: { email: session.user.email },
+    data: { updateInterval: interval },
+  });
 
   await prisma.queue.create({
-    data: { userId: user.id }
+    data: { userId: user.id },
   });
 
   session.user.updateInterval = interval;
@@ -43,12 +48,17 @@ export async function setUserTheme(theme: AvailableThemeNames) {
   )
     redirect("/");
 
-  const user = await prisma.user.findFirstOrThrow({ where: { email: session.user.email } });
+  const user = await prisma.user.findFirstOrThrow({
+    where: { email: session.user.email },
+  });
 
-  await prisma.user.update({ where: { email: session.user.email }, data: { theme: theme } });
+  await prisma.user.update({
+    where: { email: session.user.email },
+    data: { theme: theme },
+  });
 
   await prisma.queue.create({
-    data: { userId: user.id }
+    data: { userId: user.id },
   });
 
   session.user.theme = theme;
@@ -73,7 +83,7 @@ export async function setAutomaticallyUpdate(update: boolean) {
   });
 
   await prisma.queue.create({
-    data: { userId: user.id }
+    data: { userId: user.id },
   });
 
   session.user.automaticallyUpdate = update;
@@ -81,18 +91,12 @@ export async function setAutomaticallyUpdate(update: boolean) {
   revalidateTag(user.githubUsername ?? "torvalds");
 }
 
-
 export async function deleteAccount() {
   const session = await getServerSession(authOptions);
 
-  if (
-    !session ||
-    !session.user.email
-  )
-    redirect("/");
+  if (!session || !session.user.email) redirect("/");
 
   await prisma.user.delete({
     where: { email: session.user.email },
   });
-
 }

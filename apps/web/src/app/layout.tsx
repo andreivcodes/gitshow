@@ -13,10 +13,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
-      <body className='dark'>
+      <body className="dark">
         <main className="orb-container flex min-h-screen flex-col items-center justify-between">
           <SessionProvider>
             <div className="orb -z-10" />

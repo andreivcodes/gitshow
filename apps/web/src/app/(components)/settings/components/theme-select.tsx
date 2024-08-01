@@ -1,16 +1,19 @@
 "use client";
 
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { useTransition } from "react";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
 import { setUserTheme } from "../actions";
 
-export default function ThemeSelect({
-  theme,
-}: {
-  theme: AvailableThemeNames;
-}) {
+export default function ThemeSelect({ theme }: { theme: AvailableThemeNames }) {
   const { toast } = useToast();
   const [_, startTransition] = useTransition();
 
@@ -18,8 +21,7 @@ export default function ThemeSelect({
     <Select
       onValueChange={(e) => {
         toast({
-          description:
-            "🎨 Your theme has been changed.",
+          description: "🎨 Your theme has been changed.",
         });
         startTransition(() => {
           setUserTheme(e as AvailableThemeNames);
@@ -31,7 +33,6 @@ export default function ThemeSelect({
         <SelectValue placeholder="Select a theme" />
       </SelectTrigger>
       <SelectContent>
-
         <SelectGroup>
           <SelectItem value="normal">
             <p>Normal</p>
@@ -55,7 +56,6 @@ export default function ThemeSelect({
             <p>Black and White</p>
           </SelectItem>
         </SelectGroup>
-
       </SelectContent>
     </Select>
   );

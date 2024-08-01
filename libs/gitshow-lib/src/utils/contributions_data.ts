@@ -77,13 +77,9 @@ export async function contribData(username: string): Promise<ContributionData> {
   let browser: Browser | undefined;
   let page: Page | undefined;
 
-  const launchArgs = JSON.stringify({
-    args: ["--user-data-dir=~/browserless-cache"],
-  });
-
   try {
       browser = await puppeteer.connect({
-        browserWSEndpoint: `${process.env.BROWSERLESS_WSS!}/?token=${process.env.BROWSERLESS_TOKEN}&launch=${launchArgs}`,
+        browserWSEndpoint: `${process.env.BROWSERLESS_WSS!}/?token=${process.env.BROWSERLESS_TOKEN}`,
       });
 
       page = await browser.newPage();

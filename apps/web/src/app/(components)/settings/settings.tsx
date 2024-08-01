@@ -1,6 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import IntervalSelect from "./components/interval-select";
 import ThemeSelect from "./components/theme-select";
 import SignOut from "./components/sign-out";
@@ -14,12 +20,18 @@ export default function Settings() {
   const { data } = useSession();
 
   if (!data)
-    return <Card className={cn("m-4 flex flex-col items-start gap-4 xl:min-w-[400px] h-[27.8rem]")}>
-
-    </Card >
+    return (
+      <Card
+        className={cn(
+          "m-4 flex flex-col items-start gap-4 xl:min-w-[400px] h-[27.8rem]",
+        )}
+      ></Card>
+    );
 
   return (
-    <Card className={cn("m-4 flex flex-col items-start gap-4 xl:min-w-[400px]")}>
+    <Card
+      className={cn("m-4 flex flex-col items-start gap-4 xl:min-w-[400px]")}
+    >
       <CardHeader>
         <CardTitle>Settings</CardTitle>
       </CardHeader>
@@ -36,9 +48,7 @@ export default function Settings() {
           </div>
           <div>
             <Label>Update interval</Label>
-            <IntervalSelect
-              interval={data?.user.updateInterval}
-            />
+            <IntervalSelect interval={data?.user.updateInterval} />
           </div>
         </div>
         <hr></hr>
@@ -48,6 +58,6 @@ export default function Settings() {
         <Delete />
         <SignOut />
       </CardFooter>
-    </Card >
+    </Card>
   );
 }

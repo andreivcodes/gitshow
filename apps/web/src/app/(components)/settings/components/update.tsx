@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useTransition } from "react";
@@ -28,7 +27,9 @@ export default function Update({
           }}
         />
       </div>
-      <Label className="font-mono text-xs">Last update: {lastUpdate ? lastUpdate.toLocaleString() : "Unknown"}</Label>
+      <Label className="font-mono text-xs">
+        Last update: {lastUpdate ? lastUpdate.toLocaleString() : "Unknown"}
+      </Label>
     </div>
   );
 }

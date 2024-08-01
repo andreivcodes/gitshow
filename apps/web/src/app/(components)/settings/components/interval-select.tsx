@@ -1,9 +1,16 @@
 "use client";
 
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { useTransition } from "react";
-import { RefreshInterval, } from "@prisma/client";
+import { RefreshInterval } from "@prisma/client";
 import { setUpdateInterval } from "../actions";
 
 export default function IntervalSelect({
@@ -18,8 +25,7 @@ export default function IntervalSelect({
     <Select
       onValueChange={(e) => {
         toast({
-          description:
-            "⏱️ Your interval has been changed.",
+          description: "⏱️ Your interval has been changed.",
         });
         startTransition(() => {
           setUpdateInterval(e as RefreshInterval);
@@ -31,7 +37,6 @@ export default function IntervalSelect({
         <SelectValue placeholder="Select an update interval" />
       </SelectTrigger>
       <SelectContent>
-
         <SelectGroup>
           <SelectItem value={"EVERY_DAY"}>
             <div className="flex flex-row gap-2">

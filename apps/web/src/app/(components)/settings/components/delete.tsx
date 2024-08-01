@@ -7,18 +7,17 @@ import { cn } from "@/lib/utils";
 import { signOut } from "next-auth/react";
 
 export default function Delete() {
-
   const [_, startTransition] = useTransition();
 
   return (
     <Button
-      className={cn("w-full")} variant="destructive"
+      className={cn("w-full")}
+      variant="destructive"
       onClick={(e) => {
         startTransition(() => {
           deleteAccount().then(() => signOut());
         });
       }}
-
     >
       Delete my account
     </Button>

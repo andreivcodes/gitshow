@@ -1,11 +1,12 @@
 import { type DefaultSession, type NextAuthOptions } from "next-auth";
 import Github, { GithubProfile } from "next-auth/providers/github";
-import TwitterLegacy, { TwitterLegacyProfile } from "next-auth/providers/twitter";
-import { RefreshInterval, } from "@prisma/client";
+import TwitterLegacy, {
+  TwitterLegacyProfile,
+} from "next-auth/providers/twitter";
+import { RefreshInterval } from "@prisma/client";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
 import { prisma } from "@/lib/db";
 import AES from "crypto-js/aes";
-
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -46,7 +47,9 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session }) {
       if (session.user.email) {
-        const u = await prisma.user.findFirst({ where: { email: session.user.email } });
+        const u = await prisma.user.findFirst({
+          where: { email: session.user.email },
+        });
 
         if (u) {
           session.user.automaticallyUpdate = u.automaticallyUpdate === true;
@@ -55,9 +58,12 @@ export const authOptions: NextAuthOptions = {
 
           session.user.theme = u.theme as AvailableThemeNames;
 
-          session.user.lastSubscriptionTimestamp = u.lastUpdateTimestamp ?? null;
+          session.user.lastSubscriptionTimestamp =
+            u.lastUpdateTimestamp ?? null;
 
-          session.user.fullyAuthenticated = session.user.githubAuthenticated && session.user.twitterAuthenticated;
+          session.user.fullyAuthenticated =
+            session.user.githubAuthenticated &&
+            session.user.twitterAuthenticated;
           session.user.githubAuthenticated = u.githubAuthenticated === true;
           session.user.twitterAuthenticated = u.twitterAuthenticated === true;
 
@@ -81,35 +87,49 @@ export const authOptions: NextAuthOptions = {
             updateData.githubId = account.providerAccountId;
             updateData.githubUsername = (profile as GithubProfile).login;
 
-            updateData.githubToken = AES.encrypt(JSON.stringify(account.access_token), process.env.TOKENS_SECRET!).toString();
+            updateData.githubToken = AES.encrypt(
+              JSON.stringify(account.access_token),
+              process.env.TOKENS_SECRET!,
+            ).toString();
             updateData.githubAuthenticated = true;
             break;
 
           case "twitter":
             updateData.twitterId = account.providerAccountId;
-            updateData.twitterTag = (profile as TwitterLegacyProfile).screen_name;
+            updateData.twitterTag = (
+              profile as TwitterLegacyProfile
+            ).screen_name;
             updateData.twitterUsername = (profile as TwitterLegacyProfile).name;
-            updateData.twitterPicture = (profile as TwitterLegacyProfile).profile_image_url_https?.replace(
-              "_normal.jpg",
-              ".jpg",
-            );
+            updateData.twitterPicture = (
+              profile as TwitterLegacyProfile
+            ).profile_image_url_https?.replace("_normal.jpg", ".jpg");
 
-            updateData.twitterOAuthToken = AES.encrypt(JSON.stringify(account.oauth_token), process.env.TOKENS_SECRET!).toString();
-            updateData.twitterOAuthTokenSecret = AES.encrypt(JSON.stringify(account.oauth_token_secret), process.env.TOKENS_SECRET!).toString();
+            updateData.twitterOAuthToken = AES.encrypt(
+              JSON.stringify(account.oauth_token),
+              process.env.TOKENS_SECRET!,
+            ).toString();
+            updateData.twitterOAuthTokenSecret = AES.encrypt(
+              JSON.stringify(account.oauth_token_secret),
+              process.env.TOKENS_SECRET!,
+            ).toString();
             updateData.twitterAuthenticated = true;
             break;
         }
 
         try {
-          const existingUser = await prisma.user.findFirst({ where: { email: profile.email } });
+          const existingUser = await prisma.user.findFirst({
+            where: { email: profile.email },
+          });
 
           if (existingUser) {
-            const user = await prisma.user.update({ where: { email: profile.email }, data: updateData });
-
-            await prisma.queue.create({
-              data: { userId: user.id }
+            const user = await prisma.user.update({
+              where: { email: profile.email },
+              data: updateData,
             });
 
+            await prisma.queue.create({
+              data: { userId: user.id },
+            });
           } else {
             updateData.theme = "normal";
             updateData.updateInterval = RefreshInterval.EVERY_MONTH;
@@ -117,7 +137,7 @@ export const authOptions: NextAuthOptions = {
             const user = await prisma.user.create({ data: updateData });
 
             await prisma.queue.create({
-              data: { userId: user.id }
+              data: { userId: user.id },
             });
           }
         } catch (error) {
