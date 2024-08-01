@@ -53,7 +53,7 @@ async function ContribsData() {
   }
 
   return (
-    <div className="w-full xl:w-fit flex items-center justify-center">
+    <div className="w-full xl:w-fit flex xl:items-center xl:justify-center">
       <Contributions
         name={session?.user.twittername ?? "Linus Torvalds"}
         twittertag={session?.user.twittertag ?? "@Linus__Torvalds"}
