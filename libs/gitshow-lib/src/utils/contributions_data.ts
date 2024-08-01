@@ -80,9 +80,9 @@ async function fetchContributionData(page: Page, username: string): Promise<Cont
 
 export async function contribData(username: string): Promise<ContributionData> {
 
-  const user = await prisma.user.findFirstOrThrow({ where: { githubUsername: username } });
+  const user = await prisma.user.findFirst({ where: { githubUsername: username } });
 
-  if (user.contribData && user.lastFetchTimestamp && new Date(user.lastFetchTimestamp).getTime() > new Date().getTime() - CACHE_EXPIRY_MS) {
+  if (user && user.contribData && user.lastFetchTimestamp && new Date(user.lastFetchTimestamp).getTime() > new Date().getTime() - CACHE_EXPIRY_MS) {
       return user.contribData as unknown as ContributionData;
     }
 
