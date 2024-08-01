@@ -29,6 +29,9 @@ model User {
   twitterOAuthToken       String?
   twitterOAuthTokenSecret String?
 
+  contribData        Json?
+  lastFetchTimestamp DateTime?
+
   @@map("user")
 }
 

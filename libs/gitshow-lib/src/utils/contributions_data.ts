@@ -1,7 +1,13 @@
 import puppeteer, { Page, Browser } from "puppeteer";
 import { ContributionDay, ContributionData } from "./contributions_types";
 import { config as dotenvConfig } from "dotenv";
+import { Prisma, PrismaClient } from "@prisma/client";
 dotenvConfig();
+
+const prisma = new PrismaClient();
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 5000; // Initial delay, exponential backoff applied
+const CACHE_EXPIRY_MS = 60 * 60 * 1000; // 24 hours
 
 function delay(time: number) {
   return new Promise(resolve => setTimeout(resolve, time));
@@ -17,10 +23,9 @@ async function isPageValid(page: Page): Promise<boolean> {
 }
 
 async function fetchContributionData(page: Page, username: string): Promise<ContributionData> {
-  const maxRetries = 3;
   let attempt = 0;
 
-  while (attempt < maxRetries) {
+  while (attempt < MAX_RETRIES) {
     try {
       if (!(await isPageValid(page))) {
         throw new Error("Page is not valid");
@@ -65,28 +70,47 @@ async function fetchContributionData(page: Page, username: string): Promise<Cont
       };
     } catch (error) {
       attempt++;
-      console.warn(`Retrying (${attempt}/${maxRetries}) due to error: ${(error as Error).message}`);
-      await delay(Math.pow(2, attempt) * 1000); // Exponential backoff
-      if (attempt >= maxRetries) throw error;
+      console.warn(`Retrying (${attempt}/${MAX_RETRIES}) due to error: ${(error as Error).message}`);
+      await delay(Math.pow(2, attempt) * RETRY_DELAY  ); // Exponential backoff
+      if (attempt >= MAX_RETRIES) throw error;
     }
   }
   throw new Error("Max retries reached");
 }
 
 export async function contribData(username: string): Promise<ContributionData> {
+
+  const user = await prisma.user.findFirstOrThrow({ where: { githubUsername: username } });
+
+  if (user.contribData && user.lastFetchTimestamp && new Date(user.lastFetchTimestamp).getTime() > new Date().getTime() - CACHE_EXPIRY_MS) {
+      return user.contribData as unknown as ContributionData;
+    }
+
   let browser: Browser | undefined;
   let page: Page | undefined;
 
   try {
+
+    const launchArgs = JSON.stringify({
+      headless: true,
+      timeout: 30000,
+      stealth: true,
+      args: [`--user-data-dir=~/browserless-cache-${username}`],
+    });
+
       browser = await puppeteer.connect({
-        browserWSEndpoint: `${process.env.BROWSERLESS_WSS!}/?token=${process.env.BROWSERLESS_TOKEN}`,
+        browserWSEndpoint: `wss://browserless.git.show/?token=${process.env.BROWSERLESS_TOKEN}&launch=${launchArgs}`,
       });
 
       page = await browser.newPage();
-      page.setDefaultNavigationTimeout(10000);
-      page.setDefaultTimeout(10000);
+      page.setDefaultNavigationTimeout(30000);
+      page.setDefaultTimeout(30000);
+
 
     const data = await fetchContributionData(page, username);
+
+    await prisma.user.updateMany({ where: { githubUsername: username }, data: { contribData: data as unknown as Prisma.JsonObject, lastFetchTimestamp: new Date() } });
+
     return data;
   } catch (error) {
       console.error("Error fetching contribution data:", error);
