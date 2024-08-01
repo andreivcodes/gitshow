@@ -4,8 +4,13 @@ import { config as dotenvConfig } from "dotenv";
 
 dotenvConfig();
 
+function delay(time:number) {
+    return new Promise(resolve => setTimeout(resolve, time));
+}
+
 async function fetchContributionData(page: Page, username: string): Promise<ContributionData> {
   await page.goto(`https://github.com/users/${username}/contributions`, { waitUntil: 'networkidle0' });
+  await delay(2000);
 
   await page.waitForSelector(".js-calendar-graph-table", { timeout: 15000 });
 
@@ -59,8 +64,9 @@ export async function contribData(username: string): Promise<ContributionData> {
     });
 
     page = await browser.newPage();
+    await delay(2000);
 
-    const maxRetries = 3;
+    const maxRetries = 5  ;
     let attempt = 0;
     let data;
 
