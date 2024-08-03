@@ -93,9 +93,7 @@ export async function contribData(username: string): Promise<ContributionData> {
 
     const launchArgs = JSON.stringify({
       headless: true,
-      timeout: 30000,
       stealth: true,
-      args: [`--user-data-dir=~/browserless-cache-${username}`],
     });
 
       browser = await puppeteer.connect({
