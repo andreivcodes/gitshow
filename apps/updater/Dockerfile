@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Copy package-related files
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn .yarn/
 
 # Copy project-specific package files
 COPY apps/updater/package.json apps/updater/
