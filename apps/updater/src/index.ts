@@ -4,42 +4,52 @@ import { TwitterApi } from "twitter-api-v2";
 import { AvailableThemeNames, contribSvg } from "@gitshow/gitshow-lib";
 import sharp from "sharp";
 import schedule from "node-schedule";
-import { PrismaClient, RefreshInterval } from "@prisma/client"
+import { PrismaClient, RefreshInterval, User } from "@prisma/client"
 import AES from "crypto-js/aes";
 import CryptoJS from "crypto-js";
 
 dotenv_config();
 
-const prisma = new PrismaClient();
+// Validate environment variables
+const requiredEnvVars = ['TOKENS_SECRET', 'TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET'];
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    console.error(`Missing required environment variable: ${envVar}`);
+    process.exit(1);
+  }
+}
 
-type Message = {
-  userId: string;
-};
+const prisma = new PrismaClient();
 
 async function processQueue() {
   while (true) {
-    const message = await prisma.queue.findFirst({
-      where: { status: "pending" },
-      orderBy: { createdAt: 'asc' }
-    });
+    try {
+      const job = await prisma.queue.findFirst({
+        where: { status: "pending" },
+        orderBy: { createdAt: 'asc' }
+      });
 
-    if (message) {
-      try {
-        await update_user({ userId: message.userId });
-        console.log(`Updated ${message.userId}`);
+      if (job) {
+        try {
+          await updateUser(job.userId);
+          console.log(`Updated ${job.userId}`);
 
-        await prisma.queue.update({
-          where: { id: message.id },
-          data: { status: "processed" }
-        });
-      } catch (e) {
-        console.log(`Failed to update ${message.userId} - ${e}`);
-        await prisma.queue.update({
-          where: { id: message.id },
-          data: { status: "failed" }
-        });
+          await prisma.queue.update({
+            where: { id: job.id },
+            data: { status: "processed" }
+          });
+        } catch (e) {
+          console.error(`Failed to update ${job.userId} - ${e}`);
+          await prisma.queue.update({
+            where: { id: job.id },
+            data: { status: "failed" }
+          });
+        }
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 60 * 1000));
       }
-    } else {
+    } catch (error) {
+      console.error("Error in queue processing:", error);
       await new Promise(resolve => setTimeout(resolve, 60 * 1000));
     }
   }
@@ -53,48 +63,59 @@ processQueue()
   });
 
 schedule.scheduleJob("0 */1 * * *", async () => {
-  const users = await prisma.user.findMany({
-    where: {
-      automaticallyUpdate: true,
-      twitterAuthenticated: true,
-      githubAuthenticated: true,
-    },
-  });
-
-  const usersToRefresh = users.filter(
-    (u) =>
-      u.lastUpdateTimestamp &&
-      ((u.updateInterval == RefreshInterval.EVERY_DAY &&
-        new Date(u.lastUpdateTimestamp).getTime() < new Date().getTime() + 24 * 60 * 60 * 1000) ||
-        (u.updateInterval == RefreshInterval.EVERY_WEEK &&
-          new Date(u.lastUpdateTimestamp).getTime() < new Date().getTime() + 7 * 24 * 60 * 60 * 1000) ||
-        (u.updateInterval == RefreshInterval.EVERY_MONTH &&
-          new Date(u.lastUpdateTimestamp).getTime() < new Date().getTime() + 30 * 24 * 60 * 60 * 1000)),
-  );
-
-  console.log(`Updating ${usersToRefresh.length} users.`);
-
-  for (const user of usersToRefresh) {
-    console.log(`Request update for ${user.id}`);
-
-    const message: Message = {
-      userId: user.id,
-    };
-
-    await prisma.queue.create({
-      data: { userId: message.userId }
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        automaticallyUpdate: true,
+        twitterAuthenticated: true,
+        githubAuthenticated: true,
+      },
     });
+
+    const usersToRefresh = users.filter(shouldRefreshUser);
+
+    console.log(`Updating ${usersToRefresh.length} users.`);
+
+    for (const user of usersToRefresh) {
+      console.log(`Request update for ${user.id}`);
+      await prisma.queue.create({
+        data: { userId: user.id }
+      });
+    }
+  } catch (error) {
+    console.error("Error in scheduled job:", error);
   }
 });
 
-const update_user = async ({ userId }: { userId: string }) => {
+function shouldRefreshUser(user: User): boolean {
+  if (!user.lastUpdateTimestamp) return true;
+
+  const now = new Date();
+  const lastUpdate = new Date(user.lastUpdateTimestamp);
+  const timeDiff = now.getTime() - lastUpdate.getTime();
+
+  switch (user.updateInterval) {
+    case RefreshInterval.EVERY_DAY:
+      return timeDiff > 24 * 60 * 60 * 1000;
+    case RefreshInterval.EVERY_WEEK:
+      return timeDiff > 7 * 24 * 60 * 60 * 1000;
+    case RefreshInterval.EVERY_MONTH:
+      return timeDiff > 30 * 24 * 60 * 60 * 1000;
+    default:
+      return false;
+  }
+}
+
+function decryptToken(encryptedToken: string): string {
+  const decrypted = AES.decrypt(encryptedToken, process.env.TOKENS_SECRET!);
+  return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
+}
+
+async function updateUser(userId: string) {
   const user = await prisma.user.findFirstOrThrow({ where: { id: userId } });
 
-  var accessToken = AES.decrypt(user.twitterOAuthToken!, process.env.TOKENS_SECRET!);
-  var decryptedAccessToken = JSON.parse(accessToken.toString(CryptoJS.enc.Utf8));
-
-  var accessSecret = AES.decrypt(user.twitterOAuthTokenSecret!, process.env.TOKENS_SECRET!);
-  var decryptedAccessSecret = JSON.parse(accessSecret.toString(CryptoJS.enc.Utf8));
+  const decryptedAccessToken = decryptToken(user.twitterOAuthToken!);
+  const decryptedAccessSecret = decryptToken(user.twitterOAuthTokenSecret!);
 
   const client = new TwitterApi({
     appKey: process.env.TWITTER_CONSUMER_KEY!,
@@ -104,7 +125,6 @@ const update_user = async ({ userId }: { userId: string }) => {
   });
 
   const bannerSvg = await contribSvg(user.githubUsername!, user.theme as AvailableThemeNames);
-
   const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 }).jpeg().toBuffer();
 
   await client.v1.updateAccountProfileBanner(bannerJpeg);
@@ -113,14 +133,15 @@ const update_user = async ({ userId }: { userId: string }) => {
     where: { id: user.id },
     data: { lastUpdateTimestamp: new Date() },
   });
-};
+}
 
 const app = express();
 
-app.get("/", (_req, res) => {
-  res.send("OK");
+app.get("/health", (_req, res) => {
+  res.status(200).send("OK");
 });
 
-app.listen(3001, () => {
-  console.log(`Healthcheck is running at http://localhost:3001`);
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Healthcheck is running at http://localhost:${PORT}/health`);
 });
