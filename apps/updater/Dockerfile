@@ -10,6 +10,7 @@ COPY package.json yarn.lock .yarnrc.yml ./
 # Copy project-specific package files
 COPY apps/updater/package.json apps/updater/
 COPY libs/gitshow-lib/package.json libs/gitshow-lib/
+COPY libs/db/package.json libs/db/
 
 # Install dependencies
 RUN npm install -g corepack@latest && corepack enable
@@ -38,6 +39,7 @@ ENV TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
 # Copy the remaining project files
 COPY apps/updater/ apps/updater/
 COPY libs/gitshow-lib/ libs/gitshow-lib/
+COPY libs/db/ libs/db/
 
 # Build the project
 RUN yarn build-updater

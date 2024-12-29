@@ -10,6 +10,7 @@ COPY package.json yarn.lock .yarnrc.yml ./
 # Copy project-specific package files
 COPY apps/web/package.json apps/web/
 COPY libs/gitshow-lib/package.json libs/gitshow-lib/
+COPY libs/db/package.json libs/db/
 
 # Install dependencies
 RUN npm install -g corepack@latest && corepack enable
@@ -42,6 +43,7 @@ ENV NEXTAUTH_URL=${NEXTAUTH_URL}
 # Copy the remaining project files
 COPY apps/web/ apps/web/
 COPY libs/gitshow-lib/ libs/gitshow-lib/
+COPY libs/db/ libs/db/
 
 # Build the project
 RUN yarn build-web
