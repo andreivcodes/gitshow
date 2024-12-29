@@ -23,8 +23,20 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
+// Mutex flag to ensure atomic processing
+let isProcessing = false;
+
 async function processQueue() {
   while (true) {
+    if (isProcessing) {
+      // If the queue is already being processed, wait for a second before checking again
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      continue;
+    }
+
+    // Acquire the mutex
+    isProcessing = true;
+
     try {
       const job = await db
         .selectFrom("jobQueue")
@@ -53,11 +65,15 @@ async function processQueue() {
             .execute();
         }
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 60 * 1000));
+        // No jobs to process, wait for a second before checking again
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     } catch (error) {
       console.error("Error in queue processing:", error);
-      await new Promise((resolve) => setTimeout(resolve, 60 * 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } finally {
+      // Release the mutex
+      isProcessing = false;
     }
   }
 }
