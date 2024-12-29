@@ -10,7 +10,6 @@ COPY package.json yarn.lock .yarnrc.yml ./
 # Copy project-specific package files
 COPY apps/web/package.json apps/web/
 COPY libs/gitshow-lib/package.json libs/gitshow-lib/
-COPY prisma/ prisma/
 
 # Install dependencies
 RUN npm install -g corepack@latest && corepack enable

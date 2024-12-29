@@ -2,11 +2,10 @@
 
 import { authOptions } from "@/lib/auth";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
-import { RefreshInterval } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/db";
 import { revalidateTag } from "next/cache";
+import { RefreshInterval, db } from "@gitshow/db";
 
 export async function initAction() {}
 
@@ -21,18 +20,19 @@ export async function setUpdateInterval(interval: RefreshInterval) {
   )
     redirect("/");
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: { email: session.user.email },
-  });
+  const user = await db
+    .selectFrom("user")
+    .where("email", "=", session.user.email)
+    .selectAll()
+    .executeTakeFirstOrThrow();
 
-  await prisma.user.update({
-    where: { email: session.user.email },
-    data: { updateInterval: interval },
-  });
+  await db
+    .updateTable("user")
+    .where("id", "=", user.id)
+    .set({ updateInterval: interval })
+    .execute();
 
-  await prisma.queue.create({
-    data: { userId: user.id },
-  });
+  await db.insertInto("jobQueue").values({ userId: user.id }).execute();
 
   session.user.updateInterval = interval;
 }
@@ -48,18 +48,19 @@ export async function setUserTheme(theme: AvailableThemeNames) {
   )
     redirect("/");
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: { email: session.user.email },
-  });
+  const user = await db
+    .selectFrom("user")
+    .where("email", "=", session.user.email)
+    .selectAll()
+    .executeTakeFirstOrThrow();
 
-  await prisma.user.update({
-    where: { email: session.user.email },
-    data: { theme: theme },
-  });
+  await db
+    .updateTable("user")
+    .where("id", "=", user.id)
+    .set({ theme: theme })
+    .execute();
 
-  await prisma.queue.create({
-    data: { userId: user.id },
-  });
+  await db.insertInto("jobQueue").values({ userId: user.id }).execute();
 
   session.user.theme = theme;
 
@@ -77,16 +78,19 @@ export async function setAutomaticallyUpdate(update: boolean) {
   )
     redirect("/");
 
-  const user = await prisma.user.update({
-    where: { email: session.user.email },
-    data: { automaticallyUpdate: update },
-  });
+  const user = await db
+    .selectFrom("user")
+    .where("email", "=", session.user.email)
+    .selectAll()
+    .executeTakeFirstOrThrow();
 
-  await prisma.queue.create({
-    data: { userId: user.id },
-  });
+  await db
+    .updateTable("user")
+    .where("id", "=", user.id)
+    .set({ automaticallyUpdate: update })
+    .execute();
 
-  session.user.automaticallyUpdate = update;
+  await db.insertInto("jobQueue").values({ userId: user.id }).execute();
 
   revalidateTag(user.githubUsername ?? "torvalds");
 }
@@ -96,7 +100,5 @@ export async function deleteAccount() {
 
   if (!session || !session.user.email) redirect("/");
 
-  await prisma.user.delete({
-    where: { email: session.user.email },
-  });
+  await db.deleteFrom("user").where("email", "=", session.user.email).execute();
 }

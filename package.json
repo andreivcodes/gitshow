@@ -15,7 +15,7 @@
     "start-web": "yarn workspace @gitshow/web run start"
   },
   "devDependencies": {
-    "@tsconfig/recommended": "1.0.7"
+    "@tsconfig/recommended": "1.0.8"
   },
   "engines": {
     "node": "20"

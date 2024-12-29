@@ -25,6 +25,9 @@
   "references": [
     {
       "path": "../../libs/gitshow-lib"
+    },
+    {
+      "path": "../../libs/db"
     }
   ],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

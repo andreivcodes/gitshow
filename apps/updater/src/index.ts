@@ -4,14 +4,18 @@ import { TwitterApi } from "twitter-api-v2";
 import { AvailableThemeNames, contribSvg } from "@gitshow/gitshow-lib";
 import sharp from "sharp";
 import schedule from "node-schedule";
-import { PrismaClient, RefreshInterval, User } from "@prisma/client"
 import AES from "crypto-js/aes";
 import CryptoJS from "crypto-js";
+import { db, RefreshInterval, Selectable, User } from "@gitshow/db";
 
 dotenv_config();
 
 // Validate environment variables
-const requiredEnvVars = ['TOKENS_SECRET', 'TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET'];
+const requiredEnvVars = [
+  "TOKENS_SECRET",
+  "TWITTER_CONSUMER_KEY",
+  "TWITTER_CONSUMER_SECRET",
+];
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
     console.error(`Missing required environment variable: ${envVar}`);
@@ -19,38 +23,41 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
-const prisma = new PrismaClient();
-
 async function processQueue() {
   while (true) {
     try {
-      const job = await prisma.queue.findFirst({
-        where: { status: "pending" },
-        orderBy: { createdAt: 'asc' }
-      });
+      const job = await db
+        .selectFrom("jobQueue")
+        .selectAll()
+        .where("status", "=", "pending")
+        .orderBy("status asc")
+        .executeTakeFirst();
 
       if (job) {
         try {
           await updateUser(job.userId);
           console.log(`Updated ${job.userId}`);
 
-          await prisma.queue.update({
-            where: { id: job.id },
-            data: { status: "processed" }
-          });
+          await db
+            .updateTable("jobQueue")
+            .where("id", "=", job.id)
+            .set({ status: "processed" })
+            .execute();
         } catch (e) {
           console.error(`Failed to update ${job.userId} - ${e}`);
-          await prisma.queue.update({
-            where: { id: job.id },
-            data: { status: "failed" }
-          });
+
+          await db
+            .updateTable("jobQueue")
+            .where("id", "=", job.id)
+            .set({ status: "failed" })
+            .execute();
         }
       } else {
-        await new Promise(resolve => setTimeout(resolve, 60 * 1000));
+        await new Promise((resolve) => setTimeout(resolve, 60 * 1000));
       }
     } catch (error) {
       console.error("Error in queue processing:", error);
-      await new Promise(resolve => setTimeout(resolve, 60 * 1000));
+      await new Promise((resolve) => setTimeout(resolve, 60 * 1000));
     }
   }
 }
@@ -64,13 +71,13 @@ processQueue()
 
 schedule.scheduleJob("0 */1 * * *", async () => {
   try {
-    const users = await prisma.user.findMany({
-      where: {
-        automaticallyUpdate: true,
-        twitterAuthenticated: true,
-        githubAuthenticated: true,
-      },
-    });
+    const users = await db
+      .selectFrom("user")
+      .where("automaticallyUpdate", "=", true)
+      .where("twitterAuthenticated", "=", true)
+      .where("githubAuthenticated", "=", true)
+      .selectAll()
+      .execute();
 
     const usersToRefresh = users.filter(shouldRefreshUser);
 
@@ -78,16 +85,15 @@ schedule.scheduleJob("0 */1 * * *", async () => {
 
     for (const user of usersToRefresh) {
       console.log(`Request update for ${user.id}`);
-      await prisma.queue.create({
-        data: { userId: user.id }
-      });
+
+      await db.insertInto("jobQueue").values({ userId: user.id }).execute();
     }
   } catch (error) {
     console.error("Error in scheduled job:", error);
   }
 });
 
-function shouldRefreshUser(user: User): boolean {
+function shouldRefreshUser(user: Selectable<User>): boolean {
   if (!user.lastUpdateTimestamp) return true;
 
   const now = new Date();
@@ -112,10 +118,14 @@ function decryptToken(encryptedToken: string): string {
 }
 
 async function updateUser(userId: string) {
-  const user = await prisma.user.findFirstOrThrow({ where: { id: userId } });
+  const user = await db
+    .selectFrom("user")
+    .selectAll()
+    .where("id", "=", userId)
+    .executeTakeFirstOrThrow();
 
-  const decryptedAccessToken = decryptToken(user.twitterOAuthToken!);
-  const decryptedAccessSecret = decryptToken(user.twitterOAuthTokenSecret!);
+  const decryptedAccessToken = decryptToken(user.twitterOauthToken!);
+  const decryptedAccessSecret = decryptToken(user.twitterOauthTokenSecret!);
 
   const client = new TwitterApi({
     appKey: process.env.TWITTER_CONSUMER_KEY!,
@@ -124,15 +134,21 @@ async function updateUser(userId: string) {
     accessSecret: decryptedAccessSecret,
   });
 
-  const bannerSvg = await contribSvg(user.githubUsername!, user.theme as AvailableThemeNames);
-  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 }).jpeg().toBuffer();
+  const bannerSvg = await contribSvg(
+    user.githubUsername!,
+    user.theme as AvailableThemeNames
+  );
+  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 })
+    .jpeg()
+    .toBuffer();
 
   await client.v1.updateAccountProfileBanner(bannerJpeg);
 
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { lastUpdateTimestamp: new Date() },
-  });
+  await db
+    .updateTable("user")
+    .where("id", "=", user.id)
+    .set({ lastUpdateTimestamp: new Date() })
+    .execute();
 }
 
 const app = express();

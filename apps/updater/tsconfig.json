@@ -6,6 +6,9 @@
   "references": [
     {
       "path": "../../libs/gitshow-lib"
+    },
+    {
+      "path": "../../libs/db"
     }
   ]
 }

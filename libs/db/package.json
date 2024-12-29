@@ -1,0 +1,24 @@
+{
+  "name": "@gitshow/db",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "db:migrate": "kysely migrate latest",
+    "db:seed": "yarn kysely seed run",
+    "db:gen": "kysely-codegen --camel-case --runtime-enums --out-file ./src/kysely_db.ts"
+  },
+  "dependencies": {
+    "dotenv": "16.4.7",
+    "kysely": "^0.27.5",
+    "pg": "8.13.1"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "1.0.8",
+    "@types/dotenv": "8.2.3",
+    "@types/pg": "8",
+    "kysely-codegen": "0.17.0",
+    "kysely-ctl": "0.10.1",
+    "typescript": "5.7.2"
+  }
+}

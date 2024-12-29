@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { useTransition } from "react";
-import { RefreshInterval } from "@prisma/client";
 import { setUpdateInterval } from "../actions";
+import { RefreshInterval } from "@gitshow/db";
 
 export default function IntervalSelect({
   interval,

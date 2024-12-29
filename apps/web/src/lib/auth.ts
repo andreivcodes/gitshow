@@ -3,10 +3,9 @@ import Github, { GithubProfile } from "next-auth/providers/github";
 import TwitterLegacy, {
   TwitterLegacyProfile,
 } from "next-auth/providers/twitter";
-import { RefreshInterval } from "@prisma/client";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
-import { prisma } from "@/lib/db";
 import AES from "crypto-js/aes";
+import { RefreshInterval, db } from "@gitshow/db";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -47,9 +46,11 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session }) {
       if (session.user.email) {
-        const u = await prisma.user.findFirst({
-          where: { email: session.user.email },
-        });
+        const u = await db
+          .selectFrom("user")
+          .where("email", "=", session.user.email)
+          .selectAll()
+          .executeTakeFirst();
 
         if (u) {
           session.user.automaticallyUpdate = u.automaticallyUpdate === true;
@@ -89,7 +90,7 @@ export const authOptions: NextAuthOptions = {
 
             updateData.githubToken = AES.encrypt(
               JSON.stringify(account.access_token),
-              process.env.TOKENS_SECRET!,
+              process.env.TOKENS_SECRET!
             ).toString();
             updateData.githubAuthenticated = true;
             break;
@@ -106,39 +107,49 @@ export const authOptions: NextAuthOptions = {
 
             updateData.twitterOAuthToken = AES.encrypt(
               JSON.stringify(account.oauth_token),
-              process.env.TOKENS_SECRET!,
+              process.env.TOKENS_SECRET!
             ).toString();
             updateData.twitterOAuthTokenSecret = AES.encrypt(
               JSON.stringify(account.oauth_token_secret),
-              process.env.TOKENS_SECRET!,
+              process.env.TOKENS_SECRET!
             ).toString();
             updateData.twitterAuthenticated = true;
             break;
         }
 
         try {
-          const existingUser = await prisma.user.findFirst({
-            where: { email: profile.email },
-          });
+          const existingUser = await db
+            .selectFrom("user")
+            .where("email", "=", profile.email)
+            .selectAll()
+            .executeTakeFirst();
 
           if (existingUser) {
-            const user = await prisma.user.update({
-              where: { email: profile.email },
-              data: updateData,
-            });
+            await db
+              .updateTable("user")
+              .where("email", "=", profile.email)
+              .set(updateData)
+              .execute();
 
-            await prisma.queue.create({
-              data: { userId: user.id },
-            });
+            await db
+              .insertInto("jobQueue")
+              .values({ userId: existingUser.id })
+              .execute();
           } else {
             updateData.theme = "normal";
             updateData.updateInterval = RefreshInterval.EVERY_MONTH;
 
-            const user = await prisma.user.create({ data: updateData });
+            const res = await db
+              .insertInto("user")
+              .values(updateData)
+              .returning("id as id")
+              .executeTakeFirst();
 
-            await prisma.queue.create({
-              data: { userId: user.id },
-            });
+            if (res)
+              await db
+                .insertInto("jobQueue")
+                .values({ userId: res.id })
+                .execute();
           }
         } catch (error) {
           console.error("Failed to retrieve or update user:", error);
