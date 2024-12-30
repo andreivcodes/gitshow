@@ -62,32 +62,41 @@ schedule.scheduleJob("* * * * *", async () => {
   isProcessing = true;
 
   try {
-    const job = await db
+    // Fetch up to 5 pending jobs
+    const jobs = await db
       .selectFrom("jobQueue")
       .selectAll()
       .where("status", "=", "pending")
       .orderBy("status asc")
-      .executeTakeFirst();
+      .limit(5)
+      .execute();
 
-    if (job) {
-      try {
-        await updateUser(job.userId);
-        console.log(`Updated ${job.userId}`);
+    if (jobs.length > 0) {
+      console.log(`Processing ${jobs.length} jobs.`);
 
-        await db
-          .updateTable("jobQueue")
-          .where("id", "=", job.id)
-          .set({ status: "processed" })
-          .execute();
-      } catch (e) {
-        console.error(`Failed to update ${job.userId} - ${e}`);
+      // Process jobs concurrently
+      await Promise.all(
+        jobs.map(async (job) => {
+          try {
+            await updateUser(job.userId);
+            console.log(`Updated ${job.userId}`);
 
-        await db
-          .updateTable("jobQueue")
-          .where("id", "=", job.id)
-          .set({ status: "failed" })
-          .execute();
-      }
+            await db
+              .updateTable("jobQueue")
+              .where("id", "=", job.id)
+              .set({ status: "processed" })
+              .execute();
+          } catch (e) {
+            console.error(`Failed to update ${job.userId} - ${e}`);
+
+            await db
+              .updateTable("jobQueue")
+              .where("id", "=", job.id)
+              .set({ status: "failed" })
+              .execute();
+          }
+        })
+      );
     }
   } catch (error) {
     console.error("Error in queue processing:", error);
