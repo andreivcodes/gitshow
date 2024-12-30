@@ -14,21 +14,13 @@ export default function Home() {
         <ContribsWrapper />
       </Suspense>
       <Suspense fallback={<LoadingCard />}>
-        <SessionWrapper />
+        <MenuWrapper />
       </Suspense>
     </div>
   );
 }
 
-function ContribsWrapper() {
-  return (
-    <Suspense fallback={<LoadingCard />}>
-      <ContribsData />
-    </Suspense>
-  );
-}
-
-async function ContribsData() {
+async function ContribsWrapper() {
   const session = await getServerSession(authOptions);
   const getCachedSvg = unstable_cache(
     async (githubUsername, theme) => {
@@ -64,15 +56,7 @@ async function ContribsData() {
   );
 }
 
-function SessionWrapper() {
-  return (
-    <Suspense fallback={<LoadingCard />}>
-      <SessionData />
-    </Suspense>
-  );
-}
-
-async function SessionData() {
+async function MenuWrapper() {
   const session = await getServerSession(authOptions);
   return session &&
     session.user.twitterAuthenticated &&
