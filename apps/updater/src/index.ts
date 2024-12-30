@@ -23,69 +23,8 @@ for (const envVar of requiredEnvVars) {
   }
 }
 
-// Mutex flag to ensure atomic processing
-let isProcessing = false;
-
-async function processQueue() {
-  while (true) {
-    if (isProcessing) {
-      // If the queue is already being processed, wait for a second before checking again
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      continue;
-    }
-
-    // Acquire the mutex
-    isProcessing = true;
-
-    try {
-      const job = await db
-        .selectFrom("jobQueue")
-        .selectAll()
-        .where("status", "=", "pending")
-        .orderBy("status asc")
-        .executeTakeFirst();
-
-      if (job) {
-        try {
-          await updateUser(job.userId);
-          console.log(`Updated ${job.userId}`);
-
-          await db
-            .updateTable("jobQueue")
-            .where("id", "=", job.id)
-            .set({ status: "processed" })
-            .execute();
-        } catch (e) {
-          console.error(`Failed to update ${job.userId} - ${e}`);
-
-          await db
-            .updateTable("jobQueue")
-            .where("id", "=", job.id)
-            .set({ status: "failed" })
-            .execute();
-        }
-      } else {
-        // No jobs to process, wait for a second before checking again
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-    } catch (error) {
-      console.error("Error in queue processing:", error);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } finally {
-      // Release the mutex
-      isProcessing = false;
-    }
-  }
-}
-
-processQueue()
-  .then(() => console.log("Queue processing started!"))
-  .catch((err) => {
-    console.error("Error starting queue processing:", err);
-    process.exit(1);
-  });
-
-schedule.scheduleJob("0 */1 * * *", async () => {
+// Schedule event creation once an hour
+schedule.scheduleJob("0 * * * *", async () => {
   try {
     const users = await db
       .selectFrom("user")
@@ -97,15 +36,64 @@ schedule.scheduleJob("0 */1 * * *", async () => {
 
     const usersToRefresh = users.filter(shouldRefreshUser);
 
-    console.log(`Updating ${usersToRefresh.length} users.`);
+    console.log(`Creating update events for ${usersToRefresh.length} users.`);
 
     for (const user of usersToRefresh) {
-      console.log(`Request update for ${user.id}`);
+      console.log(`Creating update event for ${user.id}`);
 
       await db.insertInto("jobQueue").values({ userId: user.id }).execute();
     }
   } catch (error) {
-    console.error("Error in scheduled job:", error);
+    console.error("Error in event creation job:", error);
+  }
+});
+
+// Mutex flag to ensure atomic processing
+let isProcessing = false;
+
+// Schedule processing every minute
+schedule.scheduleJob("* * * * *", async () => {
+  if (isProcessing) {
+    // If the queue is already being processed, skip this iteration
+    return;
+  }
+
+  // Acquire the mutex
+  isProcessing = true;
+
+  try {
+    const job = await db
+      .selectFrom("jobQueue")
+      .selectAll()
+      .where("status", "=", "pending")
+      .orderBy("status asc")
+      .executeTakeFirst();
+
+    if (job) {
+      try {
+        await updateUser(job.userId);
+        console.log(`Updated ${job.userId}`);
+
+        await db
+          .updateTable("jobQueue")
+          .where("id", "=", job.id)
+          .set({ status: "processed" })
+          .execute();
+      } catch (e) {
+        console.error(`Failed to update ${job.userId} - ${e}`);
+
+        await db
+          .updateTable("jobQueue")
+          .where("id", "=", job.id)
+          .set({ status: "failed" })
+          .execute();
+      }
+    }
+  } catch (error) {
+    console.error("Error in queue processing:", error);
+  } finally {
+    // Release the mutex
+    isProcessing = false;
   }
 });
 
