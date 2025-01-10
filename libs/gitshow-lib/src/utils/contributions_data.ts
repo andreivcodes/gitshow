@@ -90,6 +90,57 @@ async function fetchContributionData(
   throw new Error("Max retries reached");
 }
 
+async function connectWithRetry(maxRetries = 3, delay = 1000): Promise<Browser> {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const browser = await connectToBrowserless();
+      if (!browser) {
+        throw new Error('Failed to initialize browser');
+      }
+      return browser;
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      console.log(`Retry ${i + 1}/${maxRetries} after ${delay}ms`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error('Failed to connect after maximum retries');
+}
+
+async function connectToBrowserless(): Promise<Browser> {
+  const launchArgs = JSON.stringify({
+    args: ['--no-sandbox'],
+    headless: true,
+  });
+
+  const browserlessUrl = process.env.BROWSERLESS_URL;
+  const browserlessToken = process.env.BROWSERLESS_TOKEN;
+
+  if (!browserlessUrl || !browserlessToken) {
+    throw new Error('Browserless URL or token not configured');
+  }
+
+  const wsUrl = `${browserlessUrl}/?token=${browserlessToken}&launch=${launchArgs}`;
+
+  console.log('Connecting to browserless service...');
+
+  try {
+    const browser = await puppeteer.connect({
+      browserWSEndpoint: wsUrl,
+    });
+
+    if (!browser) {
+      throw new Error('Browser initialization failed');
+    }
+
+    console.log('Successfully connected to browserless');
+    return browser;
+  } catch (error) {
+    console.error('Failed to connect to browserless:', error);
+    throw new Error(`Browserless connection failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
 export async function contribData(username: string): Promise<ContributionData> {
   const user = await db
     ?.selectFrom("user")
@@ -107,20 +158,20 @@ export async function contribData(username: string): Promise<ContributionData> {
     return user.contribData as unknown as ContributionData;
   }
 
-  let browser: Browser | undefined;
-  let page: Page | undefined;
+  let browser: Browser | null = null;
+  let page: Page | null = null;
 
   try {
-    const launchArgs = JSON.stringify({
-      headless: true,
-      stealth: true,
-    });
-
-    browser = await puppeteer.connect({
-      browserURL: `${process.env.BROWSERLESS_URL}/?token=${process.env.BROWSERLESS_TOKEN}&launch=${launchArgs}`,
-    });
+    browser = await connectWithRetry();
+    if (!browser) {
+      throw new Error('Failed to initialize browser');
+    }
 
     page = await browser.newPage();
+    if (!page) {
+      throw new Error('Failed to create new page');
+    }
+
     page.setDefaultNavigationTimeout(30000);
     page.setDefaultTimeout(30000);
 
@@ -140,6 +191,7 @@ export async function contribData(username: string): Promise<ContributionData> {
     console.error("Error fetching contribution data:", error);
     throw error;
   } finally {
-    if (browser) await browser.close();
+    if (page) await page.close().catch(console.error);
+    if (browser) await browser.close().catch(console.error);
   }
 }
