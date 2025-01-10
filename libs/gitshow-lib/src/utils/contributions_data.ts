@@ -117,7 +117,7 @@ export async function contribData(username: string): Promise<ContributionData> {
     });
 
     browser = await puppeteer.connect({
-      browserWSEndpoint: `${process.env.BROWSERLESS_WSS}/?token=${process.env.BROWSERLESS_TOKEN}&launch=${launchArgs}`,
+      browserURL: `${process.env.BROWSERLESS_URL}/?token=${process.env.BROWSERLESS_TOKEN}&launch=${launchArgs}`,
     });
 
     page = await browser.newPage();
