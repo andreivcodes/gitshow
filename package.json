@@ -1,12 +1,14 @@
 {
   "name": "git.show",
   "version": "0.1.0",
+  "devDependencies": {
+    "@tsconfig/recommended": "1.0.8"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "packageManager": "yarn@4.3.1",
   "private": true,
-  "type": "module",
-  "workspaces": [
-    "libs/*",
-    "apps/*"
-  ],
   "scripts": {
     "build-lib": "yarn workspace @gitshow/gitshow-lib run build",
     "build-updater": "yarn run build-lib && yarn workspace @gitshow/updater run build",
@@ -14,11 +16,9 @@
     "start-updater": "yarn workspace @gitshow/updater run start",
     "start-web": "yarn workspace @gitshow/web run start"
   },
-  "devDependencies": {
-    "@tsconfig/recommended": "1.0.8"
-  },
-  "engines": {
-    "node": "20"
-  },
-  "packageManager": "yarn@4.3.1"
+  "type": "module",
+  "workspaces": [
+    "libs/*",
+    "apps/*"
+  ]
 }
