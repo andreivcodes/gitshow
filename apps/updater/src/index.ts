@@ -147,6 +147,34 @@ async function updateUser(userId: string) {
     accessSecret: decryptedAccessSecret,
   });
 
+  // Fetch current Twitter user info to update profile picture
+  try {
+    const twitterUser = await client.v1.verifyCredentials({
+      include_email: false,
+      skip_status: true,
+    });
+    
+    // Update profile picture URL if it has changed
+    if (twitterUser.profile_image_url_https) {
+      const newProfilePictureUrl = twitterUser.profile_image_url_https.replace(
+        "_normal.jpg",
+        ".jpg"
+      );
+      
+      if (newProfilePictureUrl !== user.twitterPicture) {
+        await db
+          .updateTable("user")
+          .where("id", "=", user.id)
+          .set({ twitterPicture: newProfilePictureUrl })
+          .execute();
+        console.log(`Updated profile picture for user ${userId}`);
+      }
+    }
+  } catch (error) {
+    console.error(`Failed to fetch Twitter user info for ${userId}:`, error);
+    // Continue with banner update even if profile picture update fails
+  }
+
   const bannerSvg = await contribSvg(
     user.githubUsername!,
     user.theme as AvailableThemeNames
