@@ -25,7 +25,7 @@ export default function SignIn() {
   };
 
   return (
-    <Card className="w-full sm:w-[448px] h-auto sm:h-[460px] flex flex-col">
+    <Card className="w-full sm:w-[448px] h-auto sm:min-h-[460px] flex flex-col">
       <CardHeader className="space-y-1">
         <CardTitle className="flex justify-center text-2xl">
           Connect your accounts

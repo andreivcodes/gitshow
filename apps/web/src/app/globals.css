@@ -163,15 +163,6 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
-}
 
 @keyframes free-select {
   0%,
@@ -183,21 +174,6 @@
   50% {
     background-size: 200% 200%;
     background-position: 100% 50%;
-  }
-}
-
-@keyframes free-select {
-  0%,
-  100% {
-    background: rgba(121, 145, 176, 0.75);
-    background-size: 200% 200%;
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background: rgba(121, 145, 176, 0.75);
-    background-size: 200% 200%;
-    background-position: 0% 50%;
   }
 }
 
@@ -293,11 +269,15 @@
   height: 400px;
   animation: moveAndGlow 20s infinite alternate ease-in-out;
   filter: blur(200px);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .orb-container {
   position: relative;
   overflow: hidden;
+  overflow-x: visible;
 }
 
 .chart-shadow::before {
@@ -327,6 +307,20 @@
     );
     transition: background-color 1s ease-in-out;
   }
+}
+
+.chart-container {
+  transform-style: preserve-3d;
+  overflow: hidden;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.chart-svg-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
 }
 
 /*

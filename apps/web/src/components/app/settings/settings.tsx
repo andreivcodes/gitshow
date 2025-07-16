@@ -23,13 +23,13 @@ export default function Settings() {
     return (
       <Card
         className={cn(
-          "w-full sm:w-[448px] h-auto sm:h-[460px] flex flex-col",
+          "w-full sm:w-[448px] h-auto sm:min-h-[460px] flex flex-col",
         )}
       ></Card>
     );
 
   return (
-    <Card className={cn("w-full sm:w-[448px] h-auto sm:h-[460px] flex flex-col")}>
+    <Card className={cn("w-full sm:w-[448px] h-auto sm:min-h-[460px] flex flex-col")}>
       <CardHeader className="pb-4">
         <CardTitle className="text-xl">Settings</CardTitle>
       </CardHeader>

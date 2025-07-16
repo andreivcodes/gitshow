@@ -89,21 +89,11 @@ export default function Contributions({
   return (
     <div
       ref={chartRef}
-      className="bg-black rounded-xl relative h-[270px] ml-4 mr-0 sm:mx-4 w-[566px] min-w-[566px] flex items-center justify-center chart-shadow chart-fade"
-      style={{
-        ...rotationStyles,
-        transformStyle: "preserve-3d",
-        overflow: "hidden",
-      }}
+      className="bg-black rounded-xl relative h-[270px] mr-0 sm:mx-4 w-[566px] min-w-[566px] flex items-center justify-center chart-shadow chart-fade chart-container"
+      style={rotationStyles}
     >
       <div
-        className="absolute w-auto h-auto rounded-t-lg left-1/2 transform -translate-x-1/2 bottom-[3em]"
-        style={{
-          width: "100%",
-          height: "100%",
-          overflow: "hidden",
-          display: "flex",
-        }}
+        className="absolute w-auto h-auto rounded-t-lg left-1/2 transform -translate-x-1/2 bottom-[3em] chart-svg-wrapper"
         dangerouslySetInnerHTML={{ __html: svg }}
       />
 
