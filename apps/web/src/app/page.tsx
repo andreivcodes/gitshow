@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 
 export default function Home() {
   return (
-    <div className="flex w-full flex-col justify-around gap-8 p-4 xl:flex-row xl:p-24">
+    <div className="flex w-full flex-col justify-around gap-8 p-4 xl:flex-row xl:p-24 overflow-x-hidden sm:overflow-x-visible">
       <Suspense fallback={<ContributionsLoadingCard />}>
         <ContribsWrapper />
       </Suspense>
@@ -46,7 +46,7 @@ async function ContribsWrapper() {
   }
 
   return (
-    <div className="w-full xl:w-fit flex xl:items-center xl:justify-center">
+    <div className="w-full xl:w-fit flex xl:items-center xl:justify-center overflow-x-visible sm:overflow-x-hidden">
       <Contributions
         name={session?.user.twittername ?? "Linus Torvalds"}
         twittertag={session?.user.twittertag ?? "@Linus__Torvalds"}
@@ -70,9 +70,9 @@ async function MenuWrapper() {
 
 function ContributionsLoadingCard() {
   return (
-    <div className="w-full xl:w-fit flex xl:items-center xl:justify-center">
+    <div className="w-full xl:w-fit flex xl:items-center xl:justify-center overflow-x-visible sm:overflow-x-hidden">
       <div
-        className="animate-pulse bg-black/50 rounded-lg relative h-[16em] mx-4 w-full max-w-[500px] 2xl:max-w-[30em] min-w-[300px] sm:min-w-[500px] flex items-center justify-center"
+        className="animate-pulse bg-black/50 rounded-lg relative h-[16em] ml-4 mr-4 sm:mx-4 w-[500px] 2xl:w-[30em] flex items-center justify-center"
         style={{
           transformStyle: "preserve-3d",
           overflow: "hidden",
@@ -84,7 +84,7 @@ function ContributionsLoadingCard() {
 
 function MenuLoadingCard() {
   return (
-    <Card className="animate-pulse w-[448px] h-[460px] flex flex-col">
+    <Card className="animate-pulse w-full sm:w-[448px] h-auto sm:h-[460px] min-h-[400px] flex flex-col">
       <div className="flex-1" />
     </Card>
   );

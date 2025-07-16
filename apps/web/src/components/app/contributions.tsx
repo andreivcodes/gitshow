@@ -27,11 +27,11 @@ export default function Contributions({
   };
 
   useEffect(() => {
-    const isMobile = window.matchMedia(
-      "only screen and (max-width: 760px)",
+    const checkMobile = () => window.matchMedia(
+      "only screen and (max-width: 640px)",
     ).matches;
 
-    if (isMobile) {
+    if (checkMobile()) {
       return;
     }
 
@@ -89,7 +89,7 @@ export default function Contributions({
   return (
     <div
       ref={chartRef}
-      className="bg-black rounded-lg relative h-[16em] mx-4 w-full max-w-[500px] 2xl:max-w-[30em] flex items-center justify-center chart-shadow chart-fade"
+      className="bg-black rounded-lg relative h-[16em] ml-4 mr-4 sm:mx-4 w-[500px] 2xl:w-[30em] flex items-center justify-center chart-shadow chart-fade overflow-x-visible sm:overflow-x-hidden"
       style={{
         ...rotationStyles,
         transformStyle: "preserve-3d",
