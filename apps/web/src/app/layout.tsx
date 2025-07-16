@@ -2,7 +2,6 @@
 
 import "./globals.css";
 import { Header } from "@/components/app/header";
-import Feedback from "@/components/app/feedback";
 import { Footer } from "@/components/app/footer";
 import { SessionProvider } from "next-auth/react";
 
@@ -19,7 +18,6 @@ export default function RootLayout({
             <div className="orb -z-10" />
             <Header />
             {children}
-            <Feedback />
             <Footer />
           </SessionProvider>
         </main>
