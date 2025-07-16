@@ -23,40 +23,40 @@ export default function Settings() {
     return (
       <Card
         className={cn(
-          "m-4 flex flex-col items-start gap-4 xl:min-w-[400px] h-[27.8rem]",
+          "w-[448px] h-[460px] flex flex-col",
         )}
       ></Card>
     );
 
   return (
-    <Card
-      className={cn("m-4 flex flex-col items-start gap-4 xl:min-w-[400px]")}
-    >
-      <CardHeader>
-        <CardTitle>Settings</CardTitle>
+    <Card className={cn("w-[448px] h-[460px] flex flex-col")}>
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl">Settings</CardTitle>
       </CardHeader>
-      <CardContent className={cn("flex w-full flex-col gap-6")}>
-        <div className="flex w-full flex-col justify-center gap-4">
+      <CardContent className={cn("flex-1 flex w-full flex-col gap-4")}>
+        <div className="bg-muted/50 rounded-lg p-3">
           <Update
             automaticallyUpdate={data?.user.automaticallyUpdate}
             lastUpdate={data?.user.lastUpdateTimestamp}
           />
-          <hr></hr>
-          <div>
-            <Label>Theme</Label>
+        </div>
+        
+        <div className="space-y-3">
+          <div className="grid gap-2">
+            <Label className="text-sm">Theme</Label>
             <ThemeSelect theme={data?.user.theme} />
           </div>
-          <div>
-            <Label>Update interval</Label>
+          
+          <div className="grid gap-2">
+            <Label className="text-sm">Update Frequency</Label>
             <IntervalSelect interval={data?.user.updateInterval} />
           </div>
         </div>
-        <hr></hr>
       </CardContent>
 
-      <CardFooter className={cn("flex w-full flex-row justify-center gap-2")}>
-        <Delete />
+      <CardFooter className={cn("grid grid-cols-2 gap-2 border-t pt-4")}>
         <SignOut />
+        <Delete />
       </CardFooter>
     </Card>
   );

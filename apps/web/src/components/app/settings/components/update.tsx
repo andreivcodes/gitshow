@@ -15,9 +15,19 @@ export default function Update({
   const [_, startTransition] = useTransition();
 
   return (
-    <div className="w-full">
-      <div className="flex w-full flex-row justify-between">
-        <Label>Automatically update</Label>
+    <div className="w-full space-y-2">
+      <div className="flex w-full flex-row items-center justify-between gap-3">
+        <div className="flex-1">
+          <Label className="text-sm">Auto-update banner</Label>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Last synced: {lastUpdate ? new Date(lastUpdate).toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric', 
+              hour: 'numeric', 
+              minute: '2-digit' 
+            }) : "Never"}
+          </p>
+        </div>
         <Switch
           defaultChecked={automaticallyUpdate}
           onCheckedChange={(e) => {
@@ -27,9 +37,6 @@ export default function Update({
           }}
         />
       </div>
-      <Label className="font-mono text-xs">
-        Last update: {lastUpdate ? lastUpdate.toLocaleString() : "Unknown"}
-      </Label>
     </div>
   );
 }

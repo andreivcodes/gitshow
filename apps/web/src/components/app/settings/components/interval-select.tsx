@@ -28,7 +28,7 @@ export default function IntervalSelect({
       }}
       defaultValue={interval}
     >
-      <SelectTrigger>
+      <SelectTrigger className="w-full">
         <SelectValue placeholder="Select an update interval" />
       </SelectTrigger>
       <SelectContent>

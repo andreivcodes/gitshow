@@ -12,14 +12,16 @@ export default function Delete() {
   return (
     <Button
       className={cn("w-full")}
-      variant="destructive"
+      variant="outline"
       onClick={(e) => {
-        startTransition(() => {
-          deleteAccount().then(() => signOut());
-        });
+        if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+          startTransition(() => {
+            deleteAccount().then(() => signOut());
+          });
+        }
       }}
     >
-      Delete my account
+      Delete account
     </Button>
   );
 }

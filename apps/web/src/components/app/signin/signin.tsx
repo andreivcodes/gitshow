@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -24,7 +25,7 @@ export default function SignIn() {
   };
 
   return (
-    <Card className="flex min-w-[300px] flex-col justify-evenly p-4">
+    <Card className="w-[448px] h-[460px] flex flex-col">
       <CardHeader className="space-y-1">
         <CardTitle className="flex justify-center text-2xl">
           Connect your accounts
@@ -42,47 +43,8 @@ export default function SignIn() {
           </CardDescription>
         )}
       </CardHeader>
-      <CardContent className="grid gap-8 py-4">
-        <div className="grid gap-4 md:grid-cols-2">
-          {session?.user?.githubAuthenticated ? (
-            <Button
-              variant="ghost"
-              className="pointer-events-none border border-green-600"
-            >
-              <Icons.Github className="mr-2 h-4 w-4" />
-              Github
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              className="w-full p-0"
-              onClick={() => signIn("github")}
-              disabled={!termsAccepted}
-            >
-              <Icons.Github className="mr-2 h-4 w-4" />
-              Github
-            </Button>
-          )}
-
-          {session?.user?.twitterAuthenticated ? (
-            <Button
-              variant="ghost"
-              className="pointer-events-none border border-green-600"
-            >
-              <Icons.Twitter className="mr-2 h-4 w-4" />X
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              className="w-full p-0"
-              onClick={() => signIn("twitter")}
-              disabled={!termsAccepted}
-            >
-              <Icons.Twitter className="mr-2 h-4 w-4" />X
-            </Button>
-          )}
-        </div>
-        <div className="items-top flex space-x-2">
+      <CardContent className="flex-1">
+        <div className="items-top flex space-x-2 mt-4">
           <Checkbox id="terms1" onClick={handleCheckboxChange} />
           <div className="grid gap-1.5 leading-none">
             <label
@@ -105,6 +67,45 @@ export default function SignIn() {
           </div>
         </div>
       </CardContent>
+      <CardFooter className="grid grid-cols-2 gap-2 border-t pt-4">
+        {session?.user?.githubAuthenticated ? (
+          <Button
+            variant="ghost"
+            className="pointer-events-none border border-green-600 w-full"
+          >
+            <Icons.Github className="mr-2 h-4 w-4" />
+            Github
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => signIn("github")}
+            disabled={!termsAccepted}
+          >
+            <Icons.Github className="mr-2 h-4 w-4" />
+            Github
+          </Button>
+        )}
+
+        {session?.user?.twitterAuthenticated ? (
+          <Button
+            variant="ghost"
+            className="pointer-events-none border border-green-600 w-full"
+          >
+            <Icons.Twitter className="mr-2 h-4 w-4" />X
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => signIn("twitter")}
+            disabled={!termsAccepted}
+          >
+            <Icons.Twitter className="mr-2 h-4 w-4" />X
+          </Button>
+        )}
+      </CardFooter>
     </Card>
   );
 }

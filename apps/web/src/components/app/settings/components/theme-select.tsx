@@ -24,7 +24,7 @@ export default function ThemeSelect({ theme }: { theme: AvailableThemeNames }) {
       }}
       defaultValue={theme}
     >
-      <SelectTrigger>
+      <SelectTrigger className="w-full">
         <SelectValue placeholder="Select a theme" />
       </SelectTrigger>
       <SelectContent>

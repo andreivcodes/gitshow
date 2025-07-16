@@ -8,7 +8,7 @@ export default function SignOut() {
   return (
     <Button
       className={cn("w-full")}
-      variant="outline"
+      variant="default"
       onClick={() => signOut()}
     >
       Sign out
