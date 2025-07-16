@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "dependencies": {
     "@gitshow/db": "1.0.0",
-    "dotenv": "^16.4.7",
-    "puppeteer": "24.0.0"
+    "dotenv": "^17.2.0",
+    "puppeteer": "24.13.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.5",
-    "tsx": "^4.19.2",
-    "typescript": "5.7.3"
+    "@types/node": "^24.0.14",
+    "tsx": "^4.20.3",
+    "typescript": "5.8.3"
   },
   "main": "./src/index.ts",
   "scripts": {
