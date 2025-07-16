@@ -1,11 +1,9 @@
 "use client";
 
-import type { Metadata } from "next";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
-import { Header } from "./(components)/header";
-import Feedback from "./(components)/feedback";
-import { Footer } from "./(components)/footer";
+import { Header } from "@/components/app/header";
+import Feedback from "@/components/app/feedback";
+import { Footer } from "@/components/app/footer";
 import { SessionProvider } from "next-auth/react";
 
 export default function RootLayout({
@@ -25,7 +23,6 @@ export default function RootLayout({
             <Footer />
           </SessionProvider>
         </main>
-        <Toaster />
       </body>
     </html>
   );

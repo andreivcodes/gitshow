@@ -1,9 +1,9 @@
 "use client";
 
 import { useTransition } from "react";
-import { deleteAccount, setUpdateInterval } from "../actions";
+import { deleteAccount } from "../actions";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/components/lib/utils";
 import { signOut } from "next-auth/react";
 
 export default function Delete() {

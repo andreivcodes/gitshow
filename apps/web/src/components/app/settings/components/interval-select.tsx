@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
 import { useTransition } from "react";
 import { setUpdateInterval } from "../actions";
 import { RefreshInterval } from "@gitshow/db";
@@ -18,15 +17,11 @@ export default function IntervalSelect({
 }: {
   interval: RefreshInterval;
 }) {
-  const { toast } = useToast();
   const [_, startTransition] = useTransition();
 
   return (
     <Select
       onValueChange={(e) => {
-        toast({
-          description: "⏱️ Your interval has been changed.",
-        });
         startTransition(() => {
           setUpdateInterval(e as RefreshInterval);
         });

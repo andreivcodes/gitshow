@@ -97,7 +97,7 @@ export async function setAutomaticallyUpdate(update: boolean) {
 
 export async function deleteAccount() {
   "use server";
-  
+
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user.email) redirect("/");
@@ -113,7 +113,7 @@ export async function deleteAccount() {
     // Delete all job queue entries for this user
     await db.deleteFrom("jobQueue").where("userId", "=", user.id).execute();
   }
-  
+
   // Delete the user account
   await db.deleteFrom("user").where("email", "=", session.user.email).execute();
 }

@@ -8,21 +8,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
 import { useTransition } from "react";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
 import { setUserTheme } from "../actions";
 
 export default function ThemeSelect({ theme }: { theme: AvailableThemeNames }) {
-  const { toast } = useToast();
   const [_, startTransition] = useTransition();
 
   return (
     <Select
       onValueChange={(e) => {
-        toast({
-          description: "🎨 Your theme has been changed.",
-        });
         startTransition(() => {
           setUserTheme(e as AvailableThemeNames);
         });

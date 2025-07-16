@@ -2,9 +2,9 @@ import React, { Suspense } from "react";
 import { authOptions } from "@/lib/auth";
 import { contribSvg } from "@gitshow/gitshow-lib";
 import { getServerSession } from "next-auth/next";
-import SignIn from "./(components)/signin/signin";
-import Settings from "./(components)/settings/settings";
-import Contributions from "./(components)/contributions";
+import SignIn from "@/components/app/signin/signin";
+import Settings from "@/components/app/settings/settings";
+import Contributions from "@/components/app/contributions";
 import { unstable_cache } from "next/cache";
 
 export default function Home() {

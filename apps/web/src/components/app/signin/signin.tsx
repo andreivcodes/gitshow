@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Icons } from "@/components/ui/icons";
 import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
+import { cn } from "@/components/lib/utils";
 import Link from "next/link";
 
 export default function SignIn() {
@@ -33,11 +33,14 @@ export default function SignIn() {
           Your Github and X accounts must use the same email address!
         </CardDescription>
 
-        {(session?.user?.githubAuthenticated && !session?.user?.twitterAuthenticated
-          || !session?.user?.githubAuthenticated && session?.user?.twitterAuthenticated) &&
+        {((session?.user?.githubAuthenticated &&
+          !session?.user?.twitterAuthenticated) ||
+          (!session?.user?.githubAuthenticated &&
+            session?.user?.twitterAuthenticated)) && (
           <CardDescription className="pt-2 text-center text-amber-700">
             You need to connect both accounts for this to work!
-          </CardDescription>}
+          </CardDescription>
+        )}
       </CardHeader>
       <CardContent className="grid gap-8 py-4">
         <div className="grid gap-4 md:grid-cols-2">

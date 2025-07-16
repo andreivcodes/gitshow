@@ -2,7 +2,7 @@
 
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/components/lib/utils";
 
 export default function SignOut() {
   return (

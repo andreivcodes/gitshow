@@ -12,7 +12,7 @@ import ThemeSelect from "./components/theme-select";
 import SignOut from "./components/sign-out";
 import { Label } from "@/components/ui/label";
 import Update from "./components/update";
-import { cn } from "@/lib/utils";
+import { cn } from "@/components/lib/utils";
 import { useSession } from "next-auth/react";
 import Delete from "./components/delete";
 
