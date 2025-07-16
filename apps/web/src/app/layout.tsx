@@ -12,7 +12,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="dark">
+      <body className="dark overflow-x-hidden">
         <main className="orb-container flex min-h-screen flex-col items-center justify-between">
           <SessionProvider>
             <div className="orb -z-10" />

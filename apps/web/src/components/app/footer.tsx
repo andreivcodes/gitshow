@@ -2,7 +2,7 @@ import { Icons } from "@/components/ui/icons";
 
 export function Footer() {
   return (
-    <div className="container flex items-center justify-center mt-auto pb-24 xl:pb-4">
+    <div className="container flex items-center justify-center mt-auto pt-6 sm:pt-0 pb-24 xl:pb-4">
       <div className="flex flex-col items-center gap-4">
         <p className="text-center text-sm leading-loose flex-row flex gap-1">
           Built by{" "}
