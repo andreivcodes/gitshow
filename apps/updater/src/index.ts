@@ -147,12 +147,14 @@ async function updateUser(userId: string) {
     accessSecret: decryptedAccessSecret,
   });
 
-  // Fetch current Twitter user info to update profile picture
+  // Fetch current Twitter user info to update profile picture and username
   try {
     const twitterUser = await client.v1.verifyCredentials({
       include_email: false,
       skip_status: true,
     });
+    
+    const updates: any = {};
     
     // Update profile picture URL if it has changed
     if (twitterUser.profile_image_url_https) {
@@ -162,17 +164,34 @@ async function updateUser(userId: string) {
       );
       
       if (newProfilePictureUrl !== user.twitterPicture) {
-        await db
-          .updateTable("user")
-          .where("id", "=", user.id)
-          .set({ twitterPicture: newProfilePictureUrl })
-          .execute();
+        updates.twitterPicture = newProfilePictureUrl;
         console.log(`Updated profile picture for user ${userId}`);
       }
     }
+    
+    // Update Twitter username (display name) if it has changed
+    if (twitterUser.name && twitterUser.name !== user.twitterUsername) {
+      updates.twitterUsername = twitterUser.name;
+      console.log(`Updated Twitter display name for user ${userId}: ${user.twitterUsername} -> ${twitterUser.name}`);
+    }
+    
+    // Update Twitter handle (@username) if it has changed
+    if (twitterUser.screen_name && twitterUser.screen_name !== user.twitterTag) {
+      updates.twitterTag = twitterUser.screen_name;
+      console.log(`Updated Twitter handle for user ${userId}: @${user.twitterTag} -> @${twitterUser.screen_name}`);
+    }
+    
+    // Apply all updates if any changes were detected
+    if (Object.keys(updates).length > 0) {
+      await db
+        .updateTable("user")
+        .where("id", "=", user.id)
+        .set(updates)
+        .execute();
+    }
   } catch (error) {
     console.error(`Failed to fetch Twitter user info for ${userId}:`, error);
-    // Continue with banner update even if profile picture update fails
+    // Continue with banner update even if profile update fails
   }
 
   const bannerSvg = await contribSvg(
