@@ -89,7 +89,7 @@ export default function Contributions({
   return (
     <div
       ref={chartRef}
-      className="bg-black rounded-xl relative h-[270px] ml-4 mr-0 sm:mx-4 w-[566px] flex items-center justify-center chart-shadow chart-fade"
+      className="bg-black rounded-xl relative h-[270px] ml-4 mr-0 sm:mx-4 w-[566px] min-w-[566px] flex items-center justify-center chart-shadow chart-fade"
       style={{
         ...rotationStyles,
         transformStyle: "preserve-3d",
