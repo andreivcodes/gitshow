@@ -102,8 +102,17 @@ export async function deleteAccount() {
 
   if (!session || !session.user.email) redirect("/");
 
-  // Delete all job queue entries for this user
-  await db.deleteFrom("jobQueue").where("email", "=", session.user.email).execute();
+  // Get the user to find their ID
+  const user = await db
+    .selectFrom("user")
+    .where("email", "=", session.user.email)
+    .select("id")
+    .executeTakeFirst();
+
+  if (user) {
+    // Delete all job queue entries for this user
+    await db.deleteFrom("jobQueue").where("userId", "=", user.id).execute();
+  }
   
   // Delete the user account
   await db.deleteFrom("user").where("email", "=", session.user.email).execute();
