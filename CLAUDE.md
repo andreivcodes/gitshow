@@ -18,32 +18,32 @@ GitShow is a monorepo that creates visual representations of GitHub contribution
 ### Build Commands
 ```bash
 # Build the entire project
-yarn build-lib && yarn build-web && yarn build-updater
+pnpm build-lib && pnpm build-web && pnpm build-updater
 
 # Build individual workspaces
-yarn build-lib      # Build shared library
-yarn build-web      # Build web application  
-yarn build-updater  # Build updater service
+pnpm build-lib      # Build shared library
+pnpm build-web      # Build web application  
+pnpm build-updater  # Build updater service
 
 # Development
-yarn workspace @gitshow/web dev  # Run web app in development mode
-yarn workspace @gitshow/updater dev  # Run updater in development mode
+pnpm --filter @gitshow/web dev  # Run web app in development mode
+pnpm --filter @gitshow/updater dev  # Run updater in development mode
 ```
 
 ### Database Commands
 ```bash
-yarn workspace @gitshow/db run migrate  # Run database migrations
+pnpm --filter @gitshow/db migrate  # Run database migrations
 ```
 
 ### Linting
 ```bash
-yarn workspace @gitshow/web lint  # Lint the web application
+pnpm --filter @gitshow/web lint  # Lint the web application
 ```
 
 ### Start Services
 ```bash
-yarn start-web      # Start web application (production)
-yarn start-updater  # Start updater service (production)
+pnpm start-web      # Start web application (production)
+pnpm start-updater  # Start updater service (production)
 ```
 
 ### Dependency Management
@@ -53,7 +53,7 @@ yarn start-updater  # Start updater service (production)
 
 ## Architecture
 
-This is a Yarn workspaces monorepo with the following structure:
+This is a pnpm workspace monorepo with the following structure:
 
 ### Apps Layer
 - **web/**: Next.js 15 application with App Router

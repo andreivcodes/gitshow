@@ -7,18 +7,14 @@
   "engines": {
     "node": "20"
   },
-  "packageManager": "yarn@4.3.1",
+  "packageManager": "pnpm@10.15.0",
   "private": true,
   "scripts": {
-    "build-lib": "yarn workspace @gitshow/gitshow-lib run build",
-    "build-updater": "yarn run build-lib && yarn workspace @gitshow/updater run build",
-    "build-web": "yarn run build-lib && yarn workspace @gitshow/web run  build",
-    "start-updater": "yarn workspace @gitshow/updater run start",
-    "start-web": "yarn workspace @gitshow/web run start"
+    "build-lib": "pnpm --filter @gitshow/gitshow-lib build",
+    "build-updater": "pnpm run build-lib && pnpm --filter @gitshow/updater build",
+    "build-web": "pnpm run build-lib && pnpm --filter @gitshow/web build",
+    "start-updater": "pnpm --filter @gitshow/updater start",
+    "start-web": "pnpm --filter @gitshow/web start"
   },
-  "type": "module",
-  "workspaces": [
-    "libs/*",
-    "apps/*"
-  ]
+  "type": "module"
 }

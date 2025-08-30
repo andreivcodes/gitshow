@@ -18,7 +18,8 @@
   "scripts": {
     "db:gen": "kysely-codegen --camel-case --runtime-enums --out-file ./src/kysely_db.ts",
     "db:migrate": "kysely migrate latest",
-    "db:seed": "yarn kysely seed run"
+    "db:seed": "pnpm kysely seed run",
+    "migrate": "kysely migrate latest"
   },
   "type": "module"
 }

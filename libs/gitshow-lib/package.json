@@ -2,7 +2,7 @@
   "name": "@gitshow/gitshow-lib",
   "version": "1.0.0",
   "dependencies": {
-    "@gitshow/db": "1.0.0",
+    "@gitshow/db": "workspace:*",
     "dotenv": "^17.2.0",
     "puppeteer": "24.13.0"
   },
@@ -14,7 +14,7 @@
   "main": "./src/index.ts",
   "scripts": {
     "build": "tsc --build",
-    "start": "yarn build --watch"
+    "start": "pnpm build --watch"
   },
   "type": "module"
 }
