@@ -16,7 +16,7 @@ Turn your GitHub contributions into dynamic Twitter/X banner art. GitShow automa
 
 - Node.js 20+
 - PostgreSQL database
-- Yarn 4.3.1 (Berry)
+- pnpm 10.15.0
 - [Browserless](https://www.browserless.io/) account for web scraping
 - GitHub OAuth App
 - Twitter/X API v1.1 credentials
@@ -31,7 +31,7 @@ Turn your GitHub contributions into dynamic Twitter/X banner art. GitShow automa
 
 2. **Install dependencies**
    ```bash
-   yarn install
+   pnpm install
    ```
 
 3. **Set up environment variables**
@@ -66,24 +66,24 @@ Turn your GitHub contributions into dynamic Twitter/X banner art. GitShow automa
 
 4. **Run database migrations**
    ```bash
-   yarn workspace @gitshow/db run migrate
+   pnpm --filter @gitshow/db migrate
    ```
 
 5. **Start the development server**
    ```bash
-   yarn workspace @gitshow/web dev
+   pnpm --filter @gitshow/web dev
    ```
 
 6. **Start the updater service** (in a separate terminal)
    ```bash
-   yarn workspace @gitshow/updater dev
+   pnpm --filter @gitshow/updater dev
    ```
 
 Visit `http://localhost:3000` to see the app!
 
 ## Architecture
 
-GitShow is built as a monorepo using Yarn workspaces:
+GitShow is built as a monorepo using pnpm workspaces:
 
 ```
 gitshow/
@@ -123,13 +123,13 @@ Choose from 7 beautiful themes for your contribution graph:
 
 ```bash
 # Build everything
-yarn build-lib && yarn build-web && yarn build-updater
+pnpm build-lib && pnpm build-web && pnpm build-updater
 
 # Development mode
 yarn workspace @gitshow/web dev
 
 # Linting
-yarn workspace @gitshow/web lint
+pnpm --filter @gitshow/web lint
 
 # Update dependencies
 ./update_deps.sh

@@ -153,5 +153,5 @@ This is a pnpm workspace monorepo with the following structure:
 
 4. **Database migrations**:
    - Create new migration in `libs/db/migrations/`
-   - Run `yarn workspace @gitshow/db run migrate`
+   - Run `pnpm --filter @gitshow/db migrate`
    - Update Kysely types accordingly
