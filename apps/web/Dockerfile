@@ -5,7 +5,7 @@ FROM node:latest as builder
 WORKDIR /app
 
 # Copy package-related files
-COPY package.json yarn.lock .yarnrc.yml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Copy project-specific package files
 COPY apps/web/package.json apps/web/
@@ -13,10 +13,7 @@ COPY libs/gitshow-lib/package.json libs/gitshow-lib/
 COPY libs/db/package.json libs/db/
 
 # Install dependencies
-RUN npm install -g corepack@latest && corepack enable
-
-RUN yarn install --mode=update-lockfile
-RUN yarn install
+RUN npm install -g pnpm@10.15.0
 
 # Define build argument
 ARG DATABASE_URL
@@ -45,8 +42,11 @@ COPY apps/web/ apps/web/
 COPY libs/gitshow-lib/ libs/gitshow-lib/
 COPY libs/db/ libs/db/
 
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
 # Build the project
-RUN yarn build-web
+RUN pnpm build-web
 
 # Set the default command
-CMD ["yarn", "start-web"]
+CMD ["pnpm", "start-web"]
