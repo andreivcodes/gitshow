@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "dependencies": {
     "@gitshow/db": "workspace:*",
+    "bufferutil": "^4.0.9",
     "dotenv": "^17.2.0",
-    "puppeteer": "24.13.0"
+    "puppeteer": "24.13.0",
+    "utf-8-validate": "^6.0.5"
   },
   "devDependencies": {
     "@types/node": "^24.0.14",
