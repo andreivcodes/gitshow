@@ -1,4 +1,10 @@
 import { Card } from "@/components/ui/card";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms and Conditions",
+  description: "Terms and Conditions for using git.show",
+};
 
 export default function Page() {
   return (

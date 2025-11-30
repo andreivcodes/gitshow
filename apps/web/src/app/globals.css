@@ -380,3 +380,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* React 19 View Transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in-out;
+}
+
+::view-transition-old(contributions),
+::view-transition-new(contributions) {
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in-out;
+}

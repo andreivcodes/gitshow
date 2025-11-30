@@ -1,4 +1,10 @@
 import { Card } from "@/components/ui/card";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Privacy Policy and GDPR compliance information for git.show",
+};
 
 export default function Page() {
   return (

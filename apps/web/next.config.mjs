@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable Next.js 16 Cache Components
+  cacheComponents: true,
+
+  // Experimental features
+  experimental: {
+    // Enable Turbopack filesystem caching for faster dev builds
+    turbopackFileSystemCacheForDev: true,
+  },
+
   images: {
     remotePatterns: [
       {
@@ -9,6 +18,7 @@ const nextConfig = {
       },
     ],
   },
+
   webpack: (config, options) => {
     if (!options.dev) {
       config.devtool = "source-map";

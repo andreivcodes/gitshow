@@ -2,17 +2,17 @@
   "name": "@gitshow/db",
   "version": "1.0.0",
   "dependencies": {
-    "dotenv": "^17.2.0",
-    "kysely": "^0.28.2",
+    "dotenv": "^17.2.3",
+    "kysely": "^0.28.8",
     "pg": "8.16.3"
   },
   "devDependencies": {
-    "@tsconfig/recommended": "1.0.10",
+    "@tsconfig/recommended": "1.0.13",
     "@types/dotenv": "8.2.3",
     "@types/pg": "8",
-    "kysely-codegen": "0.18.5",
-    "kysely-ctl": "0.13.1",
-    "typescript": "5.8.3"
+    "kysely-codegen": "0.19.0",
+    "kysely-ctl": "0.19.0",
+    "typescript": "5.9.3"
   },
   "main": "./src/index.ts",
   "scripts": {

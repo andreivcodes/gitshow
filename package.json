@@ -2,12 +2,12 @@
   "name": "git.show",
   "version": "0.1.0",
   "devDependencies": {
-    "@tsconfig/recommended": "1.0.8"
+    "@tsconfig/recommended": "1.0.13"
   },
   "engines": {
     "node": "20"
   },
-  "packageManager": "pnpm@10.15.0",
+  "packageManager": "pnpm@10.24.0",
   "private": true,
   "scripts": {
     "build-lib": "pnpm --filter @gitshow/gitshow-lib build",

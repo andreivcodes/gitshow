@@ -4,14 +4,14 @@
   "dependencies": {
     "@gitshow/db": "workspace:*",
     "bufferutil": "^4.0.9",
-    "dotenv": "^17.2.0",
-    "puppeteer": "24.13.0",
+    "dotenv": "^17.2.3",
+    "puppeteer": "24.31.0",
     "utf-8-validate": "^6.0.5"
   },
   "devDependencies": {
-    "@types/node": "^24.0.14",
-    "tsx": "^4.20.3",
-    "typescript": "5.8.3"
+    "@types/node": "^24.10.1",
+    "tsx": "^4.21.0",
+    "typescript": "5.9.3"
   },
   "main": "./src/index.ts",
   "scripts": {

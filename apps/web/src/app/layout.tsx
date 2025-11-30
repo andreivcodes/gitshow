@@ -1,9 +1,47 @@
-"use client";
-
 import "./globals.css";
 import { Header } from "@/components/app/header";
 import { Footer } from "@/components/app/footer";
-import { SessionProvider } from "next-auth/react";
+import { Providers } from "@/components/providers/session-provider";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: {
+    default: "git.show - Show off your GitHub contributions",
+    template: "%s | git.show",
+  },
+  description:
+    "Automatically update your Twitter/X banner with your GitHub contribution graph. Choose from 7 themes and set automatic updates.",
+  keywords: [
+    "github",
+    "contributions",
+    "twitter banner",
+    "x banner",
+    "developer tools",
+    "github stats",
+  ],
+  authors: [{ name: "andreivcodes", url: "https://x.com/andreivtweets" }],
+  creator: "andreivcodes",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://git.show",
+    title: "git.show - Show off your GitHub contributions",
+    description:
+      "Automatically update your Twitter/X banner with your GitHub contribution graph.",
+    siteName: "git.show",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "git.show - Show off your GitHub contributions",
+    description:
+      "Automatically update your Twitter/X banner with your GitHub contribution graph.",
+    creator: "@andreivtweets",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
 
 export default function RootLayout({
   children,
@@ -14,12 +52,12 @@ export default function RootLayout({
     <html lang="en">
       <body className="dark overflow-x-hidden">
         <main className="orb-container flex min-h-screen flex-col items-start sm:items-center justify-between">
-          <SessionProvider>
+          <Providers>
             <div className="orb -z-10" />
             <Header />
             {children}
             <Footer />
-          </SessionProvider>
+          </Providers>
         </main>
       </body>
     </html>

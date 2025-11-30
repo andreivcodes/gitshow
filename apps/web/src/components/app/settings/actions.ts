@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { RefreshInterval, db } from "@gitshow/db";
 
 export async function initAction() {}
@@ -64,7 +64,7 @@ export async function setUserTheme(theme: AvailableThemeNames) {
 
   session.user.theme = theme;
 
-  revalidateTag(user.githubUsername ?? "torvalds");
+  updateTag(`user-${user.githubUsername ?? "torvalds"}`);
 }
 
 export async function setAutomaticallyUpdate(update: boolean) {
@@ -92,7 +92,7 @@ export async function setAutomaticallyUpdate(update: boolean) {
 
   await db.insertInto("jobQueue").values({ userId: user.id }).execute();
 
-  revalidateTag(user.githubUsername ?? "torvalds");
+  updateTag(`user-${user.githubUsername ?? "torvalds"}`);
 }
 
 export async function deleteAccount() {

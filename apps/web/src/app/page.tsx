@@ -1,11 +1,10 @@
 import React, { Suspense } from "react";
 import { authOptions } from "@/lib/auth";
-import { contribSvg } from "@gitshow/gitshow-lib";
 import { getServerSession } from "next-auth/next";
 import SignIn from "@/components/app/signin/signin";
 import Settings from "@/components/app/settings/settings";
 import Contributions from "@/components/app/contributions";
-import { unstable_cache } from "next/cache";
+import { getCachedContributionSvg } from "@/lib/cache/contributions-cache";
 import { Card } from "@/components/ui/card";
 
 export default function Home() {
@@ -27,22 +26,10 @@ export default function Home() {
 
 async function ContribsWrapper() {
   const session = await getServerSession(authOptions);
-  const getCachedSvg = unstable_cache(
-    async (githubUsername, theme) => {
-      try {
-        return await contribSvg(githubUsername, theme);
-      } catch (error) {
-        console.error("Error fetching SVG:", error);
-        return null;
-      }
-    },
-    [session?.user.githubname ?? "torvalds"],
-    { revalidate: 60 * 60 },
-  );
 
-  const svg = await getCachedSvg(
+  const svg = await getCachedContributionSvg(
     session?.user.githubname ?? "torvalds",
-    session?.user.theme ?? "githubDark",
+    session?.user.theme ?? "githubDark"
   );
 
   if (!svg) {
