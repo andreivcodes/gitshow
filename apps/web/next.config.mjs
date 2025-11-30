@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable Next.js 16 Cache Components
-  cacheComponents: true,
-
   // Experimental features
   experimental: {
     // Enable Turbopack filesystem caching for faster dev builds

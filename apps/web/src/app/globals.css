@@ -268,10 +268,17 @@
   width: 400px;
   height: 400px;
   animation: moveAndGlow 20s infinite alternate ease-in-out;
-  filter: blur(200px);
+  filter: blur(100px); /* Reduced from 200px for better Safari performance */
   will-change: transform, opacity;
   backface-visibility: hidden;
   transform: translateZ(0);
+}
+
+/* WebKit-specific optimization for Safari */
+@supports (-webkit-backdrop-filter: blur(1px)) {
+  .orb {
+    filter: blur(80px);
+  }
 }
 
 .orb-container {

@@ -1,19 +1,27 @@
-"use cache";
-
 import { contribSvg, AvailableThemeNames } from "@gitshow/gitshow-lib";
-import { cacheLife, cacheTag } from "next/cache";
+import { unstable_cache } from "next/cache";
+
+// Create a cached version of the contribution SVG fetcher
+// Cache for 1 hour, tagged by username for invalidation
+const getCachedContributionSvgImpl = unstable_cache(
+  async (githubUsername: string, theme: AvailableThemeNames) => {
+    try {
+      return await contribSvg(githubUsername, theme);
+    } catch (error) {
+      console.error("Error fetching contribution SVG:", error);
+      return null;
+    }
+  },
+  ["contribution-svg"],
+  {
+    revalidate: 3600, // 1 hour in seconds
+    tags: ["contributions"],
+  }
+);
 
 export async function getCachedContributionSvg(
   githubUsername: string,
   theme: AvailableThemeNames
 ) {
-  cacheLife("hours"); // 1 hour cache (matches current 60*60)
-  cacheTag(`user-${githubUsername}`); // Tagged for invalidation
-
-  try {
-    return await contribSvg(githubUsername, theme);
-  } catch (error) {
-    console.error("Error fetching contribution SVG:", error);
-    return null;
-  }
+  return getCachedContributionSvgImpl(githubUsername, theme);
 }

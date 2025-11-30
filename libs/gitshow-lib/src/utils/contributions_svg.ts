@@ -25,11 +25,7 @@ export async function contribSvg(
   const height = daysInWeek * (cellSize + cellGap) + paddingTop + paddingBottom;
 
   let svgContent = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
-  svgContent += `<defs>
-                  <style type="text/css">
-                    @import url('https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic');
-                  </style>
-                </defs>`;
+  // Font is now loaded globally via Next.js font optimization with display: swap
   svgContent += `<rect width="${width}" height="${height}" fill="${currentTheme.background}" />`;
 
   let x = paddingLeft;

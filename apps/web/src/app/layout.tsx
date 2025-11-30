@@ -3,6 +3,14 @@ import { Header } from "@/components/app/header";
 import { Footer } from "@/components/app/footer";
 import { Providers } from "@/components/providers/session-provider";
 import type { Metadata } from "next";
+import { Roboto } from 'next/font/google';
+
+const roboto = Roboto({
+  weight: ['100', '300', '400', '500', '700', '900'],
+  subsets: ['latin'],
+  display: 'swap',  // Prevents FOUC
+  preload: true,
+});
 
 export const metadata: Metadata = {
   title: {
@@ -49,7 +57,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={roboto.className}>
+      <head>
+        {/* Safari streaming buffer threshold workaround */}
+        {/* Ensures HTML payload exceeds 1024 bytes for early render */}
+        <script dangerouslySetInnerHTML={{
+          __html: `<!-- ${'x'.repeat(1100)} -->`
+        }} />
+      </head>
       <body className="dark overflow-x-hidden">
         <main className="orb-container flex min-h-screen flex-col items-start sm:items-center justify-between">
           <Providers>
