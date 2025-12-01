@@ -60,6 +60,27 @@ export default function ThemeSelect({ theme }: { theme: AvailableThemeNames }) {
           <SelectItem value="bnw">
             <p>Black and White</p>
           </SelectItem>
+          <SelectItem value="christmas">
+            <p>Christmas</p>
+          </SelectItem>
+          <SelectItem value="ocean">
+            <p>Ocean</p>
+          </SelectItem>
+          <SelectItem value="sunset">
+            <p>Sunset</p>
+          </SelectItem>
+          <SelectItem value="forest">
+            <p>Forest</p>
+          </SelectItem>
+          <SelectItem value="neon">
+            <p>Neon</p>
+          </SelectItem>
+          <SelectItem value="candy">
+            <p>Candy</p>
+          </SelectItem>
+          <SelectItem value="fire">
+            <p>Fire</p>
+          </SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
