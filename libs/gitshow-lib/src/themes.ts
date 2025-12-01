@@ -8,7 +8,7 @@ export type Theme = {
   level0: string;
 };
 
-export const themes: Record<"normal" | "classic" | "githubDark" | "dracula" | "bnw" | "spooky" | "winter", Theme> = {
+export const themes: Record<"normal" | "classic" | "githubDark" | "dracula" | "bnw" | "spooky" | "winter" | "christmas" | "ocean" | "sunset" | "forest" | "neon" | "candy" | "fire", Theme> = {
   normal: {
     background: "#ffffff",
     text: "#000000",
@@ -71,6 +71,69 @@ export const themes: Record<"normal" | "classic" | "githubDark" | "dracula" | "b
     level2: "#0969DA",
     level1: "#0A3069",
     level0: "#161b22",
+  },
+  christmas: {
+    background: "#0f1c0f",
+    text: "#f0e6d2",
+    level4: "#c41e3a",
+    level3: "#165b33",
+    level2: "#e74c3c",
+    level1: "#27ae60",
+    level0: "#1a2921",
+  },
+  ocean: {
+    background: "#001a33",
+    text: "#e0f2f7",
+    level4: "#00d4ff",
+    level3: "#0099cc",
+    level2: "#006699",
+    level1: "#004466",
+    level0: "#002b44",
+  },
+  sunset: {
+    background: "#1a0a2e",
+    text: "#ffeaa7",
+    level4: "#ff6b6b",
+    level3: "#ee5a6f",
+    level2: "#c44569",
+    level1: "#786fa6",
+    level0: "#2d1b4e",
+  },
+  forest: {
+    background: "#0d1b0d",
+    text: "#d4e8d4",
+    level4: "#86c232",
+    level3: "#61892f",
+    level2: "#4a6023",
+    level1: "#33421a",
+    level0: "#1b2816",
+  },
+  neon: {
+    background: "#0a0e27",
+    text: "#e6f1ff",
+    level4: "#ff00ff",
+    level3: "#00ffff",
+    level2: "#ff00aa",
+    level1: "#0088ff",
+    level0: "#151933",
+  },
+  candy: {
+    background: "#fff5f7",
+    text: "#5a3e5e",
+    level4: "#ff6b9d",
+    level3: "#c44569",
+    level2: "#ffa8c5",
+    level1: "#ffd3e1",
+    level0: "#ffe5ec",
+  },
+  fire: {
+    background: "#1a0000",
+    text: "#ffe6cc",
+    level4: "#ff4500",
+    level3: "#ff6347",
+    level2: "#ff7f50",
+    level1: "#ffa500",
+    level0: "#2d1010",
   },
 };
 
