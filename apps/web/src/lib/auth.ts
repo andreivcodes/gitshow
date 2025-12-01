@@ -4,8 +4,7 @@ import TwitterLegacy, {
   TwitterLegacyProfile,
 } from "next-auth/providers/twitter";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
-import AES from "crypto-js/aes";
-import { RefreshInterval, db } from "@gitshow/db";
+import { RefreshInterval, db, encryptToken } from "@gitshow/db";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -59,14 +58,11 @@ export const authOptions: NextAuthOptions = {
 
           session.user.theme = u.theme as AvailableThemeNames;
 
-          session.user.lastSubscriptionTimestamp =
-            u.lastUpdateTimestamp ?? null;
-
+          session.user.githubAuthenticated = u.githubAuthenticated === true;
+          session.user.twitterAuthenticated = u.twitterAuthenticated === true;
           session.user.fullyAuthenticated =
             session.user.githubAuthenticated &&
             session.user.twitterAuthenticated;
-          session.user.githubAuthenticated = u.githubAuthenticated === true;
-          session.user.twitterAuthenticated = u.twitterAuthenticated === true;
 
           session.user.twittername = u.twitterUsername ?? null;
           session.user.twittertag = u.twitterTag ?? null;
@@ -88,10 +84,10 @@ export const authOptions: NextAuthOptions = {
             updateData.githubId = account.providerAccountId;
             updateData.githubUsername = (profile as GithubProfile).login;
 
-            updateData.githubToken = AES.encrypt(
-              JSON.stringify(account.access_token),
+            updateData.githubToken = encryptToken(
+              account.access_token!,
               process.env.TOKENS_SECRET!
-            ).toString();
+            );
             updateData.githubAuthenticated = true;
             break;
 
@@ -105,14 +101,14 @@ export const authOptions: NextAuthOptions = {
               profile as TwitterLegacyProfile
             ).profile_image_url_https?.replace("_normal.jpg", ".jpg");
 
-            updateData.twitterOAuthToken = AES.encrypt(
-              JSON.stringify(account.oauth_token),
+            updateData.twitterOAuthToken = encryptToken(
+              String(account.oauth_token),
               process.env.TOKENS_SECRET!
-            ).toString();
-            updateData.twitterOAuthTokenSecret = AES.encrypt(
-              JSON.stringify(account.oauth_token_secret),
+            );
+            updateData.twitterOAuthTokenSecret = encryptToken(
+              String(account.oauth_token_secret),
               process.env.TOKENS_SECRET!
-            ).toString();
+            );
             updateData.twitterAuthenticated = true;
             break;
         }

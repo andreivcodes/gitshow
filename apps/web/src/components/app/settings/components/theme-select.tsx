@@ -12,6 +12,7 @@ import { useTransition } from "react";
 import { AvailableThemeNames } from "@gitshow/gitshow-lib";
 import { setUserTheme } from "../actions";
 import { useViewTransition } from "@/hooks/use-view-transition";
+import { toast } from "sonner";
 
 export default function ThemeSelect({ theme }: { theme: AvailableThemeNames }) {
   const [_, startTransition] = useTransition();
@@ -21,8 +22,13 @@ export default function ThemeSelect({ theme }: { theme: AvailableThemeNames }) {
     <Select
       onValueChange={(e) => {
         startViewTransition(() => {
-          startTransition(() => {
-            setUserTheme(e as AvailableThemeNames);
+          startTransition(async () => {
+            const result = await setUserTheme(e as AvailableThemeNames);
+            if (result.success) {
+              toast.success("Theme updated successfully");
+            } else {
+              toast.error(result.error);
+            }
           });
         });
       }}

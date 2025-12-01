@@ -1,12 +1,13 @@
 import puppeteer, { Page, Browser } from "puppeteer";
 import { ContributionDay, ContributionData } from "./contributions_types";
-import { config as dotenvConfig } from "dotenv";
-import { db } from "@gitshow/db";
-dotenvConfig();
 
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 5000; // Initial delay, exponential backoff applied
-const CACHE_EXPIRY_MS = 60 * 60 * 1000; // 24 hours
+export interface ScraperConfig {
+  browserlessUrl: string;
+  browserlessToken: string;
+  maxRetries?: number;
+  retryDelayMs?: number;
+  timeoutMs?: number;
+}
 
 function delay(time: number) {
   return new Promise((resolve) => setTimeout(resolve, time));
@@ -23,11 +24,16 @@ async function isPageValid(page: Page): Promise<boolean> {
 
 async function fetchContributionData(
   page: Page,
-  username: string
+  username: string,
+  config: ScraperConfig
 ): Promise<ContributionData> {
+  const maxRetries = config.maxRetries || 3;
+  const retryDelay = config.retryDelayMs || 5000;
+  const timeout = config.timeoutMs || 30000;
+
   let attempt = 0;
 
-  while (attempt < MAX_RETRIES) {
+  while (attempt < maxRetries) {
     try {
       if (!(await isPageValid(page))) {
         throw new Error("Page is not valid");
@@ -35,12 +41,12 @@ async function fetchContributionData(
 
       await page.goto(`https://github.com/users/${username}/contributions`, {
         waitUntil: "networkidle0",
-        timeout: 30000,
+        timeout,
       });
       await delay(5000);
 
       await page.waitForSelector(".js-calendar-graph-table", {
-        timeout: 30000,
+        timeout,
       });
 
       const contributionsCount = await page.evaluate(() => {
@@ -79,21 +85,25 @@ async function fetchContributionData(
     } catch (error) {
       attempt++;
       console.warn(
-        `Retrying (${attempt}/${MAX_RETRIES}) due to error: ${
+        `Retrying (${attempt}/${maxRetries}) due to error: ${
           (error as Error).message
         }`
       );
-      await delay(Math.pow(2, attempt) * RETRY_DELAY); // Exponential backoff
-      if (attempt >= MAX_RETRIES) throw error;
+      await delay(Math.pow(2, attempt) * retryDelay); // Exponential backoff
+      if (attempt >= maxRetries) throw error;
     }
   }
   throw new Error("Max retries reached");
 }
 
-async function connectWithRetry(maxRetries = 3, delay = 1000): Promise<Browser> {
+async function connectWithRetry(
+  config: ScraperConfig,
+  maxRetries = 3,
+  delay = 1000
+): Promise<Browser> {
   for (let i = 0; i < maxRetries; i++) {
     try {
-      const browser = await connectToBrowserless();
+      const browser = await connectToBrowserless(config);
       if (!browser) {
         throw new Error('Failed to initialize browser');
       }
@@ -107,20 +117,13 @@ async function connectWithRetry(maxRetries = 3, delay = 1000): Promise<Browser> 
   throw new Error('Failed to connect after maximum retries');
 }
 
-async function connectToBrowserless(): Promise<Browser> {
+async function connectToBrowserless(config: ScraperConfig): Promise<Browser> {
   const launchArgs = JSON.stringify({
     args: ['--no-sandbox'],
     headless: true,
   });
 
-  const browserlessUrl = process.env.BROWSERLESS_URL;
-  const browserlessToken = process.env.BROWSERLESS_TOKEN;
-
-  if (!browserlessUrl || !browserlessToken) {
-    throw new Error('Browserless URL or token not configured');
-  }
-
-  const wsUrl = `${browserlessUrl}/?token=${browserlessToken}&launch=${launchArgs}`;
+  const wsUrl = `${config.browserlessUrl}/?token=${config.browserlessToken}&launch=${launchArgs}`;
 
   console.log('Connecting to browserless service...');
 
@@ -141,28 +144,15 @@ async function connectToBrowserless(): Promise<Browser> {
   }
 }
 
-export async function contribData(username: string): Promise<ContributionData> {
-  const user = await db
-    ?.selectFrom("user")
-    .where("githubUsername", "=", username)
-    .selectAll()
-    .executeTakeFirst();
-
-  if (
-    user &&
-    user.contribData &&
-    user.lastFetchTimestamp &&
-    new Date(user.lastFetchTimestamp).getTime() >
-      new Date().getTime() - CACHE_EXPIRY_MS
-  ) {
-    return user.contribData as unknown as ContributionData;
-  }
-
+export async function scrapeContributions(
+  username: string,
+  config: ScraperConfig
+): Promise<ContributionData> {
   let browser: Browser | null = null;
   let page: Page | null = null;
 
   try {
-    browser = await connectWithRetry();
+    browser = await connectWithRetry(config);
     if (!browser) {
       throw new Error('Failed to initialize browser');
     }
@@ -172,19 +162,11 @@ export async function contribData(username: string): Promise<ContributionData> {
       throw new Error('Failed to create new page');
     }
 
-    page.setDefaultNavigationTimeout(30000);
-    page.setDefaultTimeout(30000);
+    const timeout = config.timeoutMs || 30000;
+    page.setDefaultNavigationTimeout(timeout);
+    page.setDefaultTimeout(timeout);
 
-    const data = await fetchContributionData(page, username);
-
-    await db
-      .updateTable("user")
-      .where("githubUsername", "=", username)
-      .set({
-        contribData: JSON.stringify(data),
-        lastFetchTimestamp: new Date(),
-      })
-      .execute();
+    const data = await fetchContributionData(page, username, config);
 
     return data;
   } catch (error) {

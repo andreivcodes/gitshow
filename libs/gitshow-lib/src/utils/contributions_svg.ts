@@ -1,11 +1,11 @@
 import { AvailableThemeNames, Theme, themes } from "../themes";
-import { contribData } from "./contributions_data";
+import { ContributionData } from "./contributions_types";
 
-export async function contribSvg(
-  username: string,
+export function renderContribSvg(
+  contributionData: ContributionData,
   theme: AvailableThemeNames,
-): Promise<string> {
-  const contributionData = await contribData(username);
+  username: string
+): string {
   const cellSize = 10;
   const cellGap = 2;
   const daysInWeek = 7;

@@ -8,11 +8,6 @@ import Contributions from "@/components/app/contributions";
 import { getCachedContributionSvg } from "@/lib/cache/contributions-cache";
 import { Card } from "@/components/ui/card";
 
-// Force dynamic rendering to enable Suspense streaming
-// This disables PPR and allows skeletons to show immediately
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
 export default async function Home() {
   // Fetch session ONCE at page level to avoid duplicate calls
   const session = await getServerSession(authOptions);

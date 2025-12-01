@@ -11,6 +11,7 @@ import {
 import { useTransition } from "react";
 import { setUpdateInterval } from "../actions";
 import { RefreshInterval } from "@gitshow/db";
+import { toast } from "sonner";
 
 export default function IntervalSelect({
   interval,
@@ -22,8 +23,13 @@ export default function IntervalSelect({
   return (
     <Select
       onValueChange={(e) => {
-        startTransition(() => {
-          setUpdateInterval(e as RefreshInterval);
+        startTransition(async () => {
+          const result = await setUpdateInterval(e as RefreshInterval);
+          if (result.success) {
+            toast.success("Update interval changed successfully");
+          } else {
+            toast.error(result.error);
+          }
         });
       }}
       defaultValue={interval}

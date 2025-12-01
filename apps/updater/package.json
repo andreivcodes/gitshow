@@ -4,7 +4,6 @@
   "dependencies": {
     "@gitshow/db": "workspace:*",
     "@gitshow/gitshow-lib": "workspace:*",
-    "crypto-js": "^4.2.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "node-schedule": "^2.1.1",
@@ -12,7 +11,6 @@
     "twitter-api-v2": "^1.28.0"
   },
   "devDependencies": {
-    "@types/crypto-js": "^4.2.2",
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.1",
     "@types/node-cron": "^3.0.11",

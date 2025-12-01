@@ -1,12 +1,13 @@
-import { contribSvg, AvailableThemeNames } from "@gitshow/gitshow-lib";
+import { AvailableThemeNames } from "@gitshow/gitshow-lib";
 import { unstable_cache } from "next/cache";
+import { fetchContributions } from "../contributions-fetcher";
 
 // Create a cached version of the contribution SVG fetcher
 // Cache for 1 hour, tagged by username for invalidation
 const getCachedContributionSvgImpl = unstable_cache(
   async (githubUsername: string, theme: AvailableThemeNames) => {
     try {
-      return await contribSvg(githubUsername, theme);
+      return await fetchContributions(githubUsername, theme);
     } catch (error) {
       console.error("Error fetching contribution SVG:", error);
       return null;

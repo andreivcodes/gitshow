@@ -1,12 +1,10 @@
 import { config as dotenv_config } from "dotenv";
 import express from "express";
 import { TwitterApi } from "twitter-api-v2";
-import { AvailableThemeNames, contribSvg } from "@gitshow/gitshow-lib";
+import { AvailableThemeNames, scrapeContributions, renderContribSvg } from "@gitshow/gitshow-lib";
 import sharp from "sharp";
 import schedule from "node-schedule";
-import AES from "crypto-js/aes";
-import CryptoJS from "crypto-js";
-import { db, RefreshInterval, Selectable, User } from "@gitshow/db";
+import { db, RefreshInterval, Selectable, User, decryptToken, sql } from "@gitshow/db";
 
 dotenv_config();
 
@@ -48,26 +46,32 @@ schedule.scheduleJob("0 * * * *", async () => {
   }
 });
 
-// Mutex flag to ensure atomic processing
-let isProcessing = false;
+// Track active jobs for graceful shutdown
+const activeJobs = new Set<string>();
 
 // Schedule processing every minute
 schedule.scheduleJob("* * * * *", async () => {
-  if (isProcessing) {
-    // If the queue is already being processed, skip this iteration
-    return;
-  }
-
-  // Acquire the mutex
-  isProcessing = true;
+  // Use PostgreSQL advisory lock (atomic, multi-instance safe)
+  const lockId = 123456789; // Arbitrary unique lock ID for job processing
 
   try {
+    // Try to acquire lock (non-blocking)
+    const lockResult = await db
+      .selectFrom(sql`pg_try_advisory_lock(${lockId})`.as('lock'))
+      .select(sql`pg_try_advisory_lock(${lockId})`.as('acquired'))
+      .executeTakeFirst();
+
+    if (!lockResult?.acquired) {
+      console.log("Another instance is processing jobs, skipping...");
+      return;
+    }
+
     // Fetch up to 5 pending jobs
     const jobs = await db
       .selectFrom("jobQueue")
       .selectAll()
       .where("status", "=", "pending")
-      .orderBy("status asc")
+      .orderBy("createdAt", "asc")
       .limit(5)
       .execute();
 
@@ -77,6 +81,7 @@ schedule.scheduleJob("* * * * *", async () => {
       // Process jobs concurrently
       await Promise.all(
         jobs.map(async (job) => {
+          activeJobs.add(job.userId);
           try {
             await updateUser(job.userId);
             console.log(`Updated ${job.userId}`);
@@ -94,6 +99,8 @@ schedule.scheduleJob("* * * * *", async () => {
               .where("id", "=", job.id)
               .set({ status: "failed" })
               .execute();
+          } finally {
+            activeJobs.delete(job.userId);
           }
         })
       );
@@ -101,8 +108,15 @@ schedule.scheduleJob("* * * * *", async () => {
   } catch (error) {
     console.error("Error in queue processing:", error);
   } finally {
-    // Release the mutex
-    isProcessing = false;
+    // Always release lock
+    try {
+      await db
+        .selectFrom(sql`pg_advisory_unlock(${lockId})`.as('unlock'))
+        .select(sql`pg_advisory_unlock(${lockId})`.as('released'))
+        .execute();
+    } catch (unlockError) {
+      console.error("Failed to release advisory lock:", unlockError);
+    }
   }
 });
 
@@ -125,11 +139,6 @@ function shouldRefreshUser(user: Selectable<User>): boolean {
   }
 }
 
-function decryptToken(encryptedToken: string): string {
-  const decrypted = AES.decrypt(encryptedToken, process.env.TOKENS_SECRET!);
-  return JSON.parse(decrypted.toString(CryptoJS.enc.Utf8));
-}
-
 async function updateUser(userId: string) {
   const user = await db
     .selectFrom("user")
@@ -137,8 +146,8 @@ async function updateUser(userId: string) {
     .where("id", "=", userId)
     .executeTakeFirstOrThrow();
 
-  const decryptedAccessToken = decryptToken(user.twitterOauthToken!);
-  const decryptedAccessSecret = decryptToken(user.twitterOauthTokenSecret!);
+  const decryptedAccessToken = decryptToken(user.twitterOauthToken!, process.env.TOKENS_SECRET!);
+  const decryptedAccessSecret = decryptToken(user.twitterOauthTokenSecret!, process.env.TOKENS_SECRET!);
 
   const client = new TwitterApi({
     appKey: process.env.TWITTER_CONSUMER_KEY!,
@@ -194,10 +203,20 @@ async function updateUser(userId: string) {
     // Continue with banner update even if profile update fails
   }
 
-  const bannerSvg = await contribSvg(
+  const contributionData = await scrapeContributions(
     user.githubUsername!,
-    user.theme as AvailableThemeNames
+    {
+      browserlessUrl: process.env.BROWSERLESS_URL!,
+      browserlessToken: process.env.BROWSERLESS_TOKEN!,
+    }
   );
+
+  const bannerSvg = renderContribSvg(
+    contributionData,
+    user.theme as AvailableThemeNames,
+    user.githubUsername!
+  );
+
   const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 })
     .jpeg()
     .toBuffer();
@@ -218,6 +237,47 @@ app.get("/health", (_req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Healthcheck is running at http://localhost:${PORT}/health`);
 });
+
+// Graceful shutdown handler
+let isShuttingDown = false;
+
+async function gracefulShutdown(signal: string) {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+
+  console.log(`Received ${signal}, starting graceful shutdown...`);
+
+  // Cancel scheduled jobs
+  const jobs = schedule.scheduledJobs;
+  Object.values(jobs).forEach(job => job.cancel());
+  console.log("Cancelled all scheduled jobs");
+
+  // Wait for active jobs to complete (max 30 seconds)
+  const maxWait = 30000;
+  const startTime = Date.now();
+
+  while (activeJobs.size > 0 && Date.now() - startTime < maxWait) {
+    console.log(`Waiting for ${activeJobs.size} jobs to complete...`);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
+  if (activeJobs.size > 0) {
+    console.warn(`Forcing shutdown with ${activeJobs.size} jobs still running`);
+  } else {
+    console.log("All jobs completed successfully");
+  }
+
+  // Close HTTP server
+  server.close(() => {
+    console.log("HTTP server closed");
+  });
+
+  console.log("Graceful shutdown complete");
+  process.exit(0);
+}
+
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));

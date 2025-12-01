@@ -2,9 +2,7 @@
   "name": "@gitshow/gitshow-lib",
   "version": "1.0.0",
   "dependencies": {
-    "@gitshow/db": "workspace:*",
     "bufferutil": "^4.0.9",
-    "dotenv": "^17.2.3",
     "puppeteer": "24.31.0",
     "utf-8-validate": "^6.0.5"
   },

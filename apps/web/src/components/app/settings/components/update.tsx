@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useTransition } from "react";
 import { setAutomaticallyUpdate } from "../actions";
+import { toast } from "sonner";
 
 export default function Update({
   automaticallyUpdate,
@@ -31,8 +32,13 @@ export default function Update({
         <Switch
           defaultChecked={automaticallyUpdate}
           onCheckedChange={(e) => {
-            startTransition(() => {
-              setAutomaticallyUpdate(e);
+            startTransition(async () => {
+              const result = await setAutomaticallyUpdate(e);
+              if (result.success) {
+                toast.success(e ? "Auto-update enabled" : "Auto-update disabled");
+              } else {
+                toast.error(result.error);
+              }
             });
           }}
         />
