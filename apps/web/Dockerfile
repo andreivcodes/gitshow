@@ -49,5 +49,5 @@ RUN pnpm install --frozen-lockfile
 # Build the project
 RUN pnpm build-web
 
-# Set the default command
-CMD ["pnpm", "start-web"]
+# Run migrations at startup, then start the web server
+CMD pnpm --filter @gitshow/db migrate:run && pnpm start-web
