@@ -20,7 +20,7 @@
     "db:migrate": "kysely migrate latest",
     "db:seed": "pnpm kysely seed run",
     "migrate": "kysely migrate latest",
-    "migrate:run": "tsx src/migrate.ts"
+    "migrate:run": "tsx scripts/migrate.ts"
   },
   "type": "module"
 }

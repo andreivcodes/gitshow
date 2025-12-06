@@ -2,7 +2,7 @@ import * as path from "path";
 import { fileURLToPath } from "url";
 import { promises as fs } from "fs";
 import { Migrator, FileMigrationProvider } from "kysely";
-import { db } from "./index.js";
+import { db } from "../src/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
