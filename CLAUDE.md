@@ -4,154 +4,99 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-GitShow is a monorepo that creates visual representations of GitHub contributions and automatically updates social media profiles. It consists of a Next.js web app, a background updater service, and shared libraries.
+GitShow is a monorepo that creates visual representations of GitHub contributions and automatically updates Twitter/X profile banners. It consists of a Next.js web app, a background updater service, and shared libraries.
 
 **Key Features:**
-- Scrapes GitHub contribution graphs using Puppeteer
-- Generates SVG visualizations with 7 different themes
+- Scrapes GitHub contribution graphs using Puppeteer via Browserless
+- Generates SVG visualizations with 14 themes
 - Converts SVGs to JPEG and uploads as Twitter/X banners
 - Supports automatic daily/weekly/monthly updates
 - Requires dual authentication (GitHub + Twitter with matching emails)
 
 ## Development Commands
 
-### Build Commands
 ```bash
 # Build the entire project
 pnpm build-lib && pnpm build-web && pnpm build-updater
 
 # Build individual workspaces
-pnpm build-lib      # Build shared library
-pnpm build-web      # Build web application  
+pnpm build-lib      # Build shared library (required before web/updater)
+pnpm build-web      # Build web application
 pnpm build-updater  # Build updater service
 
 # Development
-pnpm --filter @gitshow/web dev  # Run web app in development mode
-pnpm --filter @gitshow/updater dev  # Run updater in development mode
-```
+pnpm --filter @gitshow/web dev        # Run web app with Turbopack
+pnpm --filter @gitshow/updater start  # Run updater service
 
-### Database Commands
-```bash
-pnpm --filter @gitshow/db migrate  # Run database migrations
-```
+# Database
+pnpm --filter @gitshow/db migrate     # Run migrations
+pnpm --filter @gitshow/db db:gen      # Generate Kysely types from DB
 
-### Linting
-```bash
-pnpm --filter @gitshow/web lint  # Lint the web application
-```
+# Linting
+pnpm --filter @gitshow/web lint
 
-### Start Services
-```bash
-pnpm start-web      # Start web application (production)
-pnpm start-updater  # Start updater service (production)
-```
-
-### Dependency Management
-```bash
-./update_deps.sh    # Update and sync dependencies across workspaces using syncpack
+# Dependency management
+./update_deps.sh    # Update and sync dependencies using syncpack
 ```
 
 ## Architecture
 
-This is a pnpm workspace monorepo with the following structure:
+This is a pnpm workspace monorepo (`libs/*` and `apps/*`).
 
-### Apps Layer
-- **web/**: Next.js 15 application with App Router
-  - Uses NextAuth for authentication (GitHub/Twitter OAuth)
-  - No Stripe integration (dependencies exist but not used)
-  - Server components and API routes pattern
-  - 3D tilt effect on contribution cards (desktop only)
-  
-- **updater/**: Node.js service for scheduled Twitter profile updates
-  - Runs two scheduled jobs:
-    - Hourly: Creates jobs for users needing updates
-    - Every minute: Processes up to 5 pending jobs concurrently
+### Apps
 
-### Libraries Layer  
-- **@gitshow/db**: Database abstraction using Kysely ORM
-  - PostgreSQL database with migrations in `libs/db/migrations/`
-  - Two tables: `user` and `jobQueue`
-  - Provides type-safe database queries with camelCase mapping
-  
-- **@gitshow/gitshow-lib**: Core business logic
-  - GitHub contributions data fetching via Puppeteer + Browserless
-  - SVG generation with 7 themes (normal, classic, githubDark, dracula, bnw, spooky, winter)
-  - 1-hour cache for contribution data
-  - Sharp for SVG to JPEG conversion
+**web/** - Next.js 16 application with App Router
+- NextAuth for authentication (GitHub/Twitter OAuth)
+- Server components and API routes pattern
+- UI components in `src/components/ui/` (shadcn/ui pattern)
+- App-specific components in `src/components/app/`
+
+**updater/** - Node.js service for scheduled Twitter banner updates
+- Hourly job: Creates queue entries for users needing updates
+- Every-minute job: Processes up to 5 pending jobs concurrently
+- Uses PostgreSQL advisory locks for multi-instance safety
+- Exposes `/health` endpoint for healthchecks
+
+### Libraries
+
+**@gitshow/db** - Database layer using Kysely ORM
+- PostgreSQL with camelCase column mapping
+- Tables: `user`, `jobQueue`
+- Migrations in `migrations/`
+- Exports: `db`, `RefreshInterval`, `encryptToken`, `decryptToken`
+
+**@gitshow/gitshow-lib** - Core business logic
+- `scrapeContributions()` - Fetches GitHub data via Puppeteer
+- `renderContribSvg()` - Generates SVG from contribution data
+- Exports all theme definitions from `themes.ts`
 
 ### Key Technical Patterns
 
-1. **Dual Authentication Requirement**: 
-   - Both GitHub and Twitter accounts must have the same email
-   - `fullyAuthenticated` flag only true when both providers connected
-   - Tokens are AES encrypted before database storage
+1. **Dual Authentication**: Both GitHub and Twitter accounts must share the same email. `fullyAuthenticated` is true only when both providers are connected. Tokens are AES encrypted before database storage.
 
-2. **Database Schema**:
-   - `user` table: Stores auth tokens, preferences, and cached contribution data
-   - `jobQueue` table: Manages background processing jobs
-   - Uses JSONB for contribution data storage
+2. **Job Processing**: Uses PostgreSQL advisory locks (`pg_try_advisory_lock`) for atomic job claiming across multiple instances. Jobs have `pending`, `processed`, or `failed` status.
 
-3. **Background Job Processing**:
-   - Mutex flag ensures atomic processing
-   - Exponential backoff for GitHub scraping retries
-   - Updates `lastUpdateTimestamp` on successful banner update
+3. **Contribution Data Flow**:
+   - Scrape via Browserless → Parse HTML → Generate SVG → Convert to JPEG via Sharp → Upload to Twitter API v1.1
 
-4. **UI Components**: 
-   - Uses shadcn/ui pattern with Radix UI primitives in `src/components/ui/`
-   - Custom 3D tilt effect in contributions component
-   - Skeleton loading states throughout
+### Key Files
 
-5. **Environment Variables Required**:
-   - DATABASE_URL, NEXTAUTH_URL, NEXTAUTH_SECRET
-   - GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
-   - TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET
-   - TOKENS_SECRET (for AES encryption)
-   - BROWSERLESS_URL, BROWSERLESS_TOKEN
+- `libs/gitshow-lib/src/themes.ts` - All 14 theme definitions (normal, classic, githubDark, dracula, bnw, spooky, winter, christmas, ocean, sunset, forest, neon, candy, fire)
+- `libs/gitshow-lib/src/utils/contributions_scraper.ts` - Puppeteer scraping logic
+- `libs/gitshow-lib/src/utils/contributions_svg.ts` - SVG generation (7x53 grid)
+- `apps/web/src/lib/auth.ts` - NextAuth configuration with dual-auth logic
+- `apps/updater/src/index.ts` - Scheduled jobs and Twitter API integration
 
-### Important Files and Their Purposes
+### Environment Variables
 
-- `apps/web/src/app/(components)/contributions/contributions_data.ts`: 
-  - Fetches GitHub data using Puppeteer
-  - Implements caching logic
-  - Handles retry with exponential backoff
+Required for all services:
+- `DATABASE_URL` - PostgreSQL connection string
+- `TOKENS_SECRET` - AES encryption key for stored tokens
 
-- `apps/web/src/app/(components)/contributions/contributions_svg.ts`:
-  - Generates SVG from contribution data
-  - Implements 7x53 grid layout (days x weeks)
-  - Adds "Get yours from git.show" watermark
+Web app additionally requires:
+- `NEXTAUTH_URL`, `NEXTAUTH_SECRET`
+- `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`
+- `TWITTER_CONSUMER_KEY`, `TWITTER_CONSUMER_SECRET`
 
-- `libs/gitshow-lib/src/utils/themes.ts`:
-  - Defines all 7 theme color schemes
-  - Each theme has 5 contribution levels (0-4)
-
-- `apps/updater/src/index.ts`:
-  - Scheduled job implementation using node-schedule
-  - Handles Twitter API v1.1 banner uploads
-  - Processes job queue with concurrent limit of 5
-
-- `apps/web/src/lib/auth.ts`:
-  - NextAuth configuration with custom JWT/session callbacks
-  - Handles dual authentication logic
-  - Encrypts tokens before storage
-
-### Common Development Tasks
-
-1. **Adding a new theme**:
-   - Add theme definition to `libs/gitshow-lib/src/utils/themes.ts`
-   - Update theme type in database schema if needed
-   - No UI changes needed - themes are dynamically loaded
-
-2. **Debugging authentication issues**:
-   - Check email matching between GitHub and Twitter accounts
-   - Verify environment variables are set correctly
-   - Look for `fullyAuthenticated` flag in session
-
-3. **Testing contribution fetching**:
-   - Can test locally by calling `getContributions()` directly
-   - Browserless URL and token required for Puppeteer
-   - Check `lastFetchTimestamp` to understand caching
-
-4. **Database migrations**:
-   - Create new migration in `libs/db/migrations/`
-   - Run `pnpm --filter @gitshow/db migrate`
-   - Update Kysely types accordingly
+Updater/scraping additionally requires:
+- `BROWSERLESS_URL`, `BROWSERLESS_TOKEN`

@@ -71,7 +71,7 @@
   },
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "pnpm --filter @gitshow/db migrate:run && next build",
     "dev": "next dev --turbopack",
     "lint": "next lint",
     "start": "next start"

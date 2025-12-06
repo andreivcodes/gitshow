@@ -19,7 +19,8 @@
     "db:gen": "kysely-codegen --camel-case --runtime-enums --out-file ./src/kysely_db.ts",
     "db:migrate": "kysely migrate latest",
     "db:seed": "pnpm kysely seed run",
-    "migrate": "kysely migrate latest"
+    "migrate": "kysely migrate latest",
+    "migrate:run": "tsx src/migrate.ts"
   },
   "type": "module"
 }
