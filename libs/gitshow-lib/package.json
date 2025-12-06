@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "bufferutil": "^4.0.9",
-    "puppeteer": "24.31.0",
+    "puppeteer": "24.32.0",
     "utf-8-validate": "^6.0.5"
   },
   "devDependencies": {
