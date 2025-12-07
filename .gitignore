@@ -4,3 +4,8 @@ node_modules
 dist
 .DS_Store
 .yarn/install-state.gz
+.next
+
+# Workflow DevKit generated files
+src/app/.well-known
+.workflow-data

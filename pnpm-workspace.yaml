@@ -1,8 +1,0 @@
-packages:
-  - libs/*
-  - apps/*
-
-onlyBuiltDependencies:
-  - esbuild
-  - puppeteer
-  - sharp
