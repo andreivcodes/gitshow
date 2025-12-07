@@ -44,9 +44,10 @@ export function renderSvg(contributionData: ContributionData, theme: ThemeName):
     }
   }
 
-  const watermarkX = width - 110;
-  const watermarkY = height - 60;
-  svgContent += `<text x="${watermarkX}" y="${watermarkY + paddingTop}" font-size="10" fill="${currentTheme.text}" text-anchor="middle" style="font-family:'Roboto';">Get yours from git.show</text>`;
+  // Position watermark in the center of the bottom padding area
+  const watermarkX = width - paddingRight - 60;
+  const watermarkY = height - paddingBottom / 2;
+  svgContent += `<text x="${watermarkX}" y="${watermarkY}" font-size="10" fill="${currentTheme.text}" text-anchor="middle" style="font-family:'Roboto';">Get yours from git.show</text>`;
   svgContent += "</svg>";
 
   return svgContent;

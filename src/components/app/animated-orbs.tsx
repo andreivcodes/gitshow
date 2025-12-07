@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
 function randomBetween(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function generateOrbStyles() {
+function generateOrbStyles(): React.CSSProperties {
   return {
     "--orb1-start-x": `${randomBetween(5, 30)}vw`,
     "--orb1-start-y": `${randomBetween(10, 40)}vh`,
@@ -36,11 +36,8 @@ function generateOrbStyles() {
 }
 
 export function AnimatedOrbs() {
-  const [styles, setStyles] = useState<React.CSSProperties>({});
-
-  useEffect(() => {
-    setStyles(generateOrbStyles());
-  }, []);
+  // Generate random positions once on mount
+  const styles = useMemo(() => generateOrbStyles(), []);
 
   return (
     <div className="orb-wrapper" style={styles}>

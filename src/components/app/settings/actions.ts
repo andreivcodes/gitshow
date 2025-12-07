@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import type { Session } from "next-auth";
 import { updateTag } from "next/cache";
-import { db } from "@/lib/db";
+import { db, decryptToken } from "@/lib/db";
 import {
   ThemeNameSchema,
   RefreshIntervalSchema,
@@ -14,6 +14,9 @@ import {
   type VoidActionResult,
 } from "@/lib/schemas";
 import { z } from "zod";
+import { scrapeContributions, renderSvg } from "@/lib/contributions";
+import { TwitterApi } from "twitter-api-v2";
+import sharp from "sharp";
 
 /**
  * Helper to check if user is fully authenticated.
@@ -173,6 +176,82 @@ export async function deleteAccount(): Promise<VoidActionResult> {
     return {
       success: false,
       error: "Failed to delete account. Please try again.",
+    };
+  }
+}
+
+export async function forceUpdateBanner(): Promise<VoidActionResult> {
+  const authResult = await requireFullAuth();
+  if (!authResult.success) {
+    return authResult;
+  }
+
+  try {
+    const { session } = authResult;
+
+    const user = await db
+      .selectFrom("user")
+      .where("email", "=", session.user.email!)
+      .selectAll()
+      .executeTakeFirstOrThrow();
+
+    if (!user.twitterOauthToken || !user.twitterOauthTokenSecret) {
+      return { success: false, error: "Twitter not connected" };
+    }
+
+    if (!user.githubUsername) {
+      return { success: false, error: "GitHub username not found" };
+    }
+
+    // Decrypt Twitter tokens
+    const decryptedAccessToken = decryptToken(user.twitterOauthToken, process.env.TOKENS_SECRET!);
+    const decryptedAccessSecret = decryptToken(
+      user.twitterOauthTokenSecret,
+      process.env.TOKENS_SECRET!
+    );
+
+    const client = new TwitterApi({
+      appKey: process.env.TWITTER_CONSUMER_KEY!,
+      appSecret: process.env.TWITTER_CONSUMER_SECRET!,
+      accessToken: decryptedAccessToken,
+      accessSecret: decryptedAccessSecret,
+    });
+
+    // Scrape GitHub contributions
+    const contributionData = await scrapeContributions(user.githubUsername, {
+      browserlessUrl: process.env.BROWSERLESS_URL!,
+      browserlessToken: process.env.BROWSERLESS_TOKEN!,
+    });
+
+    // Generate SVG
+    const bannerSvg = renderSvg(contributionData, user.theme as ThemeName);
+
+    // Convert to JPEG at Twitter's optimal banner size (1500x500)
+    const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 })
+      .resize(1500, 500, { fit: "fill" })
+      .jpeg({ quality: 90 })
+      .toBuffer();
+
+    // Upload to Twitter
+    await client.v1.updateAccountProfileBanner(bannerJpeg);
+
+    // Update last update timestamp
+    await db
+      .updateTable("user")
+      .where("id", "=", user.id)
+      .set({ lastUpdateTimestamp: new Date() })
+      .execute();
+
+    // Invalidate cache
+    updateTag("contributions");
+    updateTag(`user-${user.githubUsername}`);
+
+    return { success: true, data: undefined };
+  } catch (error) {
+    console.error("Failed to force update banner:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update banner. Please try again.",
     };
   }
 }

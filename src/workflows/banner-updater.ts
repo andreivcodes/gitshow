@@ -164,8 +164,11 @@ async function updateUserBanner(userId: string): Promise<void> {
   // Generate SVG
   const bannerSvg = renderSvg(contributionData, user.theme as ThemeName);
 
-  // Convert to JPEG
-  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 }).jpeg().toBuffer();
+  // Convert to JPEG at Twitter's optimal banner size (1500x500)
+  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 })
+    .resize(1500, 500, { fit: "fill" })
+    .jpeg({ quality: 90 })
+    .toBuffer();
 
   // Upload to Twitter
   try {
