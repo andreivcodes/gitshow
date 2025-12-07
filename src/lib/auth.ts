@@ -1,3 +1,5 @@
+import "server-only";
+
 import { cache } from "react";
 import { type DefaultSession, type NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth/next";

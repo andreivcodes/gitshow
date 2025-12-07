@@ -1,3 +1,5 @@
+import "server-only";
+
 import puppeteer, { Page, Browser } from "puppeteer";
 import type { ContributionDay, ContributionData, ScraperConfig } from "./types";
 

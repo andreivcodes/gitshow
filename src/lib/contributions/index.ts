@@ -1,3 +1,5 @@
+import "server-only";
+
 import { cacheLife, cacheTag } from "next/cache";
 import { db } from "@/lib/db";
 import { scrapeContributions } from "./scraper";
