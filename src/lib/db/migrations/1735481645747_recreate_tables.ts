@@ -7,17 +7,11 @@ export async function up(db: Kysely<unknown>): Promise<void> {
   // Create the 'user' table
   await db.schema
     .createTable("user")
-    .addColumn("id", "uuid", (col) =>
-      col.primaryKey().defaultTo(sql`gen_random_uuid()`)
-    )
+    .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
     .addColumn("email", "varchar", (col) => col.notNull().unique())
-    .addColumn("automaticallyUpdate", "boolean", (col) =>
-      col.notNull().defaultTo(true)
-    )
+    .addColumn("automaticallyUpdate", "boolean", (col) => col.notNull().defaultTo(true))
     .addColumn("lastUpdateTimestamp", "timestamp")
-    .addColumn("updateInterval", "varchar", (col) =>
-      col.notNull().defaultTo("EVERY_DAY")
-    )
+    .addColumn("updateInterval", "varchar", (col) => col.notNull().defaultTo("EVERY_DAY"))
     .addColumn("theme", "varchar", (col) => col.notNull().defaultTo("normal"))
     .addColumn("githubAuthenticated", "boolean")
     .addColumn("twitterAuthenticated", "boolean")

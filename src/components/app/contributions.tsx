@@ -27,9 +27,7 @@ export default function Contributions({
   };
 
   useEffect(() => {
-    const checkMobile = () => window.matchMedia(
-      "only screen and (max-width: 640px)",
-    ).matches;
+    const checkMobile = () => window.matchMedia("only screen and (max-width: 640px)").matches;
 
     if (checkMobile()) {
       return;
@@ -52,10 +50,8 @@ export default function Contributions({
           const mouseX = e.clientX - centerX;
           const mouseY = e.clientY - centerY;
           const rotateXUncapped =
-            (-1 * tiltEffectSettings.maxx * mouseY * 2) /
-            (chartRect.height / 2);
-          const rotateYUncapped =
-            (+1 * tiltEffectSettings.maxy * mouseX) / (chartRect.height / 2);
+            (-1 * tiltEffectSettings.maxx * mouseY * 2) / (chartRect.height / 2);
+          const rotateYUncapped = (+1 * tiltEffectSettings.maxy * mouseX) / (chartRect.height / 2);
           const rotateX =
             rotateXUncapped < -tiltEffectSettings.maxx
               ? -tiltEffectSettings.maxx

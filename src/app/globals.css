@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 /*
   ---break---
 */
@@ -163,7 +163,6 @@
   }
 }
 
-
 @keyframes free-select {
   0%,
   100% {
@@ -206,85 +205,233 @@
   }
 }
 
-@keyframes moveAndGlow {
-  0% {
-    box-shadow:
-      0 0 60px 30px rgba(123, 31, 162, 0.2),
-      0 0 120px 60px rgba(76, 201, 240, 0.1),
-      0 0 200px 100px rgba(255, 198, 93, 0.05);
-    transform: translate(20vw, 20vh);
-    background: rgba(123, 31, 162, 0.6);
-    border-radius: 60% 40% 50% 50%;
-    opacity: 0.25;
-  }
+/* CSS custom properties for animatable gradient colors */
+@property --orb-color-1 {
+  syntax: "<color>";
+  initial-value: rgba(123, 31, 162, 0.8);
+  inherits: false;
+}
 
+@property --orb-color-2 {
+  syntax: "<color>";
+  initial-value: rgba(255, 105, 180, 0.7);
+  inherits: false;
+}
+
+@property --orb-color-3 {
+  syntax: "<color>";
+  initial-value: rgba(0, 150, 136, 0.75);
+  inherits: false;
+}
+
+@property --orb-color-4 {
+  syntax: "<color>";
+  initial-value: rgba(0, 188, 212, 0.6);
+  inherits: false;
+}
+
+@property --orb-color-5 {
+  syntax: "<color>";
+  initial-value: rgba(255, 152, 0, 0.7);
+  inherits: false;
+}
+
+@property --orb-color-6 {
+  syntax: "<color>";
+  initial-value: rgba(255, 193, 7, 0.6);
+  inherits: false;
+}
+
+/* Orb movement animations - subtle but visible */
+@keyframes orb-move-1 {
+  0%,
   100% {
-    box-shadow:
-      0 0 60px 30px rgba(123, 31, 162, 0.2),
-      0 0 120px 60px rgba(76, 201, 240, 0.1),
-      0 0 200px 100px rgba(255, 198, 93, 0.05);
-    transform: translate(25%, 65%) scale(1);
-    background: rgba(123, 31, 162, 0.6);
-    border-radius: 40% 40% 50% 50%;
-    opacity: 0.55;
+    transform: translate(10vw, 20vh) scale(1);
+    opacity: 0.25;
+    --orb-color-1: rgba(123, 31, 162, 0.5);
   }
-
-  25% {
-    box-shadow:
-      0 0 80px 40px rgba(255, 105, 180, 0.3),
-      0 0 160px 80px rgba(255, 87, 34, 0.2),
-      0 0 240px 120px rgba(255, 193, 7, 0.1);
-    transform: translate(10vw, 15vh) scale(1.1);
-    background: rgba(255, 105, 180, 0.6);
-    border-radius: 45% 55% 50% 50%;
-    opacity: 0.35;
-  }
-
   50% {
-    box-shadow:
-      0 0 100px 50px rgba(0, 150, 136, 0.3),
-      0 0 200px 100px rgba(0, 188, 212, 0.2),
-      0 0 300px 150px rgba(0, 230, 118, 0.1);
-    transform: translate(-10vw, 60vh) scale(0.9);
-    background: rgba(0, 150, 136, 0.6);
-    border-radius: 30% 60% 50% 50%;
-    opacity: 0.4;
-  }
-
-  75% {
-    box-shadow:
-      0 0 80px 40px rgba(156, 39, 176, 0.3),
-      0 0 160px 80px rgba(103, 58, 183, 0.2),
-      0 0 240px 120px rgba(63, 81, 181, 0.1);
-    transform: translate(55vw, -15vh) scale(1.05);
-    background: rgba(156, 39, 176, 0.6);
-    border-radius: 50% 50% 50% 50%;
-    opacity: 0.15;
+    transform: translate(25vw, 40vh) scale(1.08);
+    opacity: 0.35;
+    --orb-color-1: rgba(142, 36, 170, 0.55);
   }
 }
 
+@keyframes orb-move-2 {
+  0%,
+  100% {
+    transform: translate(60vw, 55vh) scale(1);
+    opacity: 0.2;
+    --orb-color-2: rgba(255, 105, 180, 0.45);
+  }
+  50% {
+    transform: translate(45vw, 35vh) scale(0.95);
+    opacity: 0.3;
+    --orb-color-2: rgba(233, 30, 99, 0.5);
+  }
+}
+
+@keyframes orb-move-3 {
+  0%,
+  100% {
+    transform: translate(45vw, 5vh) scale(1);
+    opacity: 0.2;
+    --orb-color-3: rgba(0, 150, 136, 0.45);
+  }
+  50% {
+    transform: translate(25vw, 25vh) scale(1.06);
+    opacity: 0.3;
+    --orb-color-3: rgba(0, 188, 212, 0.5);
+  }
+}
+
+@keyframes orb-move-4 {
+  0%,
+  100% {
+    transform: translate(70vw, 35vh) scale(1);
+    opacity: 0.18;
+    --orb-color-4: rgba(0, 188, 212, 0.4);
+  }
+  50% {
+    transform: translate(50vw, 50vh) scale(0.95);
+    opacity: 0.25;
+    --orb-color-4: rgba(38, 198, 218, 0.45);
+  }
+}
+
+@keyframes orb-move-5 {
+  0%,
+  100% {
+    transform: translate(20vw, 60vh) scale(1);
+    opacity: 0.18;
+    --orb-color-5: rgba(255, 152, 0, 0.4);
+  }
+  50% {
+    transform: translate(40vw, 45vh) scale(1.05);
+    opacity: 0.25;
+    --orb-color-5: rgba(255, 167, 38, 0.45);
+  }
+}
+
+@keyframes orb-move-6 {
+  0%,
+  100% {
+    transform: translate(75vw, 70vh) scale(1);
+    opacity: 0.15;
+    --orb-color-6: rgba(255, 193, 7, 0.35);
+  }
+  50% {
+    transform: translate(55vw, 50vh) scale(1.04);
+    opacity: 0.22;
+    --orb-color-6: rgba(255, 235, 59, 0.4);
+  }
+}
+
+/* Orb container - holds pseudo-element layers */
 .orb {
   position: absolute;
-  width: 400px;
-  height: 400px;
-  animation: moveAndGlow 20s infinite alternate ease-in-out;
-  filter: blur(100px); /* Reduced from 200px for better Safari performance */
+  width: 550px;
+  height: 550px;
+  filter: blur(90px);
   will-change: transform, opacity;
   backface-visibility: hidden;
-  transform: translateZ(0);
+  pointer-events: none;
+}
+
+/* Primary orb - purple/pink gradient with subtle color shifting */
+.orb-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--orb-color-1) 0%, transparent 70%);
+  animation: orb-move-1 45s infinite ease-in-out;
+}
+
+.orb-primary::after {
+  content: "";
+  position: absolute;
+  inset: -50px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--orb-color-2) 0%, transparent 70%);
+  animation: orb-move-2 55s infinite ease-in-out;
+}
+
+/* Secondary orb - teal/cyan gradient with subtle color shifting */
+.orb-secondary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--orb-color-3) 0%, transparent 70%);
+  animation: orb-move-3 50s infinite ease-in-out;
+}
+
+.orb-secondary::after {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--orb-color-4) 0%, transparent 70%);
+  animation: orb-move-4 60s infinite ease-in-out;
+}
+
+/* Tertiary orb - warm orange/gold gradient with subtle color shifting */
+.orb-tertiary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--orb-color-5) 0%, transparent 70%);
+  animation: orb-move-5 48s infinite ease-in-out;
+}
+
+.orb-tertiary::after {
+  content: "";
+  position: absolute;
+  inset: -30px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--orb-color-6) 0%, transparent 70%);
+  animation: orb-move-6 58s infinite ease-in-out;
 }
 
 /* WebKit-specific optimization for Safari */
 @supports (-webkit-backdrop-filter: blur(1px)) {
   .orb {
-    filter: blur(80px);
+    filter: blur(75px);
+  }
+}
+
+/* Accessibility - respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .orb::before,
+  .orb::after {
+    animation: none;
+    opacity: 0.2;
+  }
+  .orb-primary::before {
+    transform: translate(15vw, 30vh);
+  }
+  .orb-primary::after {
+    transform: translate(50vw, 45vh);
+  }
+  .orb-secondary::before {
+    transform: translate(35vw, 15vh);
+  }
+  .orb-secondary::after {
+    transform: translate(60vw, 40vh);
+  }
+  .orb-tertiary::before {
+    transform: translate(30vw, 55vh);
+  }
+  .orb-tertiary::after {
+    transform: translate(65vw, 60vh);
   }
 }
 
 .orb-container {
   position: relative;
   overflow: hidden;
-  overflow-x: visible;
 }
 
 .chart-shadow::before {
@@ -307,11 +454,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0) 10%,
-      rgba(0, 0, 0, 1) 100%
-    );
+    background: linear-gradient(to right, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, 1) 100%);
     transition: background-color 1s ease-in-out;
   }
 }

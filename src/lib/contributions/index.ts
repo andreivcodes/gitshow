@@ -15,10 +15,7 @@ const CACHE_EXPIRY_MS = 60 * 60 * 1000; // 1 hour
  *
  * Tagged with "contributions" for on-demand revalidation when user changes theme.
  */
-export async function getContributionSvg(
-  username: string,
-  theme: ThemeName
-): Promise<string> {
+export async function getContributionSvg(username: string, theme: ThemeName): Promise<string> {
   "use cache";
   cacheLife("hours");
   cacheTag("contributions", `user-${username}`);
@@ -31,9 +28,7 @@ export async function getContributionSvg(
     .executeTakeFirst();
 
   const now = Date.now();
-  const lastFetch = user?.lastFetchTimestamp
-    ? new Date(user.lastFetchTimestamp).getTime()
-    : 0;
+  const lastFetch = user?.lastFetchTimestamp ? new Date(user.lastFetchTimestamp).getTime() : 0;
 
   let contributionData: ContributionData;
 
@@ -67,6 +62,12 @@ export async function getContributionSvg(
 export { themes } from "./themes";
 // Re-export schema types for backwards compatibility
 export type { ThemeName as AvailableThemeNames } from "@/lib/schemas";
-export type { ContributionData, ContributionDay, ScraperConfig, Theme, ThemeName } from "@/lib/schemas";
+export type {
+  ContributionData,
+  ContributionDay,
+  ScraperConfig,
+  Theme,
+  ThemeName,
+} from "@/lib/schemas";
 export { scrapeContributions } from "./scraper";
 export { renderSvg } from "./svg";

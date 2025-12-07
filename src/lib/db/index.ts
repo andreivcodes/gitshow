@@ -24,11 +24,7 @@ const createDbInstance = () => {
     dialect: new PostgresDialect({
       pool: db_pool,
     }),
-    plugins: [
-      new CamelCasePlugin(),
-      new DeduplicateJoinsPlugin(),
-      new ParseJSONResultsPlugin(),
-    ],
+    plugins: [new CamelCasePlugin(), new DeduplicateJoinsPlugin(), new ParseJSONResultsPlugin()],
   });
 };
 
@@ -47,9 +43,7 @@ function traverseJSON<DB, TB extends keyof DB>(
     path = [path];
   }
 
-  return sql`${sql.ref(column)}->${sql.raw(
-    path.map((item) => `'${item}'`).join("->")
-  )}`;
+  return sql`${sql.ref(column)}->${sql.raw(path.map((item) => `'${item}'`).join("->"))}`;
 }
 
 export { traverseJSON };
@@ -58,7 +52,7 @@ export * from "./types";
 export { Kysely };
 export { sql, type Selectable, type Insertable } from "kysely";
 export { jsonArrayFrom } from "kysely/helpers/postgres";
-export { encryptToken, decryptToken } from './crypto';
+export { encryptToken, decryptToken } from "./crypto";
 
 // Re-export RefreshInterval from schemas for backwards compatibility
 // The canonical source is now the Zod schema in @/lib/schemas

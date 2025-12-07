@@ -42,9 +42,7 @@ async function fetchContributionData(
       });
 
       const contributionsCount = await page.evaluate(() => {
-        const contributionsElement = document.querySelector(
-          ".js-yearly-contributions h2"
-        );
+        const contributionsElement = document.querySelector(".js-yearly-contributions h2");
         if (contributionsElement && contributionsElement.textContent) {
           const text = contributionsElement.textContent.trim();
           const countMatch = text.match(/^([0-9,]+)/);
@@ -76,11 +74,7 @@ async function fetchContributionData(
       };
     } catch (error) {
       attempt++;
-      console.warn(
-        `Retrying (${attempt}/${maxRetries}) due to error: ${
-          (error as Error).message
-        }`
-      );
+      console.warn(`Retrying (${attempt}/${maxRetries}) due to error: ${(error as Error).message}`);
       await delay(Math.pow(2, attempt) * retryDelay);
       if (attempt >= maxRetries) throw error;
     }

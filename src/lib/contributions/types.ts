@@ -5,9 +5,4 @@
  * These re-exports maintain existing import paths.
  */
 
-export type {
-  ContributionDay,
-  ContributionData,
-  ScraperConfig,
-  Theme,
-} from "@/lib/schemas";
+export type { ContributionDay, ContributionData, ScraperConfig, Theme } from "@/lib/schemas";

@@ -6,11 +6,7 @@ import { cn } from "@/components/lib/utils";
 
 export default function SignOut() {
   return (
-    <Button
-      className={cn("w-full")}
-      variant="default"
-      onClick={() => signOut()}
-    >
+    <Button className={cn("w-full")} variant="default" onClick={() => signOut()}>
       Sign out
     </Button>
   );

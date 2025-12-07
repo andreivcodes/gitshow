@@ -50,10 +50,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("[BannerUpdater API] Failed to get workflow status:", error);
-    return NextResponse.json(
-      { error: "Failed to get workflow status", runId },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to get workflow status", runId }, { status: 500 });
   }
 }
 
@@ -77,9 +74,6 @@ export async function POST() {
     });
   } catch (error) {
     console.error("[BannerUpdater API] Failed to start workflow:", error);
-    return NextResponse.json(
-      { error: "Failed to start workflow" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to start workflow" }, { status: 500 });
   }
 }

@@ -19,9 +19,7 @@ import { z } from "zod";
  * Helper to check if user is fully authenticated.
  * Returns the authenticated session or an error result.
  */
-type AuthResult =
-  | { success: true; session: Session }
-  | { success: false; error: string };
+type AuthResult = { success: true; session: Session } | { success: false; error: string };
 
 async function requireFullAuth(): Promise<AuthResult> {
   const session = await getServerSession(authOptions);
@@ -102,11 +100,7 @@ export async function setUserTheme(theme: ThemeName): Promise<VoidActionResult> 
       .selectAll()
       .executeTakeFirstOrThrow();
 
-    await db
-      .updateTable("user")
-      .where("id", "=", user.id)
-      .set({ theme: parsed.data })
-      .execute();
+    await db.updateTable("user").where("id", "=", user.id).set({ theme: parsed.data }).execute();
 
     session.user.theme = parsed.data;
 

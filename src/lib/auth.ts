@@ -1,9 +1,11 @@
 import { type DefaultSession, type NextAuthOptions } from "next-auth";
 import Github, { GithubProfile } from "next-auth/providers/github";
-import TwitterLegacy, {
-  TwitterLegacyProfile,
-} from "next-auth/providers/twitter";
-import { type ThemeName, RefreshInterval, type RefreshInterval as RefreshIntervalType } from "@/lib/schemas";
+import TwitterLegacy, { TwitterLegacyProfile } from "next-auth/providers/twitter";
+import {
+  type ThemeName,
+  RefreshInterval,
+  type RefreshInterval as RefreshIntervalType,
+} from "@/lib/schemas";
 import { db, encryptToken, Insertable, User } from "@/lib/db";
 
 declare module "next-auth" {
@@ -61,8 +63,7 @@ export const authOptions: NextAuthOptions = {
           session.user.githubAuthenticated = u.githubAuthenticated === true;
           session.user.twitterAuthenticated = u.twitterAuthenticated === true;
           session.user.fullyAuthenticated =
-            session.user.githubAuthenticated &&
-            session.user.twitterAuthenticated;
+            session.user.githubAuthenticated && session.user.twitterAuthenticated;
 
           session.user.twittername = u.twitterUsername ?? null;
           session.user.twittertag = u.twitterTag ?? null;
@@ -93,9 +94,7 @@ export const authOptions: NextAuthOptions = {
 
           case "twitter":
             updateData.twitterId = account.providerAccountId;
-            updateData.twitterTag = (
-              profile as TwitterLegacyProfile
-            ).screen_name;
+            updateData.twitterTag = (profile as TwitterLegacyProfile).screen_name;
             updateData.twitterUsername = (profile as TwitterLegacyProfile).name;
             updateData.twitterPicture = (
               profile as TwitterLegacyProfile

@@ -3,13 +3,13 @@ import { Header } from "@/components/app/header";
 import { Footer } from "@/components/app/footer";
 import { Providers } from "@/components/providers/session-provider";
 import type { Metadata } from "next";
-import { Roboto } from 'next/font/google';
+import { Roboto } from "next/font/google";
 import { Toaster } from "sonner";
 
 const roboto = Roboto({
-  weight: ['100', '300', '400', '500', '700', '900'],
-  subsets: ['latin'],
-  display: 'swap',  // Prevents FOUC
+  weight: ["100", "300", "400", "500", "700", "900"],
+  subsets: ["latin"],
+  display: "swap", // Prevents FOUC
   preload: true,
 });
 
@@ -35,15 +35,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://git.show",
     title: "git.show - Show off your GitHub contributions",
-    description:
-      "Automatically update your Twitter/X banner with your GitHub contribution graph.",
+    description: "Automatically update your Twitter/X banner with your GitHub contribution graph.",
     siteName: "git.show",
   },
   twitter: {
     card: "summary_large_image",
     title: "git.show - Show off your GitHub contributions",
-    description:
-      "Automatically update your Twitter/X banner with your GitHub contribution graph.",
+    description: "Automatically update your Twitter/X banner with your GitHub contribution graph.",
     creator: "@andreivtweets",
   },
   robots: {
@@ -62,14 +60,18 @@ export default function RootLayout({
       <head>
         {/* Safari streaming buffer threshold workaround */}
         {/* Ensures HTML payload exceeds 1024 bytes for early render */}
-        <script dangerouslySetInnerHTML={{
-          __html: `<!-- ${'x'.repeat(1100)} -->`
-        }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `<!-- ${"x".repeat(1100)} -->`,
+          }}
+        />
       </head>
       <body className="dark overflow-x-hidden">
         <main className="orb-container flex min-h-screen flex-col items-start sm:items-center justify-between">
           <Providers>
-            <div className="orb -z-10" />
+            <div className="orb orb-primary -z-10" aria-hidden="true" />
+            <div className="orb orb-secondary -z-10" aria-hidden="true" />
+            <div className="orb orb-tertiary -z-10" aria-hidden="true" />
             <Header />
             {children}
             <Footer />

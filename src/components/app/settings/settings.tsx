@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import IntervalSelect from "./components/interval-select";
 import ThemeSelect from "./components/theme-select";
 import SignOut from "./components/sign-out";
@@ -21,11 +15,7 @@ export default function Settings() {
 
   if (!data)
     return (
-      <Card
-        className={cn(
-          "w-full sm:w-[448px] h-auto sm:min-h-[460px] flex flex-col",
-        )}
-      ></Card>
+      <Card className={cn("w-full sm:w-[448px] h-auto sm:min-h-[460px] flex flex-col")}></Card>
     );
 
   return (
@@ -40,13 +30,13 @@ export default function Settings() {
             lastUpdate={data?.user.lastUpdateTimestamp}
           />
         </div>
-        
+
         <div className="space-y-3">
           <div className="grid gap-2">
             <Label className="text-sm">Theme</Label>
             <ThemeSelect theme={data?.user.theme} />
           </div>
-          
+
           <div className="grid gap-2">
             <Label className="text-sm">Update Frequency</Label>
             <IntervalSelect interval={data?.user.updateInterval} />

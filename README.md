@@ -24,22 +24,26 @@ Turn your GitHub contributions into dynamic Twitter/X banner art. GitShow automa
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/andreivcodes/gitshow.git
    cd gitshow
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    ```
 
    Fill in your `.env` file:
+
    ```env
    # Database
    DATABASE_URL=postgresql://user:password@localhost:5432/gitshow
@@ -65,11 +69,13 @@ Turn your GitHub contributions into dynamic Twitter/X banner art. GitShow automa
    ```
 
 4. **Run database migrations**
+
    ```bash
    pnpm --filter @gitshow/db migrate
    ```
 
 5. **Start the development server**
+
    ```bash
    pnpm --filter @gitshow/web dev
    ```

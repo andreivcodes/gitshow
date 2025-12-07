@@ -19,19 +19,14 @@ export default function Error({
     <div className="flex w-full flex-col gap-8 p-4 xl:p-24 items-center justify-center min-h-[50vh]">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl text-red-500">
-            Something went wrong!
-          </CardTitle>
+          <CardTitle className="text-2xl text-red-500">Something went wrong!</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted-foreground">
-            We encountered an unexpected error. This has been logged and we'll
-            look into it.
+            We encountered an unexpected error. This has been logged and we'll look into it.
           </p>
           {error.digest && (
-            <p className="text-xs text-muted-foreground">
-              Error ID: {error.digest}
-            </p>
+            <p className="text-xs text-muted-foreground">Error ID: {error.digest}</p>
           )}
           <Button onClick={reset} className="w-full">
             Try again

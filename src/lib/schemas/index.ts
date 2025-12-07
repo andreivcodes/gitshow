@@ -66,11 +66,7 @@ export const themeNames = ThemeNameSchema.options;
 /**
  * Refresh interval for automatic banner updates.
  */
-export const RefreshIntervalSchema = z.enum([
-  "EVERY_DAY",
-  "EVERY_WEEK",
-  "EVERY_MONTH",
-]);
+export const RefreshIntervalSchema = z.enum(["EVERY_DAY", "EVERY_WEEK", "EVERY_MONTH"]);
 
 export type RefreshInterval = z.infer<typeof RefreshIntervalSchema>;
 

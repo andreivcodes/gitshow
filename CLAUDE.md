@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 GitShow is a Next.js application that creates visual representations of GitHub contributions and automatically updates Twitter/X profile banners. It uses Vercel Workflow DevKit for background job processing.
 
 **Key Features:**
+
 - Scrapes GitHub contribution graphs using Puppeteer via Browserless
 - Generates SVG visualizations with 14 themes
 - Converts SVGs to JPEG and uploads as Twitter/X banners
@@ -46,6 +47,7 @@ This is a single Next.js 16 application with App Router.
 ### Database
 
 Uses Kysely ORM with PostgreSQL:
+
 - Tables: `user`
 - Migrations in `src/lib/db/migrations/`
 - Exports: `db`, `RefreshInterval`, `encryptToken`, `decryptToken`
@@ -53,6 +55,7 @@ Uses Kysely ORM with PostgreSQL:
 ### Core Business Logic
 
 Located in `src/lib/gitshow/`:
+
 - `contributions-scraper.ts` - Puppeteer scraping logic via Browserless
 - `contributions-svg.ts` - SVG generation (7x53 grid)
 - `themes.ts` - All 14 theme definitions
@@ -60,6 +63,7 @@ Located in `src/lib/gitshow/`:
 ### Background Jobs
 
 Uses Vercel Workflow DevKit with Local World for job processing:
+
 - `src/workflows/banner-updater.ts` - Long-running workflow for banner updates
 - Runs continuously with 1-hour intervals
 - Processes users needing banner refreshes based on their update interval
@@ -84,6 +88,7 @@ Uses Vercel Workflow DevKit with Local World for job processing:
 ### Environment Variables
 
 Required:
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `TOKENS_SECRET` - AES encryption key for stored tokens
 - `NEXTAUTH_URL`, `NEXTAUTH_SECRET`

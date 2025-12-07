@@ -20,6 +20,7 @@ const nextConfig = {
         port: "",
       },
     ],
+    qualities: [100, 75],
   },
 
   webpack: (config, options) => {

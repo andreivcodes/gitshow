@@ -51,9 +51,7 @@ async function ContribsWrapper({ session }: { session: Session | null }) {
 }
 
 async function MenuWrapper({ session }: { session: Session | null }) {
-  return session &&
-    session.user.twitterAuthenticated &&
-    session.user.githubAuthenticated ? (
+  return session && session.user.twitterAuthenticated && session.user.githubAuthenticated ? (
     <Settings />
   ) : (
     <SignIn />

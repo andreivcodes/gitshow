@@ -26,17 +26,13 @@ export default function SignIn() {
   return (
     <Card className="w-full sm:w-[448px] h-auto sm:min-h-[460px] flex flex-col">
       <CardHeader className="space-y-1">
-        <CardTitle className="flex justify-center text-2xl">
-          Connect your accounts
-        </CardTitle>
+        <CardTitle className="flex justify-center text-2xl">Connect your accounts</CardTitle>
         <CardDescription className="pt-2 text-center text-amber-700">
           Your Github and X accounts must use the same email address!
         </CardDescription>
 
-        {((session?.user?.githubAuthenticated &&
-          !session?.user?.twitterAuthenticated) ||
-          (!session?.user?.githubAuthenticated &&
-            session?.user?.twitterAuthenticated)) && (
+        {((session?.user?.githubAuthenticated && !session?.user?.twitterAuthenticated) ||
+          (!session?.user?.githubAuthenticated && session?.user?.twitterAuthenticated)) && (
           <CardDescription className="pt-2 text-center text-amber-700">
             You need to connect both accounts for this to work!
           </CardDescription>
@@ -68,10 +64,7 @@ export default function SignIn() {
       </CardContent>
       <CardFooter className="grid grid-cols-2 gap-2 border-t pt-4">
         {session?.user?.githubAuthenticated ? (
-          <Button
-            variant="ghost"
-            className="pointer-events-none border border-green-600 w-full"
-          >
+          <Button variant="ghost" className="pointer-events-none border border-green-600 w-full">
             <Icons.Github className="mr-2 h-4 w-4" />
             Github
           </Button>
@@ -88,10 +81,7 @@ export default function SignIn() {
         )}
 
         {session?.user?.twitterAuthenticated ? (
-          <Button
-            variant="ghost"
-            className="pointer-events-none border border-green-600 w-full"
-          >
+          <Button variant="ghost" className="pointer-events-none border border-green-600 w-full">
             <Icons.Twitter className="mr-2 h-4 w-4" />X
           </Button>
         ) : (

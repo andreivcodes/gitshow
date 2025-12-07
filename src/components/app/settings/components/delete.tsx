@@ -15,7 +15,9 @@ export default function Delete() {
       className={cn("w-full")}
       variant="outline"
       onClick={() => {
-        if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+        if (
+          confirm("Are you sure you want to delete your account? This action cannot be undone.")
+        ) {
           startTransition(async () => {
             const result = await deleteAccount();
             if (result.success) {

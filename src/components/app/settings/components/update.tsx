@@ -21,12 +21,15 @@ export default function Update({
         <div className="flex-1">
           <Label className="text-sm">Auto-update banner</Label>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Last synced: {lastUpdate ? new Date(lastUpdate).toLocaleDateString('en-US', { 
-              month: 'short', 
-              day: 'numeric', 
-              hour: 'numeric', 
-              minute: '2-digit' 
-            }) : "Never"}
+            Last synced:{" "}
+            {lastUpdate
+              ? new Date(lastUpdate).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                })
+              : "Never"}
           </p>
         </div>
         <Switch

@@ -1,10 +1,7 @@
 import { themes } from "./themes";
 import type { ContributionData, Theme, ThemeName } from "@/lib/schemas";
 
-export function renderSvg(
-  contributionData: ContributionData,
-  theme: ThemeName
-): string {
+export function renderSvg(contributionData: ContributionData, theme: ThemeName): string {
   const cellSize = 10;
   const cellGap = 2;
   const daysInWeek = 7;

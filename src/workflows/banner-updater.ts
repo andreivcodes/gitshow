@@ -79,11 +79,7 @@ async function getUsersNeedingUpdate(): Promise<string[]> {
 async function updateUserBanner(userId: string): Promise<void> {
   "use step";
 
-  const user = await db
-    .selectFrom("user")
-    .selectAll()
-    .where("id", "=", userId)
-    .executeTakeFirst();
+  const user = await db.selectFrom("user").selectAll().where("id", "=", userId).executeTakeFirst();
 
   if (!user) {
     throw new FatalError(`User ${userId} not found`);
@@ -97,10 +93,7 @@ async function updateUserBanner(userId: string): Promise<void> {
     throw new FatalError(`User ${userId} missing GitHub username`);
   }
 
-  const decryptedAccessToken = decryptToken(
-    user.twitterOauthToken,
-    process.env.TOKENS_SECRET!
-  );
+  const decryptedAccessToken = decryptToken(user.twitterOauthToken, process.env.TOKENS_SECRET!);
   const decryptedAccessSecret = decryptToken(
     user.twitterOauthTokenSecret,
     process.env.TOKENS_SECRET!
@@ -154,7 +147,9 @@ async function updateUserBanner(userId: string): Promise<void> {
   } catch (error) {
     // Check for permanent Twitter auth failures
     if (error instanceof Error && error.message.includes("401")) {
-      throw new FatalError(`Twitter authentication failed for user ${userId} - token may be revoked`);
+      throw new FatalError(
+        `Twitter authentication failed for user ${userId} - token may be revoked`
+      );
     }
     console.error(`[BannerUpdater] Failed to fetch Twitter user info for ${userId}:`, error);
     // Continue with banner update even if profile update fails
@@ -167,15 +162,10 @@ async function updateUserBanner(userId: string): Promise<void> {
   });
 
   // Generate SVG
-  const bannerSvg = renderSvg(
-    contributionData,
-    user.theme as ThemeName
-  );
+  const bannerSvg = renderSvg(contributionData, user.theme as ThemeName);
 
   // Convert to JPEG
-  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 })
-    .jpeg()
-    .toBuffer();
+  const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 }).jpeg().toBuffer();
 
   // Upload to Twitter
   try {
@@ -183,7 +173,9 @@ async function updateUserBanner(userId: string): Promise<void> {
   } catch (error) {
     // Check for permanent Twitter auth failures
     if (error instanceof Error && error.message.includes("401")) {
-      throw new FatalError(`Twitter authentication failed for user ${userId} - token may be revoked`);
+      throw new FatalError(
+        `Twitter authentication failed for user ${userId} - token may be revoked`
+      );
     }
     throw error; // Let other errors be retried
   }
