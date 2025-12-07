@@ -15,6 +15,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://git.show"),
   title: {
     default: "git.show - Show off your GitHub contributions",
     template: "%s | git.show",
