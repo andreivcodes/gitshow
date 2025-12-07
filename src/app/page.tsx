@@ -1,34 +1,30 @@
 import React, { Suspense } from "react";
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth/next";
-import type { Session } from "next-auth";
+import { getCachedSession } from "@/lib/auth";
 import SignIn from "@/components/app/signin/signin";
 import Settings from "@/components/app/settings/settings";
 import Contributions from "@/components/app/contributions";
 import { getContributionSvg } from "@/lib/contributions";
 import { Card } from "@/components/ui/card";
 
-export default async function Home() {
-  // Fetch session ONCE at page level to avoid duplicate calls
-  const session = await getServerSession(authOptions);
-
+export default function Home() {
   return (
     <div className="flex w-full flex-col gap-8 p-4 xl:grid xl:grid-cols-2 xl:gap-8 xl:p-24 overflow-x-visible sm:overflow-x-clip">
       <div className="xl:flex xl:items-start xl:justify-center">
         <Suspense fallback={<ContributionsLoadingCard />}>
-          <ContribsWrapper session={session} />
+          <ContribsWrapper />
         </Suspense>
       </div>
       <div className="xl:flex xl:items-start xl:justify-center">
         <Suspense fallback={<MenuLoadingCard />}>
-          <MenuWrapper session={session} />
+          <MenuWrapper />
         </Suspense>
       </div>
     </div>
   );
 }
 
-async function ContribsWrapper({ session }: { session: Session | null }) {
+async function ContribsWrapper() {
+  const session = await getCachedSession();
   const svg = await getContributionSvg(
     session?.user.githubname ?? "torvalds",
     session?.user.theme ?? "githubDark"
@@ -50,7 +46,8 @@ async function ContribsWrapper({ session }: { session: Session | null }) {
   );
 }
 
-async function MenuWrapper({ session }: { session: Session | null }) {
+async function MenuWrapper() {
+  const session = await getCachedSession();
   return session && session.user.twitterAuthenticated && session.user.githubAuthenticated ? (
     <Settings />
   ) : (

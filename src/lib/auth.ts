@@ -1,4 +1,6 @@
+import { cache } from "react";
 import { type DefaultSession, type NextAuthOptions } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import Github, { GithubProfile } from "next-auth/providers/github";
 import TwitterLegacy, { TwitterLegacyProfile } from "next-auth/providers/twitter";
 import {
@@ -143,3 +145,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
+
+// React cache() deduplicates calls within the same request
+export const getCachedSession = cache(() => getServerSession(authOptions));

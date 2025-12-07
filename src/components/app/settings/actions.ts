@@ -18,6 +18,17 @@ import { scrapeContributions, renderSvg } from "@/lib/contributions";
 import { TwitterApi } from "twitter-api-v2";
 import sharp from "sharp";
 
+const BANNER_UPDATE_TIMEOUT_MS = 60000; // 60 seconds max for entire operation
+
+function withTimeout<T>(promise: Promise<T>, ms: number, operation: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`${operation} timed out after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
 /**
  * Helper to check if user is fully authenticated.
  * Returns the authenticated session or an error result.
@@ -203,37 +214,47 @@ export async function forceUpdateBanner(): Promise<VoidActionResult> {
       return { success: false, error: "GitHub username not found" };
     }
 
-    // Decrypt Twitter tokens
-    const decryptedAccessToken = decryptToken(user.twitterOauthToken, process.env.TOKENS_SECRET!);
-    const decryptedAccessSecret = decryptToken(
-      user.twitterOauthTokenSecret,
-      process.env.TOKENS_SECRET!
+    // Wrap the entire banner update operation with a timeout
+    await withTimeout(
+      (async () => {
+        // Decrypt Twitter tokens
+        const decryptedAccessToken = decryptToken(
+          user.twitterOauthToken!,
+          process.env.TOKENS_SECRET!
+        );
+        const decryptedAccessSecret = decryptToken(
+          user.twitterOauthTokenSecret!,
+          process.env.TOKENS_SECRET!
+        );
+
+        const client = new TwitterApi({
+          appKey: process.env.TWITTER_CONSUMER_KEY!,
+          appSecret: process.env.TWITTER_CONSUMER_SECRET!,
+          accessToken: decryptedAccessToken,
+          accessSecret: decryptedAccessSecret,
+        });
+
+        // Scrape GitHub contributions
+        const contributionData = await scrapeContributions(user.githubUsername!, {
+          browserlessUrl: process.env.BROWSERLESS_URL!,
+          browserlessToken: process.env.BROWSERLESS_TOKEN!,
+        });
+
+        // Generate SVG
+        const bannerSvg = renderSvg(contributionData, user.theme as ThemeName);
+
+        // Convert to JPEG at Twitter's optimal banner size (1500x500)
+        const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 })
+          .resize(1500, 500, { fit: "fill" })
+          .jpeg({ quality: 90 })
+          .toBuffer();
+
+        // Upload to Twitter
+        await client.v1.updateAccountProfileBanner(bannerJpeg);
+      })(),
+      BANNER_UPDATE_TIMEOUT_MS,
+      "Banner update"
     );
-
-    const client = new TwitterApi({
-      appKey: process.env.TWITTER_CONSUMER_KEY!,
-      appSecret: process.env.TWITTER_CONSUMER_SECRET!,
-      accessToken: decryptedAccessToken,
-      accessSecret: decryptedAccessSecret,
-    });
-
-    // Scrape GitHub contributions
-    const contributionData = await scrapeContributions(user.githubUsername, {
-      browserlessUrl: process.env.BROWSERLESS_URL!,
-      browserlessToken: process.env.BROWSERLESS_TOKEN!,
-    });
-
-    // Generate SVG
-    const bannerSvg = renderSvg(contributionData, user.theme as ThemeName);
-
-    // Convert to JPEG at Twitter's optimal banner size (1500x500)
-    const bannerJpeg = await sharp(Buffer.from(bannerSvg), { density: 500 })
-      .resize(1500, 500, { fit: "fill" })
-      .jpeg({ quality: 90 })
-      .toBuffer();
-
-    // Upload to Twitter
-    await client.v1.updateAccountProfileBanner(bannerJpeg);
 
     // Update last update timestamp
     await db
