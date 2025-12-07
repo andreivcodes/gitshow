@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Header } from "@/components/app/header";
 import { Footer } from "@/components/app/footer";
+import { AnimatedOrbs } from "@/components/app/animated-orbs";
 import { Providers } from "@/components/providers/session-provider";
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
@@ -69,9 +70,7 @@ export default function RootLayout({
       <body className="dark overflow-x-hidden">
         <main className="orb-container flex min-h-screen flex-col items-start sm:items-center justify-between">
           <Providers>
-            <div className="orb orb-primary -z-10" aria-hidden="true" />
-            <div className="orb orb-secondary -z-10" aria-hidden="true" />
-            <div className="orb orb-tertiary -z-10" aria-hidden="true" />
+            <AnimatedOrbs />
             <Header />
             {children}
             <Footer />

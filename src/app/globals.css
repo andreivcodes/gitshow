@@ -242,16 +242,16 @@
   inherits: false;
 }
 
-/* Orb movement animations - subtle but visible */
+/* Orb movement animations - using CSS variables for random positions */
 @keyframes orb-move-1 {
   0%,
   100% {
-    transform: translate(10vw, 20vh) scale(1);
+    transform: translate(var(--orb1-start-x, 10vw), var(--orb1-start-y, 20vh)) scale(1);
     opacity: 0.25;
     --orb-color-1: rgba(123, 31, 162, 0.5);
   }
   50% {
-    transform: translate(25vw, 40vh) scale(1.08);
+    transform: translate(var(--orb1-end-x, 25vw), var(--orb1-end-y, 40vh)) scale(1.08);
     opacity: 0.35;
     --orb-color-1: rgba(142, 36, 170, 0.55);
   }
@@ -260,12 +260,12 @@
 @keyframes orb-move-2 {
   0%,
   100% {
-    transform: translate(60vw, 55vh) scale(1);
+    transform: translate(var(--orb2-start-x, 60vw), var(--orb2-start-y, 55vh)) scale(1);
     opacity: 0.2;
     --orb-color-2: rgba(255, 105, 180, 0.45);
   }
   50% {
-    transform: translate(45vw, 35vh) scale(0.95);
+    transform: translate(var(--orb2-end-x, 45vw), var(--orb2-end-y, 35vh)) scale(0.95);
     opacity: 0.3;
     --orb-color-2: rgba(233, 30, 99, 0.5);
   }
@@ -274,12 +274,12 @@
 @keyframes orb-move-3 {
   0%,
   100% {
-    transform: translate(45vw, 5vh) scale(1);
+    transform: translate(var(--orb3-start-x, 45vw), var(--orb3-start-y, 5vh)) scale(1);
     opacity: 0.2;
     --orb-color-3: rgba(0, 150, 136, 0.45);
   }
   50% {
-    transform: translate(25vw, 25vh) scale(1.06);
+    transform: translate(var(--orb3-end-x, 25vw), var(--orb3-end-y, 25vh)) scale(1.06);
     opacity: 0.3;
     --orb-color-3: rgba(0, 188, 212, 0.5);
   }
@@ -288,12 +288,12 @@
 @keyframes orb-move-4 {
   0%,
   100% {
-    transform: translate(70vw, 35vh) scale(1);
+    transform: translate(var(--orb4-start-x, 70vw), var(--orb4-start-y, 35vh)) scale(1);
     opacity: 0.18;
     --orb-color-4: rgba(0, 188, 212, 0.4);
   }
   50% {
-    transform: translate(50vw, 50vh) scale(0.95);
+    transform: translate(var(--orb4-end-x, 50vw), var(--orb4-end-y, 50vh)) scale(0.95);
     opacity: 0.25;
     --orb-color-4: rgba(38, 198, 218, 0.45);
   }
@@ -302,12 +302,12 @@
 @keyframes orb-move-5 {
   0%,
   100% {
-    transform: translate(20vw, 60vh) scale(1);
+    transform: translate(var(--orb5-start-x, 20vw), var(--orb5-start-y, 60vh)) scale(1);
     opacity: 0.18;
     --orb-color-5: rgba(255, 152, 0, 0.4);
   }
   50% {
-    transform: translate(40vw, 45vh) scale(1.05);
+    transform: translate(var(--orb5-end-x, 40vw), var(--orb5-end-y, 45vh)) scale(1.05);
     opacity: 0.25;
     --orb-color-5: rgba(255, 167, 38, 0.45);
   }
@@ -316,15 +316,23 @@
 @keyframes orb-move-6 {
   0%,
   100% {
-    transform: translate(75vw, 70vh) scale(1);
+    transform: translate(var(--orb6-start-x, 75vw), var(--orb6-start-y, 70vh)) scale(1);
     opacity: 0.15;
     --orb-color-6: rgba(255, 193, 7, 0.35);
   }
   50% {
-    transform: translate(55vw, 50vh) scale(1.04);
+    transform: translate(var(--orb6-end-x, 55vw), var(--orb6-end-y, 50vh)) scale(1.04);
     opacity: 0.22;
     --orb-color-6: rgba(255, 235, 59, 0.4);
   }
+}
+
+/* Wrapper for orbs to contain CSS variables */
+.orb-wrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 /* Orb container - holds pseudo-element layers */
