@@ -49,7 +49,7 @@ export async function getContributionSvg(username: string, theme: ThemeName): Pr
       await db
         .updateTable("user")
         .set({
-          contribData: JSON.stringify(contributionData),
+          contribData: contributionData,
           lastFetchTimestamp: new Date(),
         })
         .where("id", "=", user.id)

@@ -9,16 +9,17 @@ export function renderSvg(contributionData: ContributionData, theme: ThemeName):
   const paddingRight = 50;
   const paddingBottom = 100;
   const paddingLeft = 50;
-  const currentTheme = themes[theme];
+  const currentTheme = themes[theme] ?? themes.normal;
   const contributionsMap = new Map<string, string>();
 
   contributionData.contributions.forEach((contribution) => {
     contributionsMap.set(contribution.date, contribution.level);
   });
 
-  const startDate = new Date(contributionData.range.start);
   const totalDays = contributionData.contributions.length;
-  const weeks = Math.ceil(totalDays / daysInWeek);
+  const weeks = Math.max(1, Math.ceil(totalDays / daysInWeek));
+  const startDate = new Date(contributionData.range.start);
+  const hasValidStartDate = Number.isFinite(startDate.getTime());
   const width = weeks * (cellSize + cellGap) + paddingLeft + paddingRight;
   const height = daysInWeek * (cellSize + cellGap) + paddingTop + paddingBottom;
 
@@ -29,11 +30,18 @@ export function renderSvg(contributionData: ContributionData, theme: ThemeName):
   let y = paddingTop;
 
   for (let dayIndex = 0; dayIndex < totalDays; dayIndex++) {
-    const currentDate = new Date(startDate);
-    currentDate.setDate(startDate.getDate() + dayIndex);
-    const dateString = currentDate.toISOString().split("T")[0];
-    const level = contributionsMap.get(dateString) || "0";
-    const color = currentTheme[`level${level}` as keyof Theme];
+    let level = "0";
+    if (hasValidStartDate) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + dayIndex);
+      const dateString = currentDate.toISOString().split("T")[0];
+      level = contributionsMap.get(dateString) || "0";
+    } else {
+      level = contributionData.contributions[dayIndex]?.level || "0";
+    }
+
+    const colorKey = `level${level}` as keyof Theme;
+    const color = currentTheme[colorKey] ?? currentTheme.level0;
 
     svgContent += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="${color}" rx="2" ry="2" />`;
 

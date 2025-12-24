@@ -240,6 +240,15 @@ export async function forceUpdateBanner(): Promise<VoidActionResult> {
           browserlessToken: process.env.BROWSERLESS_TOKEN!,
         });
 
+        await db
+          .updateTable("user")
+          .where("id", "=", user.id)
+          .set({
+            contribData: contributionData,
+            lastFetchTimestamp: new Date(),
+          })
+          .execute();
+
         // Generate SVG
         const bannerSvg = renderSvg(contributionData, user.theme as ThemeName);
 

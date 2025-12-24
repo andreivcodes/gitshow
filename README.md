@@ -66,6 +66,7 @@ Turn your GitHub contributions into dynamic Twitter/X banner art. GitShow automa
    # Browserless
    BROWSERLESS_URL=wss://chrome.browserless.io
    BROWSERLESS_TOKEN=your-browserless-token
+
    ```
 
 4. **Run database migrations**
