@@ -7,9 +7,7 @@ export async function register() {
 
     // Auto-start the banner updater workflow if one isn't already active in this instance.
     try {
-      const { ensureBannerUpdaterStarted } = await import(
-        "@/lib/workflows/banner-updater-control"
-      );
+      const { ensureBannerUpdaterStarted } = await import("@/lib/workflows/banner-updater-control");
       const runInfo = await ensureBannerUpdaterStarted();
       console.log(
         `[Workflow] Banner updater workflow ${runInfo.status} with runId: ${runInfo.runId}`

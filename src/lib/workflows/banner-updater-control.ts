@@ -70,9 +70,7 @@ export async function ensureBannerUpdaterStarted(): Promise<BannerUpdaterRunInfo
   }
 }
 
-export async function getBannerUpdaterStatus(
-  runId?: string
-): Promise<BannerUpdaterRunInfo | null> {
+export async function getBannerUpdaterStatus(runId?: string): Promise<BannerUpdaterRunInfo | null> {
   const state = getState();
   const resolvedRunId = runId ?? state.runId;
   if (!resolvedRunId) {

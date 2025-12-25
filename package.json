@@ -1,6 +1,18 @@
 {
   "name": "gitshow",
   "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev --turbopack",
+    "lint": "oxlint .",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "start": "next start",
+    "db:gen": "kysely-codegen --camel-case --runtime-enums --out-file ./src/lib/db/types.ts",
+    "db:migrate": "tsx src/lib/db/migrate.ts"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -66,9 +78,6 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.3",
-    "@eslint/js": "^9.39.1",
-    "@next/eslint-plugin-next": "^16.0.7",
     "@tailwindcss/postcss": "^4.1.17",
     "@tsconfig/recommended": "1.0.13",
     "@types/dotenv": "8.2.3",
@@ -76,36 +85,19 @@
     "@types/pg": "8",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^9.39.1",
-    "eslint-config-next": "16.0.7",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "globals": "^16.5.0",
     "kysely-codegen": "0.19.0",
     "kysely-ctl": "0.19.0",
+    "oxfmt": "^0.20.0",
+    "oxlint": "^1.35.0",
     "postcss": "^8.5.6",
-    "prettier": "^3.7.4",
     "tailwindcss": "^4.1.17",
     "tsx": "^4.21.0",
-    "typescript": "5.9.3",
-    "typescript-eslint": "^8.48.1"
+    "typescript": "5.9.3"
   },
-  "private": true,
-  "scripts": {
-    "build": "next build",
-    "dev": "next dev --turbopack",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "start": "next start",
-    "db:gen": "kysely-codegen --camel-case --runtime-enums --out-file ./src/lib/db/types.ts",
-    "db:migrate": "tsx src/lib/db/migrate.ts"
-  },
-  "type": "module",
-  "packageManager": "pnpm@10.24.0",
   "engines": {
     "node": ">=20"
   },
+  "packageManager": "pnpm@10.24.0",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@swc/core",
