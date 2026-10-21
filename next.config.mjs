@@ -5,6 +5,8 @@ const { withWorkflow } = pkg;
 const nextConfig = {
   // Enable Next.js 16 Cache Components
   cacheComponents: true,
+  // Keep the pre-16.3 Cache Components prefetch behavior (unset also means false, but warns)
+  partialPrefetching: false,
 
   // Experimental features
   experimental: {
