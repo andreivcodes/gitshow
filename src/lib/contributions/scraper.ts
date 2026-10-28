@@ -1,6 +1,6 @@
 import "server-only";
 
-import puppeteer, { Page, Browser } from "puppeteer";
+import puppeteer, { Page, Browser } from "puppeteer-core";
 import type { ContributionDay, ContributionData, ScraperConfig } from "./types";
 
 function delay(time: number) {
