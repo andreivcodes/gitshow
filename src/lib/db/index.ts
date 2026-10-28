@@ -21,6 +21,16 @@ const db_pool = new Pool({
   max: 10,
 });
 
+// Idle clients can error out from under us (e.g. 57P01 when Postgres restarts).
+// Without a listener the pool re-emits that as an uncaughtException and the
+// process dies; the pool already discards the broken client, so just log it.
+db_pool.on("error", (error: Error & { code?: string }) => {
+  console.error(
+    `[DB] Idle pool client error${error.code ? ` (${error.code})` : ""}:`,
+    error.message
+  );
+});
+
 const createDbInstance = () => {
   return new Kysely<DB>({
     dialect: new PostgresDialect({
