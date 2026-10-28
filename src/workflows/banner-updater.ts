@@ -16,17 +16,39 @@ export async function bannerUpdaterLoop() {
   "use workflow";
 
   while (true) {
-    // Step 1: Get list of user IDs that need updating
-    const userIds = await getUsersNeedingUpdate();
+    // A step that still fails after its retries (or throws FatalError) rejects
+    // here. Uncaught, that would fail this run and stop banner updates for
+    // every user until the next restart, so failures are contained to a single
+    // iteration (for the user query) or a single user.
+    try {
+      // Step 1: Get list of user IDs that need updating
+      const userIds = await getUsersNeedingUpdate();
 
-    // Step 2: Process each user as a separate step (allows individual retries)
-    for (const userId of userIds) {
-      await updateUserBanner(userId);
+      // Step 2: Process each user as a separate step (allows individual retries)
+      for (const userId of userIds) {
+        try {
+          await updateUserBanner(userId);
+        } catch (error) {
+          console.error(
+            `[BannerUpdater] Banner update failed for user ${userId}:`,
+            errorMessage(error)
+          );
+        }
+      }
+    } catch (error) {
+      console.error("[BannerUpdater] Failed to load users needing update:", errorMessage(error));
     }
 
     // Sleep for 1 hour before next check
     await sleep("1 hour");
   }
+}
+
+// Step errors are rehydrated inside the workflow sandbox, so `instanceof Error`
+// is not reliable here.
+function errorMessage(error: unknown): string {
+  const message = (error as { message?: unknown } | null)?.message;
+  return typeof message === "string" ? message : String(error);
 }
 
 /**
