@@ -5,6 +5,7 @@ import Settings from "@/components/app/settings/settings";
 import Contributions from "@/components/app/contributions";
 import { getContributionSvg } from "@/lib/contributions";
 import { Card } from "@/components/ui/card";
+import { unstable_rethrow } from "next/navigation";
 
 export default function Home() {
   return (
@@ -25,13 +26,20 @@ export default function Home() {
 
 async function ContribsWrapper() {
   const session = await getCachedSession();
-  const svg = await getContributionSvg(
-    session?.user.githubname ?? "torvalds",
-    session?.user.theme ?? "githubDark"
-  );
+  const username = session?.user.githubname ?? "torvalds";
 
-  if (!svg) {
-    return <ContributionsLoadingCard />;
+  let svg: string;
+  try {
+    svg = await getContributionSvg(username, session?.user.theme ?? "githubDark");
+  } catch (error) {
+    unstable_rethrow(error);
+    // Don't let a scraping failure (e.g. browserless unreachable) take down
+    // the whole page through error.tsx: sign-in and settings must still work.
+    console.error(
+      `[Home] Contribution graph unavailable for ${username}:`,
+      error instanceof Error ? error.message : error
+    );
+    return <ContributionsUnavailableCard />;
   }
 
   return (
@@ -65,6 +73,18 @@ function ContributionsLoadingCard() {
           overflow: "hidden",
         }}
       ></div>
+    </div>
+  );
+}
+
+function ContributionsUnavailableCard() {
+  return (
+    <div className="flex xl:w-auto xl:items-start xl:justify-center">
+      <div className="bg-black/50 rounded-xl relative h-[270px] mr-0 sm:mx-4 w-[566px] min-w-[566px] flex items-center justify-center p-8 text-center">
+        <p className="text-sm text-muted-foreground">
+          The contribution graph can't be loaded right now. Please try again in a few minutes.
+        </p>
+      </div>
     </div>
   );
 }

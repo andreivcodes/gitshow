@@ -15,11 +15,13 @@ const CACHE_EXPIRY_MS = 60 * 60 * 1000; // 1 hour
  * 1. Next.js cache (via "use cache") - caches the rendered SVG for 1 hour
  * 2. Database cache - stores raw contribution data to avoid repeated scraping
  *
+ * If scraping fails, the last stored data is served (cached for minutes, not
+ * hours). With nothing stored the error is rethrown for the caller to handle.
+ *
  * Tagged with "contributions" for on-demand revalidation when user changes theme.
  */
 export async function getContributionSvg(username: string, theme: ThemeName): Promise<string> {
   "use cache";
-  cacheLife("hours");
   cacheTag("contributions", `user-${username}`);
 
   // Check database cache for raw contribution data
@@ -31,32 +33,44 @@ export async function getContributionSvg(username: string, theme: ThemeName): Pr
 
   const now = Date.now();
   const lastFetch = user?.lastFetchTimestamp ? new Date(user.lastFetchTimestamp).getTime() : 0;
-
-  let contributionData: ContributionData;
+  const storedData = user?.contribData as unknown as ContributionData | null | undefined;
 
   // Use database cached data if fresh
-  if (user?.contribData && now - lastFetch < CACHE_EXPIRY_MS) {
-    contributionData = user.contribData as unknown as ContributionData;
-  } else {
+  if (storedData && now - lastFetch < CACHE_EXPIRY_MS) {
+    cacheLife("hours");
+    return renderSvg(storedData, theme);
+  }
+
+  let contributionData: ContributionData;
+  try {
     // Scrape fresh data from GitHub
     contributionData = await scrapeContributions(username, {
       browserlessUrl: process.env.BROWSERLESS_URL!,
       browserlessToken: process.env.BROWSERLESS_TOKEN!,
     });
-
-    // Store in database cache
-    if (user) {
-      await db
-        .updateTable("user")
-        .set({
-          contribData: contributionData,
-          lastFetchTimestamp: new Date(),
-        })
-        .where("id", "=", user.id)
-        .execute();
-    }
+  } catch (error) {
+    // Browserless or GitHub is unavailable. Serve the last scraped graph if
+    // we have one, but only cache it briefly so a fresh scrape is retried
+    // soon. Without stored data, rethrow: errors are not cached.
+    if (!storedData) throw error;
+    console.warn(`[Contributions] Scrape failed for ${username}, serving stored data`);
+    cacheLife("minutes");
+    return renderSvg(storedData, theme);
   }
 
+  // Store in database cache
+  if (user) {
+    await db
+      .updateTable("user")
+      .set({
+        contribData: contributionData,
+        lastFetchTimestamp: new Date(),
+      })
+      .where("id", "=", user.id)
+      .execute();
+  }
+
+  cacheLife("hours");
   return renderSvg(contributionData, theme);
 }
 

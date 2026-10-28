@@ -105,6 +105,31 @@ async function connectWithRetry(
   throw new Error("Failed to connect after maximum retries");
 }
 
+/**
+ * Turns whatever puppeteer.connect rejected with into a readable message.
+ *
+ * A failed WebSocket handshake rejects with a ws `ErrorEvent`, not an Error:
+ * logging it dumps the socket internals (including the connect URL, which
+ * carries the browserless token) and `String(event)` is "[object Object]".
+ * The token is stripped in case it ends up in a message.
+ */
+function describeConnectError(error: unknown): string {
+  let message: string;
+  if (error instanceof Error) {
+    message = error.message;
+  } else if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string"
+  ) {
+    message = error.message;
+  } else {
+    message = String(error);
+  }
+  return message.replace(/token=[^&\s"']+/gi, "token=[redacted]");
+}
+
 async function connectToBrowserless(config: ScraperConfig): Promise<Browser> {
   const launchArgs = JSON.stringify({
     args: ["--no-sandbox"],
@@ -127,10 +152,11 @@ async function connectToBrowserless(config: ScraperConfig): Promise<Browser> {
     console.log("Successfully connected to browserless");
     return browser;
   } catch (error) {
-    console.error("Failed to connect to browserless:", error);
-    throw new Error(
-      `Browserless connection failed: ${error instanceof Error ? error.message : String(error)}`
-    );
+    const message = describeConnectError(error);
+    console.error(`Failed to connect to browserless: ${message}`);
+    // No `cause`: it would carry the ErrorEvent (and the token) into the logs.
+    // oxlint-disable-next-line preserve-caught-error
+    throw new Error(`Browserless connection failed: ${message}`);
   }
 }
 
