@@ -105,19 +105,48 @@ async function connectWithRetry(
   throw new Error("Failed to connect after maximum retries");
 }
 
+/**
+ * Turns whatever puppeteer.connect rejected with into a readable message.
+ *
+ * A failed WebSocket handshake rejects with a ws `ErrorEvent`, not an Error:
+ * logging it dumps the socket internals (including the connect URL, which
+ * used to carry the browserless token) and `String(event)` is
+ * "[object Object]". Any `token=` that still ends up in a message is stripped.
+ */
+function describeConnectError(error: unknown): string {
+  let message: string;
+  if (error instanceof Error) {
+    message = error.message;
+  } else if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string"
+  ) {
+    message = error.message;
+  } else {
+    message = String(error);
+  }
+  return message.replace(/token=[^&\s"']+/gi, "token=[redacted]");
+}
+
 async function connectToBrowserless(config: ScraperConfig): Promise<Browser> {
   const launchArgs = JSON.stringify({
     args: ["--no-sandbox"],
     headless: true,
   });
 
-  const wsUrl = `${config.browserlessUrl}/?token=${config.browserlessToken}&launch=${launchArgs}`;
+  // The token goes in the Authorization header (browserless accepts
+  // `Bearer <token>`), not in the URL: the URL ends up in WebSocket errors
+  // and anything that logs them.
+  const wsUrl = `${config.browserlessUrl}/?launch=${encodeURIComponent(launchArgs)}`;
 
   console.log("Connecting to browserless service...");
 
   try {
     const browser = await puppeteer.connect({
       browserWSEndpoint: wsUrl,
+      headers: { Authorization: `Bearer ${config.browserlessToken}` },
     });
 
     if (!browser) {
@@ -127,10 +156,11 @@ async function connectToBrowserless(config: ScraperConfig): Promise<Browser> {
     console.log("Successfully connected to browserless");
     return browser;
   } catch (error) {
-    console.error("Failed to connect to browserless:", error);
-    throw new Error(
-      `Browserless connection failed: ${error instanceof Error ? error.message : String(error)}`
-    );
+    const message = describeConnectError(error);
+    console.error(`Failed to connect to browserless: ${message}`);
+    // No `cause`: it would dump the whole ErrorEvent into the logs.
+    // oxlint-disable-next-line preserve-caught-error
+    throw new Error(`Browserless connection failed: ${message}`);
   }
 }
 
