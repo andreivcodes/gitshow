@@ -110,8 +110,8 @@ async function connectWithRetry(
  *
  * A failed WebSocket handshake rejects with a ws `ErrorEvent`, not an Error:
  * logging it dumps the socket internals (including the connect URL, which
- * carries the browserless token) and `String(event)` is "[object Object]".
- * The token is stripped in case it ends up in a message.
+ * used to carry the browserless token) and `String(event)` is
+ * "[object Object]". Any `token=` that still ends up in a message is stripped.
  */
 function describeConnectError(error: unknown): string {
   let message: string;
@@ -136,13 +136,17 @@ async function connectToBrowserless(config: ScraperConfig): Promise<Browser> {
     headless: true,
   });
 
-  const wsUrl = `${config.browserlessUrl}/?token=${config.browserlessToken}&launch=${launchArgs}`;
+  // The token goes in the Authorization header (browserless accepts
+  // `Bearer <token>`), not in the URL: the URL ends up in WebSocket errors
+  // and anything that logs them.
+  const wsUrl = `${config.browserlessUrl}/?launch=${encodeURIComponent(launchArgs)}`;
 
   console.log("Connecting to browserless service...");
 
   try {
     const browser = await puppeteer.connect({
       browserWSEndpoint: wsUrl,
+      headers: { Authorization: `Bearer ${config.browserlessToken}` },
     });
 
     if (!browser) {
@@ -154,7 +158,7 @@ async function connectToBrowserless(config: ScraperConfig): Promise<Browser> {
   } catch (error) {
     const message = describeConnectError(error);
     console.error(`Failed to connect to browserless: ${message}`);
-    // No `cause`: it would carry the ErrorEvent (and the token) into the logs.
+    // No `cause`: it would dump the whole ErrorEvent into the logs.
     // oxlint-disable-next-line preserve-caught-error
     throw new Error(`Browserless connection failed: ${message}`);
   }
