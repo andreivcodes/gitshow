@@ -1,4 +1,5 @@
 import React, { Suspense } from "react";
+import type { Metadata } from "next";
 import { getCachedSession } from "@/lib/auth";
 import SignIn from "@/components/app/signin/signin";
 import Settings from "@/components/app/settings/settings";
@@ -96,3 +97,7 @@ function MenuLoadingCard() {
     </Card>
   );
 }
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
