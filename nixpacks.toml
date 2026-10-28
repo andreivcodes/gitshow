@@ -1,0 +1,33 @@
+# Node runtime
+#
+# Nixpacks only lets you pick a Node *major* (engines.node / NIXPACKS_NODE_VERSION).
+# Each major is mapped to a nixpkgs snapshot hard-coded in the Nixpacks release
+# (Nixpacks 1.41.0: Node 24 -> nixpkgs 23f9169c = nodejs 24.10.0), so the patch
+# version never moves. No nixpkgs channel with prebuilt binaries ships 24.22.x
+# yet, so overriding `nixpkgsArchive` cannot get us there either.
+#
+# Instead, drop Node/pnpm from Nix and install the official Node.js binary
+# (scripts/install-node.sh), pinned by version and SHA-256. pnpm still comes
+# from corepack (packageManager in package.json) via the provider's install
+# phase.
+#
+# To upgrade: bump NODE_VERSION and both checksums from
+# https://nodejs.org/dist/v<version>/SHASUMS256.txt
+
+[variables]
+NODE_VERSION = '24.22.1'
+NODE_SHA256_X64 = '6c172a9ab6718f7b801fb5a7bd486af2ee5e32758086a04b84fcce2aa77095e6'
+NODE_SHA256_ARM64 = 'dbabf7a1cbf947e6059ffad2c27b80041db97dea1e553b62afdee7f13fca336e'
+
+[phases.setup]
+# Provider default is ['nodejs_24', 'pnpm-10_x', 'openssl'].
+nixPkgs = ['openssl']
+# Provider adds gcc-unwrapped (for sharp under Nix's Node). The official Node
+# binary uses the system libstdc++; putting Nix's on LD_LIBRARY_PATH would mix
+# glibc versions.
+nixLibs = []
+aptPkgs = ['...', 'curl', 'ca-certificates', 'xz-utils']
+cmds = ['sh scripts/install-node.sh']
+# The base image's PATH has no /usr/local/bin; this lands in NIXPACKS_PATH,
+# which login shells (every build step and the start command) prepend.
+paths = ['/opt/node/bin']
