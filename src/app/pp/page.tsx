@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "Privacy Policy and GDPR compliance information for git.show",
+  alternates: { canonical: "/pp" },
 };
 
 export default function Page() {

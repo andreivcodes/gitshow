@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terms and Conditions",
   description: "Terms and Conditions for using git.show",
+  alternates: { canonical: "/tc" },
 };
 
 export default function Page() {
